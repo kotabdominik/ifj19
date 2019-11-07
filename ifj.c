@@ -1,1 +1,2 @@
 #include<stdio>
+#ifdef <stdio>
