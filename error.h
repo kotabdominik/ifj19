@@ -11,8 +11,8 @@
   *
   */
 
-  #ifndef ERROR_H
-  #define ERROR_H
+  #ifndef _ERROR_H_
+  #define _ERROR_H_
 
   #define OK = 0;
   #define LEXICAL_ERR = 1; //chyba v programu v rámci lexikální analýzy

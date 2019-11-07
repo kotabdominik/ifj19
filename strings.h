@@ -11,6 +11,9 @@
   *
   */
 
+  #ifndef _STRING_H_
+  #define _STRING_H_
+
 typedef struct {
   char *string;
   int length;
@@ -22,3 +25,5 @@ void stringFree(smartString *str);
 void stringClear(smartString *str);
 void stringAddChar(smartString *str, char c);
 int stringIsKeyword(smartString *str);
+
+#endif

@@ -11,6 +11,9 @@
   *
   */
 
+  #ifndef _SCANNER_H_
+  #define _SCANNER_H_
+
   #include "strings.h"
 
   typedef enum {
@@ -44,3 +47,5 @@
   	tokenType type; //type
   	tokenAttribute attribute; //value
   } token;
+
+#endif
