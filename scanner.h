@@ -57,6 +57,8 @@
   typedef union {
     smartString *string; //string value
     keyword keyword; //uhh not sure
+    int INT;
+    float FLOAT;
   } tokenAttribute;
 
   ////*    Here may be other functions such as opening source file etc    *////
