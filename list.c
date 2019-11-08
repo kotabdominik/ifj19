@@ -18,6 +18,20 @@
 ** seznamem, a proto tuto možnost neošetřujte. Vždy předpokládejte,
 ** že neinicializované proměnné mají nedefinovanou hodnotu.
 **/
+#include "list.h"
+
+int errflg;
+
+/*
+** Vytiskne upozornění na to, že došlo k chybě.
+** Tato funkce bude volána z některých dále implementovaných operací.
+**/	
+void DLError() {
+    printf ("*ERROR* The program has performed an illegal operation.\n");
+    errflg = TRUE;             /* globální proměnná -- příznak ošetření chyby */
+    return;
+}
+
 void DLInitList (tDLList *L) {
   L->Act = NULL; //inicializace ukazatelů
   L->First = NULL;
