@@ -63,7 +63,18 @@
 
 
   // Proly na ziskavanie tokenov
-  ///UWU
   token nextToken();
+
+//  Exemplar token insertion  //
+/*
+* token testToken;
+* smartString *s = malloc(sizeof(smartString));
+* stringInit(s);
+* stringAddChar(s,'+');
+* testToken.attribute.string = s;
+* testToken.type = PLUS;
+*/
+
+
 
 #endif
