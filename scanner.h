@@ -43,6 +43,10 @@
     NOTEQ; //!=
     EOL; //konec radku
     EOFTOKEN; //konec souboru
+    LEFTBRACKET; // (
+    RIGHTBRACKET; // )
+    COMMA; // ,
+    SEMICOLON; // ;
   } tokenType;
 
   typedef struct {
