@@ -63,6 +63,7 @@
 
 
   // Proly na ziskavanie tokenov
+  ///UWU
   token nextToken();
 
 #endif
