@@ -41,7 +41,13 @@
     GREATEREQ; //>=
     EQ; //==
     NOTEQ; //!=
+    EOL; //konec radku
+    EOFTOKEN; //konec souboru
   } tokenType;
+
+  typedef union {
+
+  } tokenAttribute;
 
   typedef struct {
   	tokenType type; //type
