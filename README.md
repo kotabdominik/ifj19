@@ -2,7 +2,7 @@
 ## Implementation of compiler for IFJ19
 
 ### Contributors:
-- Brezina Jindrich - <xbrezi21@stud.fit.vutbr.cz>
-- Gumancik Pavol   - <xguman01@stud.fit.vutbr.cz>
-- Kotab Dominik    - <xkotab01@stud.fit.vutbr.cz>
-- Moravcik Tomas   - <xmorav41@stud.fit.vutbr.cz>
+- Březina Jindřich - <xbrezi21@stud.fit.vutbr.cz>
+- Gumančík Pavol   - <xguman01@stud.fit.vutbr.cz>
+- Kotáb Dominik    - <xkotab01@stud.fit.vutbr.cz>
+- Moravčík Tomáš   - <xmorav41@stud.fit.vutbr.cz>
