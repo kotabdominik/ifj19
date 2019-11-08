@@ -26,17 +26,20 @@
 
                                /* ADT zásobník implementovaný ve statickém poli */
   typedef struct {
-  	char arr[MAX_STACK];                             /* pole pro uložení hodnot */
+  	int *head;                             /* ukazatel na zacatek zasobniku */
+    int currentSize;                        /* velikost zasobniku */
   	int top;                                /* index prvku na vrcholu zásobníku */
   } tStack;
 
                                     /* Hlavičky funkcí pro práci se zásobníkem. */
   void stackError ( int error_code );
   void stackInit ( tStack* s );
-  int stackEmpty ( const tStack* s );
-  int stackFull ( const tStack* s );
-  void stackTop ( const tStack* s, char* c );
+  void stackResize ( tStack* s );
+  void stackDestroy ( tStack* s );
+  void stackTop (  tStack* s, int* c );
   void stackPop ( tStack* s );
-  void stackPush ( tStack* s, char c );
+  void stackPush ( tStack* s, int c );
+  void stackFull ( tStack* s );
+  int stackEmpty ( tStack* s )
 
   #endif
