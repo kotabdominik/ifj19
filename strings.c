@@ -11,6 +11,8 @@
   *
   */
 
+#define ALLOC_ADD 10
+
 #include "error.h"
 #include "strings.h"
 
@@ -31,14 +33,25 @@ void stringClear(smartString *str) {
   str->length = 0;
 }
 
-void stringAddChar(smartString *str, char c) {
-  //dá nakonec stringu char, takhle se budou ty stringy creatovat
-  return;
+int stringAddChar(smartString *str, char c) {
+  if (str->length + 1 >= str->allocatedSize) {
+    if (str->string = (char *) realloc(str->string, s->length + ALLOC_ADD) == NULL) {
+      return INTERN_ERR;
+    }
+    str->allocatedSize =+ ALLOC_ADD;
+  }
+  str->string[s->length] = c;
+  s->length++;
+  str->[s->length] = '\0';
+
+  return OK;
 }
 
-//ma toto byt tady??, zjisti, jestli string je keyword
 int stringIsKeyword(smartString *str) {
   char *keywords[] = {"def\0", "else\0", "if\0", "None\0", "pass\0", "return\0", "while\0"};
-  //testovani
-  return 0; //je keyword?0/1
+  for (int i = 0; i < (sizeof(keywords) / sizeof(keywords[0])); i++) {
+    if (strcmp(keywords[i], str->string) == 0))
+      return 1; //ano je
+  }
+  return 0; //ne neni
 }
