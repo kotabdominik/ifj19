@@ -8,7 +8,7 @@
 # Moravčík Tomáš (xmorav41@stud.fit.vutbr.cz)
 
 
-OBJS	= *.o
+OBJS	= list.o strings.o
 SOURCE	= list.c strings.c
 HEADER	= error.h list.h scanner.h stack.h strings.h
 OUT	= final.out
@@ -16,11 +16,11 @@ CC	 = gcc
 FLAGS	 = -g3 -c -Wall
 LFLAGS	 =
 
-all: $(OBJS)
-	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+#all: $(OBJS)
+#	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
 
-final.out: $(OBJS)
-	$(CC) -g $(OBJS) -o $(OUT)
+#final.out: $(OBJS)
+#	$(CC) -g $(OBJS) -o $(OUT)
 list.o: list.c
 	$(CC) $(FLAGS) list.c
 
