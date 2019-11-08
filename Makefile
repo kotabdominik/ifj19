@@ -7,7 +7,6 @@
   * Kotáb Dominik (xkotab01@stud.fit.vutbr.cz)
   * Moravčík Tomáš (xmorav41@stud.fit.vutbr.cz)
   *
-  * Brief: header for scanner and Lexical analyzer
   *
   */
 
