@@ -7,7 +7,7 @@
   * Kotáb Dominik (xkotab01@stud.fit.vutbr.cz)
   * Moravčík Tomáš (xmorav41@stud.fit.vutbr.cz)
   *
-  * Brief:
+  * Brief: implementace operaci nad stackem, ktery se bude vyuzivat predevsim ve scanneru
   *
   */
 
