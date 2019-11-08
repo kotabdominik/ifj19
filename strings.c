@@ -15,6 +15,9 @@
 
 #include "error.h"
 #include "strings.h"
+#include <stddef.h>
+#include <malloc.h>
+#include <string.h>
 
 void stringInit(smartString *str) {
   str->string = NULL;
@@ -35,14 +38,14 @@ void stringClear(smartString *str) {
 
 int stringAddChar(smartString *str, char c) {
   if (str->length + 1 >= str->allocatedSize) {
-    if (str->string = (char *) realloc(str->string, s->length + ALLOC_ADD) == NULL) {
+    if ((str->string = (char *) realloc(str->string, str->allocatedSize + ALLOC_ADD)) == NULL) {
       return INTERN_ERR;
     }
     str->allocatedSize =+ ALLOC_ADD;
   }
-  str->string[s->length] = c;
-  s->length++;
-  str->[s->length] = '\0';
+  str->string[str->length] = c;
+  str->length++;
+  str->string[str->length] = '\0';
 
   return OK;
 }
@@ -50,7 +53,7 @@ int stringAddChar(smartString *str, char c) {
 int stringIsKeyword(smartString *str) {
   char *keywords[] = {"def\0", "else\0", "if\0", "None\0", "pass\0", "return\0", "while\0"};
   for (int i = 0; i < (sizeof(keywords) / sizeof(keywords[0])); i++) {
-    if (strcmp(keywords[i], str->string) == 0))
+    if (strcmp(keywords[i], str->string) == 0)
       return 1; //ano je
   }
   return 0; //ne neni

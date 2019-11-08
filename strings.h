@@ -23,7 +23,7 @@ typedef struct {
 void stringInit(smartString *str);
 void stringFree(smartString *str);
 void stringClear(smartString *str);
-void stringAddChar(smartString *str, char c);
+int stringAddChar(smartString *str, char c);
 int stringIsKeyword(smartString *str);
 
 #endif

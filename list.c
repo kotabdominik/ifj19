@@ -25,10 +25,10 @@ int errflg;
 /*
 ** Vytiskne upozornění na to, že došlo k chybě.
 ** Tato funkce bude volána z některých dále implementovaných operací.
-**/	
+**/
 void DLError() {
     printf ("*ERROR* The program has performed an illegal operation.\n");
-    errflg = TRUE;             /* globální proměnná -- příznak ošetření chyby */
+    errflg = 1;             /* globální proměnná -- příznak ošetření chyby */
     return;
 }
 
