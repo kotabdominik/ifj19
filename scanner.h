@@ -33,8 +33,7 @@
     INT, //integer
     FLOAT, //float
     STR, //string
-    DIVFLOAT, //úplné dělení do floatu
-    DIV, //celočíselné dělení, očekává dva int
+    DIV, //dělení
     LESS, //<
     GREATER, //>
     LESSEQ, //<=
