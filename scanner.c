@@ -21,3 +21,7 @@ token nextToken() {
   stringInit(&token.string);
 
 }
+
+token testToken;
+testToken.tokenType = "PLUS";
+testToken.tokenAttribute = '+';
