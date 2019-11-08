@@ -128,8 +128,3 @@ void stackError(int error_code) {
     */
     		return (s->top < 0) ? 1 : 0;
     }
-
-
-void main() {
-  return;
-}
