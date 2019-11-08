@@ -13,12 +13,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "scanner.h"
 
 #ifndef _LIST_H_
 #define _LIST_H_
 
 typedef struct tDLElem {                 /* prvek dvousměrně vázaného seznamu */
-        int data;                                            /* užitečná data */
+        char *tokenPointer;              /* ukazatel na token */
         struct tDLElem *lptr;          /* ukazatel na předchozí prvek seznamu */
         struct tDLElem *rptr;        /* ukazatel na následující prvek seznamu */
 } *tDLElemPtr;
@@ -31,11 +32,11 @@ typedef struct {                                  /* dvousměrně vázaný sezna
 
 void DLInitList (tDLList *);
 void DLDisposeList (tDLList *);
-void DLInsertFirst (tDLList *, int);
-void DLInsertLast(tDLList *, int);
+void DLInsertFirst (tDLList *, token);
+void DLInsertLast(tDLList *, token);
 void DLDeleteFirst (tDLList *);
 void DLDeleteLast (tDLList *);
-void DLPostInsert (tDLList *, int);
+void DLPostInsert (tDLList *, token);
 void DLSucc (tDLList *);
 
 #endif

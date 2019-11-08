@@ -19,6 +19,7 @@
 ** že neinicializované proměnné mají nedefinovanou hodnotu.
 **/
 #include "list.h"
+#include "scanner.h"
 
 int errflg;
 
@@ -60,7 +61,7 @@ void DLDisposeList (tDLList *L) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLInsertFirst (tDLList *L, int val) {
+void DLInsertFirst (tDLList *L, token val) {
 	tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
   if (temp == NULL) { //vypořádání se s errorem
     DLError();
@@ -85,7 +86,7 @@ void DLInsertFirst (tDLList *L, int val) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLInsertLast(tDLList *L, int val) {
+void DLInsertLast(tDLList *L, token val) {
   tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
   if (temp == NULL) { //vypořádání se s errorem
     DLError();
@@ -159,7 +160,7 @@ void DLDeleteLast (tDLList *L) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLPostInsert (tDLList *L, int val) {
+void DLPostInsert (tDLList *L, token val) {
   if(L->Act) { //musí být aktivní
     tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
     if (temp == NULL) { //vypořádání se s errorem
