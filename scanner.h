@@ -45,13 +45,20 @@
     EOFTOKEN; //konec souboru
   } tokenType;
 
-  typedef union {
-
-  } tokenAttribute;
-
   typedef struct {
   	tokenType type; //type
   	tokenAttribute attribute; //value
   } token;
+
+  typedef union {
+    smartString *string; //string value
+    keyword keyword; //uhh not sure
+  } tokenAttribute;
+
+  ////*    Here may be other functions such as opening source file etc    *////
+
+
+  // Proly na ziskavanie tokenov
+  token nextToken();
 
 #endif
