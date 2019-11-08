@@ -1,5 +1,5 @@
 # Formal Languages and Compilers
-## Implementation of compailer for IFJ19
+## Implementation of compiler for IFJ19
 
 ### Contributors:
 - Brezina Jindrich - <xbrezi21@stud.fit.vutbr.cz>
