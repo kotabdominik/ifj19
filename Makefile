@@ -8,7 +8,7 @@
 # Moravčík Tomáš (xmorav41@stud.fit.vutbr.cz)
 
 
-OBJS	= list.o strings.o
+OBJS	= *.o
 SOURCE	= list.c strings.c
 HEADER	= error.h list.h scanner.h stack.h strings.h
 OUT	= final.out
