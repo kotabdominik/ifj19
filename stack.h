@@ -11,18 +11,20 @@
   *
   */
 
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+
   #ifndef _STACK_H_
   #define _STACK_H_
-
-  #include <stdio.h>
 
   extern int err_flag;                   /* Indikuje, zda operace volala chybu. */
 
                                           /* Chybové kódy pro funkci stackError */
-  #define MAX_SERR    3                                   /* počet možných chyb */
-  #define SERR_INIT   1                                  /* chyba při stackInit */
-  #define SERR_PUSH   2                                  /* chyba při stackPush */
-  #define SERR_TOP    3                                   /* chyba při stackTop */
+  #define MAX_SERR 3                                   /* počet možných chyb */
+  #define SERR_INIT 1                                  /* chyba při stackInit */
+  #define SERR_PUSH 2                                  /* chyba při stackPush */
+  #define SERR_TOP 3                                   /* chyba při stackTop */
 
                                /* ADT zásobník implementovaný ve statickém poli */
   typedef struct {
@@ -39,7 +41,7 @@
   void stackTop (  tStack* s, int* c );
   void stackPop ( tStack* s );
   void stackPush ( tStack* s, int c );
-  void stackFull ( tStack* s );
-  int stackEmpty ( tStack* s )
+  int stackFull ( tStack* s );
+  int stackEmpty ( tStack* s );
 
   #endif
