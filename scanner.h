@@ -15,6 +15,8 @@
   #define _SCANNER_H_
 
   #include "strings.h"
+  #include "ctype.h"
+
 
   typedef enum {
     DEF,
@@ -46,6 +48,8 @@
     RIGHTBRACKET, // )
     COMMA, // ,
     SEMICOLON, // ;
+    COLON, // :
+    ASSIGN, // =
   } tokenType;
 
   typedef struct {
@@ -57,7 +61,7 @@
     keyword keyword; //uhh not sure
     smartString *string; //string value
     int INT;
-    float FLOAT;
+    double FLOAT;
   } tokenAttribute;
 
   ////*    Here may be other functions such as opening source file etc    *////
@@ -68,12 +72,12 @@
 
 //  Exemplar token insertion  //
 /*
-  * token testToken;
+  * token Token;
   * smartString *s = malloc(sizeof(smartString));
   * stringInit(s);
   * stringAddChar(s,'+');
-  * testToken.attribute.string = s;
-  * testToken.type = PLUS;
+  * Token.attribute.string = s;
+  * Token.type = PLUS;
 */
 
 
