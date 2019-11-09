@@ -36,6 +36,7 @@
     INTEXP, //integer with e
     FLOAT, //float
     FLOATEXP,//float with e
+    LITERAL, //LITERALLY SHAKING RIGHT NOW
     STR, //string
     DIVFLT, //dělení floatov
     DIVINT, //dělení integerov
