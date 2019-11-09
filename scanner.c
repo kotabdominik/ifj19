@@ -355,6 +355,7 @@ token nextToken(token *Token) {
               else{
                 Token.attribute.string = s;
                 Token.type = INT;
+                state = STATE_START;
                 break; //Koniec integer čísla
               }
 
@@ -384,6 +385,7 @@ token nextToken(token *Token) {
               else{
                 Token.attribute.string = s;
                 Token.type = FLOAT;
+                state = STATE_START;
                 break; //Koniec float čísla
               }
 
@@ -429,6 +431,7 @@ token nextToken(token *Token) {
                   Token.type = INTEXP;
                   break; //Koniec integer s e v čísle
                 }
+                state = STATE_START;
               }
           }
           break; //Vraciam sa do switch (c)
