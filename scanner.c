@@ -283,9 +283,11 @@ token nextToken(token *Token) {
 
         while (1){
           c = getchar();
-          if ((c = getchar) != '"')
-            if ((c = getchar) != '"')
-              if ((c = getchar) != '"')
+          if ((c = getchar()) != '"')
+            if ((c = getchar()) != '"')
+            else stringAddChar(s,c);
+              if ((c = getchar()) != '"')
+                else {stringAddChar(s,'"'); stringAddChar(s,'"');}
                 break;
           stringAddChar(s,c);
         }
