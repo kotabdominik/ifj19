@@ -14,6 +14,9 @@
 #include "scanner.h"
 
 #define STATE_START 100
+
+
+
 #define STATE_EQUAL 101
 #define STATE_GRTER 102
 #define STATE_LSSER 103
@@ -216,7 +219,6 @@ token nextToken(token *Token) {
           stringInit(s);
           stringAddChar(s,'>');
           Token.attribute.string = s;
-
           Token.type = GREATER;
           continue;
         }
@@ -304,7 +306,7 @@ token nextToken(token *Token) {
         continue;
 
       default:
-      if (isalpha(c) || c == '_'){
+      if (isalpha(c) || c == '_'){ //Robíme basic string
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
         if (s == NULL){
@@ -331,86 +333,107 @@ token nextToken(token *Token) {
         getchar(c);
 
         state = STATE_F2;
-        switch (state) {
-          case (STATE_F2): //Začiatočný state čísla
-            if(c == '.'){ //Bude float
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_P1;
-            }
-            else if(c == 'E' || c == 'e'){ //Bude Exp
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_P2;
-            }
-            else if(isalnum(c)){ //Bude cislo
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_F2;
-            }
-            else
-              //////////////////////
-            break;
-
-          case (STATE_P1): //Je float
-            if(isalnum(c)){ //Musí nasledovať číslo
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_F3;
-            }
-            else
-              return LEXICAL_ERR;
-            break;
-
-          case (STATE_F3): //Je float v tvare (example) 132.1_
-            if(c == 'E' || c == 'e'){ //Bude 132.1e
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_P2;
-            }
-            else if (isalnum(c)) { //Bude 132.12
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_F3; //Vráti sa tu
-            }
-            else
-              /////////////////////
-            break;
-
-          case (STATE_P2):
-            if (isalnum(c)){
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_F4;
-            }
-            else if (c == '+' || c == '-'){
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_P3;
-            }
-            else
-              return LEXICAL_ERR;
-            break;
-
-            case (STATE_P3):
-              if (isalnum(c)){
+        int isINTorFLT = 0; //0 is for INT, 1 is for FLOAT
+        while (1){
+          switch (state) {
+            case (STATE_F2): //Začiatočný state čísla
+              if(c == '.'){ //Bude float
                 stringAddChar(s,c);
                 c = getchar();
-                state = STATE_F4;
+                state = STATE_P1;
+              }
+              else if(c == 'E' || c == 'e'){ //Bude Exp
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P2;
+              }
+              else if(isalnum(c)){ //Bude cislo
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F2;
+              }
+              else{
+                Token.attribute.string = s;
+                Token.type = INT;
+                break; //Koniec integer čísla
+              }
+
+
+            case (STATE_P1): //Je float
+              if(isalnum(c)){ //Musí nasledovať číslo
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F3;
               }
               else
                 return LEXICAL_ERR;
               break;
 
-            case (STATE_F4):
-            if (isalnum(c)){
-              stringAddChar(s,c);
-              c = getchar();
-              state = STATE_F4;
-            }
-            else
-              ////////////
+            case (STATE_F3): //Je float v tvare (example) 132.1_
+            isINTorFLT = 1; ///Kontrola že je TYP FLOATEXP
+              if(c == 'E' || c == 'e'){ //Bude 132.1e
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P2;
+              }
+              else if (isalnum(c)) { //Bude 132.12
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F3; //Vráti sa tu
+              }
+              else{
+                Token.attribute.string = s;
+                Token.type = FLOAT;
+                break; //Koniec float čísla
+              }
+
+            case (STATE_P2):
+              if (isalnum(c)){
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F4;
+              }
+              else if (c == '+' || c == '-'){
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P3;
+              }
+              else
+                return LEXICAL_ERR;
+              break;
+
+              case (STATE_P3):
+                if (isalnum(c)){
+                  stringAddChar(s,c);
+                  c = getchar();
+                  state = STATE_F4;
+                }
+                else
+                  return LEXICAL_ERR;
+                break;
+
+              case (STATE_F4):
+              if (isalnum(c)){
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F4;
+              }
+              else{
+                Token.attribute.string = s;
+                if (isINTorFLT == 1){
+                  Token.type = FLOATEXP;
+                  isINTorFLT = 0;
+                  break; //Koniec float s e v čísle
+                }
+                else {
+                  Token.type = INTEXP;
+                  break; //Koniec integer s e v čísle
+                }
+              }
+          }
+          break; //Vraciam sa do switch (c)
         }
+
 
 
 

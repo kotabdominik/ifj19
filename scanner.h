@@ -33,7 +33,9 @@
     MINUS, //-
     TIMES, //*
     INT, //integer
+    INTEXP, //integer with e
     FLOAT, //float
+    FLOATEXP,//float with e
     STR, //string
     DIVFLT, //dělení floatov
     DIVINT, //dělení integerov
