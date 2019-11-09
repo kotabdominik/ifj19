@@ -13,15 +13,28 @@
 
 #include "string.h"
 
+#define MAX_SYMTABLE_SIZE 17569 //nějaká meme hodnota, která je shodou okolností prvočíslo
+
 #ifndef _SYMBOLTABLE_H_
 #define _SYMBOLTABLE_H_
 
-
 /* chybi nejake struktury */
+
+typedef enum //možné datové typy - 10.3 v zadání
+{
+	UNDEFINED, //nvm jestli nutný
+	INT,
+	BOOL,
+	FLOAT,
+	STRING,
+} dataType;
 
 typedef struct {
   root; //tady bude ukazatel na koren(nejaky node) binarniho stromu
 } symbolTable;
+
+// Symbol table
+typedef Sym_table_item* Sym_table[MAX_SYMTABLE_SIZE];
 
 void initSymbolTable(symbolTable *sT); //inicializace symbol tablu
 void insertFunctionSymbolTable(symbolTable *sT, smartString string); //prida data o funkci do symbol tablu
@@ -30,6 +43,6 @@ void insertVariableSymbolTable(symbolTable *sT, smartString string); //prida dat
 void removeSymbolTable(symbolTable *sT, smartString string); //odstrani prvek ze symbol tablu
 void deleteSymbolTable(symbolTable *sT); //odstrani cely symbol table
 /* vlozeni builtIn funkci do symtablu ???? */
-/* btw https://github.com/DavidHribek/IFJ/blob/development/src/symtable.h */ 
+/* btw https://github.com/DavidHribek/IFJ/blob/development/src/symtable.h */
 
 #endif

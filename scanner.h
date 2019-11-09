@@ -61,7 +61,7 @@
     keyword keyword; //uhh not sure
     smartString *string; //string value
     int INT;
-    float FLOAT;
+    double FLOAT;
   } tokenAttribute;
 
   ////*    Here may be other functions such as opening source file etc    *////
