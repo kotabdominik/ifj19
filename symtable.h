@@ -62,8 +62,8 @@ typedef struct symtableItm {
 	struct symtableItm *next;
 	char *key;
 	union {
-		functionData function;
-		variableData variable;
+		functionData *function;
+		variableData *variable;
 	} elementType;
 	elementType type;
 } symtableItem;
@@ -76,7 +76,8 @@ typedef struct symtable {
 // Symbol table
 //typedef Sym_table_item* Sym_table[MAX_SYMTABLE_SIZE]; nejspíš neřešit
 
-void initSymbolTable(symbolTable *sT, unsigned int size); //inicializace symbol tablu
+//void initSymbolTable(symbolTable *sT, unsigned int size); //inicializace symbol tablu
+symbolTable *initSymbolTable(unsigned int size);
 void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
 
 void insertFunctionSymbolTable(symbolTable *sT, smartString string); //prida data o funkci do symbol tablu
