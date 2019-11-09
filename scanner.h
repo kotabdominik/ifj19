@@ -35,7 +35,8 @@
     INT, //integer
     FLOAT, //float
     STR, //string
-    DIV, //dělení
+    DIVFLT, //dělení floatov
+    DIVINT, //dělení integerov
     LESS, //<
     GREATER, //>
     LESSEQ, //<=
