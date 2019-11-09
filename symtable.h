@@ -12,7 +12,7 @@
   */
 
 #include <stdbool.h>
-#include "strings.h"
+
 
 #define MAX_SYMTABLE_SIZE 17569 //nějaká meme hodnota, která je shodou okolností prvočíslo
 
@@ -44,7 +44,6 @@ typedef struct { //typedef struct var_item{
 	bool declared;
 	//bool used;
 	value value;
-  //char *key;
 	dataType type;
 } variableData;
 
@@ -55,7 +54,6 @@ typedef struct { //typedef struct fc_item{
 	int argCount;
 	//struct symtab_item *arguments;
 	//struct symtable *sym_table;
-	//char *key;
 } functionData;
 
 typedef struct symtableItm {
