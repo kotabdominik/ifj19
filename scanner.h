@@ -15,6 +15,8 @@
   #define _SCANNER_H_
 
   #include "strings.h"
+  #include "ctype.h"
+
 
   typedef enum {
     DEF,
@@ -46,6 +48,8 @@
     RIGHTBRACKET, // )
     COMMA, // ,
     SEMICOLON, // ;
+    COLON, // :
+    ASSIGN, // =
   } tokenType;
 
   typedef struct {
