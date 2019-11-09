@@ -15,7 +15,7 @@
   #define _SCANNER_H_
 
   #include "strings.h"
-  #include "ctype.h"
+  #include <ctype.h>
 
 
   typedef enum {

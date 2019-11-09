@@ -443,7 +443,60 @@ token nextToken(token *Token) {
 
       }
 
+      if (c == '\'') { // obmena (c == 39)
+        smartString *s = malloc(sizeof(smartString));
+        stringInit(s);
+        if (s == NULL){
+            return INTERN_ERR;
+        }
+        stringAddChar(s,c);
+        getchar(c);
+        state = STATE_P10;
 
+        while (1){
+          switch (state) {
+            case (STATE_P10):
+              if (c > 31 && c != 92 && c != 39 && c != 44 ){ // '\'' && '\\' && '\,'
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P10;
+              }
+              else if (c == 39){
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F22;
+              }
+              else if (c == 92){
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P11;
+              }
+              else{
+                return LEXICAL_ERR;
+              }
+              break;
+
+            case (STATE_P11):
+              if (c > 31 && c < 255 && c != 92 && c != 39 && c != 44 &&  ){
+
+              }
+              else if (){
+
+              }
+              else if (){
+
+              }
+              else {
+                return LEXICAL_ERR;
+              }
+          }
+        }
+
+
+
+
+
+      }
 
 
     }
