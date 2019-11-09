@@ -456,18 +456,17 @@ token nextToken(token *Token) {
         while (1){
           switch (state) {
             case (STATE_P10):
-              if (c > 31 && c != 92 && c != 39 && c != 44 ){ // '\'' && '\\' && '\,'
+              if (c > 31 && c != 92 && c != 39){ // '\'' && '\\' && '\,' //normalny znak
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_P10;
               }
-              else if (c == 39){
+              else if (c == 39){ //Apostrof teda koniec stringu
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_F22;
               }
-              else if (c == 92){
-                stringAddChar(s,c);
+              else if (c == 92){ // Backslash teda escape seq
                 c = getchar();
                 state = STATE_P11;
               }
@@ -476,19 +475,63 @@ token nextToken(token *Token) {
               }
               break;
 
-            case (STATE_P11):
-              if (c > 31 && c < 255 && c != 92 && c != 39 && c != 44 &&  ){
-
+            case (STATE_P11): //Riešime či escape alebo nah
+              if (c > 31 && c != 92 && c != 39 && c != 44 c != n && c != t){//nebola
+                stringAddChar(s,'\\');
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P10;
               }
-              else if (){
-
+              else if (c == 92 || c == 39 || c == 34){//  _/_'_"_
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_P10;
               }
-              else if (){
-
+              else if (c == n){ // Spraví EOL
+                stringAddChar(s,EOL); /////////////////hmmm check?
+                c = getchar();
+                state = STATE_P10;
+              }
+              else if (c == t){ // Spraví TAB
+                stringAddChar(s,'\t'); /////////////////hmmm check?
+                c = getchar();
+                state = STATE_P10;
+              }
+              else if (c == x){ //Bude robiť HEX    
+                c = getchar();
+                state = STATE_P12;
               }
               else {
                 return LEXICAL_ERR;
               }
+              break;
+
+            case (STATE_P12): //Riešime prvú hex val
+              if ( (c >= 48 && c <= 57) || (c >= 65 && c <= 70) || (c >= 97 && c >= 102)){ // 0..9 || A..F || a..f
+                char hexstring[3];
+                hexstring[0] = c;
+                c = getchar();
+                state = STATE_P13;
+              }
+              else {
+                return LEXICAL_ERR;
+              }
+              break;
+
+            case (STATE_P13): //Riešime druhú hex val
+              if ( (c >= 48 && c <= 57) || (c >= 65 && c <= 70) || (c >= 97 && c >= 102)){ // 0..9 || A..F || a..f
+                hexstring[1] = c;
+                int hexvalue = (int)strtol(hexstring, NULL, 16);
+
+
+                c = getchar();
+                state = STATE_P10;
+              }
+              else {
+                return LEXICAL_ERR;
+              }
+              break;
+
           }
         }
 
