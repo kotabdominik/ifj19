@@ -19,9 +19,12 @@
 #define STATE_LSSER 103
 #define STATE_NOTEQ 104
 #define STATE_COMMT 105
-#define STATE_NUMBR 106
-#define STATE_NUFLT 107
-#define STATE_NUEXP 109
+#define STATE_F2 106
+#define STATE_P1 107
+//#define STATE_NUEXP 109
+#define STATE_F3 1091
+#define STATE_P2 1092
+#define STATE_P3 1093
 #define STATE_NUSGN 110
 #define STATE_NUEND 111
 #define STATE_STRNG 112
@@ -35,17 +38,42 @@
  //smartString *s = malloc(sizeof(smartString));
 
 
-token nextToken() {
-  token Token;
+token nextToken(token *Token) {
+/*
+  smartString *s = malloc(sizeof(smartString)); //check
+  if (s == NULL){
+      return INTERN_ERR;
+  }
+  Token.attribute.string = s;
+
+  int state = STATE_START;
 
   char c,tmp;
 
-  c = getchar()
-  while((c = getchar() != EOF){
-    smartString *s = malloc(sizeof(smartString)); //check
-    if (smartString == NULL){
+
+  while (1){
+    c = getchar()
+    switch (state)
+    {
+      case (STATE_START):
 
     }
+
+  }*/
+ token Token;
+
+ char c,tmp;
+
+ c = getchar()
+ while((c = getchar() != EOF){
+  /* smartString *s = malloc(sizeof(smartString)); //check
+   if (smartString == NULL){
+     return INTERN_ERR;
+   }*/
+  int state = STATE_START;
+  while((c = getchar() != EOF){
+
+
     switch (c) {
                   // SINGULAR //
       //TODO
@@ -291,35 +319,97 @@ token nextToken() {
         }
       }
 
-      if (isalnum(c)){
+      if (isalnum(c)){ //Robíme číslo
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
         if (s == NULL){
             return INTERN_ERR;
         }
         stringAddChar(s,c);
-
         getchar(c);
-        while (1) {
-          if(c == 'E' || c == 'e'){
 
-          }
-          else if(c == '.'){
-            stringAddChar(s,c);
-            c = getchar();
-            if (!(isalnum(c)))
+        state = STATE_F2;
+        switch (state) {
+          case (STATE_F2): //Začiatočný state čísla
+            if(c == '.'){ //Bude float
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_P1;
+            }
+            else if(c == 'E' || c == 'e'){ //Bude Exp
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_P2;
+            }
+            else if(isalnum(c)){ //Bude cislo
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_F2;
+            }
+            else
+              //////////////////////
+            break;
+
+          case (STATE_P1): //Je float
+            if(isalnum(c)){ //Musí nasledovať číslo
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_F3;
+            }
+            else
               return LEXICAL_ERR;
+            break;
 
-          }
-          else if(isalnum(c)){
-            stringAddChar(s,c);
-            c = getchar();
-            continue;
-          }
+          case (STATE_F3): //Je float v tvare (example) 132.1_
+            if(c == 'E' || c == 'e'){ //Bude 132.1e
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_P2;
+            }
+            else if (isalnum(c)) { //Bude 132.12
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_F3; //Vráti sa tu
+            }
+            else
+              /////////////////////
+            break;
 
+          case (STATE_P2):
+            if (isalnum(c)){
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_F4;
+            }
+            else if (c == '+' || c == '-'){
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_P3;
+            }
+            else
+              return LEXICAL_ERR;
+            break;
 
+            case (STATE_P3):
+              if (isalnum(c)){
+                stringAddChar(s,c);
+                c = getchar();
+                state = STATE_F4;
+              }
+              else
+                return LEXICAL_ERR;
+              break;
 
+            case (STATE_F4):
+            if (isalnum(c)){
+              stringAddChar(s,c);
+              c = getchar();
+              state = STATE_F4;
+            }
+            else
+              ////////////
         }
+
 
 
 
