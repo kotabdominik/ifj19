@@ -55,17 +55,17 @@
     ASSIGN, // =
   } tokenType;
 
-  typedef struct {
-  	tokenType type; //type
-  	tokenAttribute attribute; //value
-  } token;
-
   typedef union {
     keyword keyword; //uhh not sure
     smartString *string; //string value
     int INT;
     double FLOAT;
   } tokenAttribute;
+
+  typedef struct {
+  	tokenType type; //type
+  	tokenAttribute attribute; //value
+  } token;
 
   ////*    Here may be other functions such as opening source file etc    *////
 

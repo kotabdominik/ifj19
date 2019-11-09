@@ -28,11 +28,11 @@ typedef union{
 } value;
 
 typedef enum { //možné datové typy - 10.3 v zadání
-	UNDEFINED, //nvm jestli nutný
-	INT,
-	BOOL,
-	FLOAT,
-	STRING,
+	DATA_UNDEFINED, //nvm jestli nutný
+	DATA_INT,
+	DATA_BOOL,
+	DATA_FLOAT,
+	DATA_STRING,
 } dataType;
 
 typedef enum {
@@ -80,12 +80,5 @@ typedef struct symtable {
 symbolTable *initSymbolTable(unsigned int size);
 void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
 
-void insertFunctionSymbolTable(symbolTable *sT, smartString string); //prida data o funkci do symbol tablu
-void insertVariableSymbolTable(symbolTable *sT, smartString string); //prida data o promenne do symbol tablu
-/* zatim neznamy node */ //searchSymbolTable(symbolTable *sT, smartString string); //vyhleda prvek v symbol tablu
-void removeSymbolTable(symbolTable *sT, smartString string); //odstrani prvek ze symbol tablu
-void deleteSymbolTable(symbolTable *sT); //odstrani cely symbol table
-/* vlozeni builtIn funkci do symtablu ???? */
-/* btw https://github.com/DavidHribek/IFJ/blob/development/src/symtable.h */
 
 #endif

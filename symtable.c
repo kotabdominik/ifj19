@@ -15,25 +15,24 @@
 #include <malloc.h>
 #include <string.h>
 #include "symtable.h"
+#include "scanner.h"
+
+/*
+ * vrací hash hodnotu do symbol table
+ */
+ unsigned long hash(unsigned char *str) { //https://stackoverflow.com/a/7666577
+     unsigned long hash = MAX_SYMTABLE_SIZE;
+     int c;
+
+     while (c = *str++)
+         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+     return hash % MAX_SYMTABLE_SIZE; //vrací hash v rozmezí 0 .. (MAX_SYMTABLE_SIZE - 1)
+ }
 
 /*
  * inicializace symbol table
- * table je implementovan pomoci binarniho stromu
- * = inicializuje se binarni strom
-*/
-/*
-void initSymbolTable(symbolTable *sT, unsigned int size){
-  sT = (symbolTable *) malloc(sizeof(*sT) + size * sizeof(sT->symtabList[0]));
-  if (!sT) {
-    printf("%s\n", "yikes");
-  }
-  sT->size = size;
-  for (unsigned int i = 0; i < sT->size; i++) {
-		sT->symtabList[i] = NULL;
-	}
-}
-*/
-
+ */
 symbolTable *initSymbolTable(unsigned int size){
   symbolTable *sT = (symbolTable *) malloc(sizeof(*sT) + size * sizeof(sT->symtabList[0]));
   if (!sT) {
@@ -46,6 +45,9 @@ symbolTable *initSymbolTable(unsigned int size){
   return sT;
 }
 
+/*
+ * uvolnění symbol table
+ */
 void freeSymbolTable(symbolTable *sT) {
   symtableItem *tmpItem;
 
@@ -60,6 +62,9 @@ void freeSymbolTable(symbolTable *sT) {
   }
 }
 
+/*
+ * vkládání tokenu do symbol table
+ */
 void insertSymbolTable(symbolTable *sT, int index) {
   symtableItem *new_item = (symtableItem *) malloc(sizeof(symtableItem));
   if (new_item == NULL) {
@@ -80,85 +85,17 @@ void insertSymbolTable(symbolTable *sT, int index) {
   sT->symtabList[index] = new_item;
 }
 
-void main() {
-  //symbolTable *table;
-  symbolTable *table = initSymbolTable(10);
-//  printf("%d\n", table->size);
+void main(int argc, char** argv) {
+  printf("%ld\n", hash(argv[1]));
+
+  /*
+  symbolTable *table = initSymbolTable(10); //potom MAX_SYMTABLE_SIZE
   insertSymbolTable(table, 0);
   insertSymbolTable(table, 2);
 
   printf("%d\n", table->symtabList[0]->elementType.variable->value.INT);
   printf("%d\n", table->symtabList[2]->elementType.variable->value.INT);
-
-/*
-  symtableItem *new_item = (symtableItem *) malloc(sizeof(symtableItem));
-  if (new_item == NULL) {
-    fprintf(stderr, "%s\n", "yyee");
-  }
-
-  new_item->elementType.variable = (variableData *) malloc(sizeof(variableData));
-  if (new_item->elementType.variable == NULL) {
-    fprintf(stderr, "%s\n", "yexd");
-  }
-
-  new_item->key = "a\0";
-  new_item->type = VARIABLE;
-  new_item->elementType.variable->declared = true;
-
-
-  //table->symtabList[0]->elementType.variable->value.INT = 5;
-  printf("%d\n", table->symtabList[0]->elementType.variable->value.INT);
-
-/*
-  symtableItem *new = (symtableItem *) malloc(sizeof(symtableItem));
-  if (new == NULL) {
-    fprintf(stderr, "%s\n", "yyee");
-  }
-
-  new->elementType.variable = (variableData *) malloc(sizeof(variableData));
-  if (new->elementType.variable == NULL) {
-    fprintf(stderr, "%s\n", "yexd");
-  }
-
-  new->key = "a\0";
-  new->type = VARIABLE;
-  new->elementType.variable->declared = true;
-
-  new->next = table->symtabList[1];
-  table->symtabList[1] = new;
-
-  table->symtabList[1]->elementType.variable->value.INT = 10;
-  printf("%d\n", table->symtabList[1]->elementType.variable->value.INT);
 */
-  //table->symtabList[1] = new_item;
-
-  //printf("%s\n", new_item->key); //a
-
-  //table->symtabList[0] = new_item;
-
-
-  //table->symtabList[0] = (symtableItem *) calloc(1, sizeof(symtableItem));
-
-
-//  if (!(table->symtabList[0] = (symtableItem *) malloc(sizeof(*tmpItem)))) {
-//    printf("%s\n", "yeet :c");
-//  }
-
-  //symtableItem *tableItem;
-  //struct symtableItm *tableItem
-
-  //table->symtabList[0]->elementType.variable.value.INT = 5;
-  //tableItem->elementType.variable.value.INT = 5; //setování value int tableItemu
-
-  //tableItem->key = (char *) malloc(sizeof(char) * 5); //malokace a setování klíče, 5 je délka klíče
-  //strcpy(tableItem->key, "aaaa\0");
-
-  //table->symtabList[2] = nextTableItem;
-  //tableItem->next = nextTableItem;
-
-  //table->symtabList[0] = tableItem; //přiřazování tableItemu do tablu
-
-  //printf("%s\n", table->symtabList[0]->key);
 }
 
 
