@@ -13,6 +13,20 @@
 
 #include "scanner.h"
 
+#define STATE_START 100
+#define STATE_EQUAL 101
+#define STATE_GRTER 102
+#define STATE_LSSER 103
+#define STATE_NOTEQ 104
+#define STATE_COMMT 105
+#define STATE_NUMBR 106
+#define STATE_NUFLT 107
+#define STATE_NUEXP 109
+#define STATE_NUSGN 110
+#define STATE_NUEND 111
+#define STATE_STRNG 112
+#define STATE_STRLT 113
+#define STATE_ESCAP 114
 
 
 
@@ -231,34 +245,8 @@ token nextToken() {
           return LEXICAL_ERR;
         if ((c = getchar) != '"')
           return LEXICAL_ERR;
-        while (1){
-          c = getchar();
-          if ((c = getchar) != '"')
-            if ((c = getchar) != '"')
-              if ((c = getchar) != '"')
-                break;
-        }
-        break;
 
-      case '#':
-         while ((c = getchar()) != EOL || c = getchar()) != EOF)
-          c = getchar();
-         break;
-
-      case EOL:
-        c = getchar();
-        continue;
-
-
-
-
-
-      default:
-      if (isalpha(c) || c == '_'){
         smartString *s = malloc(sizeof(smartString));
-        stringInit(s);
-
-        Token.attribute.string = STR;
         if (s == NULL){
             return INTERN_ERR;
         }
