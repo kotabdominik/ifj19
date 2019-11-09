@@ -72,12 +72,12 @@
 
 //  Exemplar token insertion  //
 /*
-  * token testToken;
+  * token Token;
   * smartString *s = malloc(sizeof(smartString));
   * stringInit(s);
   * stringAddChar(s,'+');
-  * testToken.attribute.string = s;
-  * testToken.type = PLUS;
+  * Token.attribute.string = s;
+  * Token.type = PLUS;
 */
 
 

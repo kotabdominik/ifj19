@@ -45,9 +45,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,'+');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = PLUS;
+        Token.type = PLUS;
         break;
 
       case '-':
@@ -57,9 +57,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,'-');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = MINUS;
+        Token.type = MINUS;
         break;
 
       case '*':
@@ -69,9 +69,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,'*');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = TIMES;
+        Token.type = TIMES;
         break;
 
       case '(':
@@ -81,9 +81,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,'(');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = LEFTBRACKET;
+        Token.type = LEFTBRACKET;
         break;
 
       case ')':
@@ -93,9 +93,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,')');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = RIGHTBRACKET;
+        Token.type = RIGHTBRACKET;
         break;
 
       case ';':
@@ -105,9 +105,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,';');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = SEMICOLON;
+        Token.type = SEMICOLON;
         break;
 
       case ':':
@@ -117,9 +117,9 @@ token nextToken() {
         }
         stringInit(s);
         stringAddChar(s,':');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = COLON;
+        Token.type = COLON;
         break;
                   // MULTIPLE //
       case '=':
@@ -133,9 +133,9 @@ token nextToken() {
           stringInit(s);
           stringAddChar(s,'=');
           stringAddChar(s,'=');
-          testToken.attribute.string = s;
+          Token.attribute.string = s;
 
-          testToken.type = EQ;
+          Token.type = EQ;
           break;
         }
         else {
@@ -145,9 +145,9 @@ token nextToken() {
           }
           stringInit(s);
           stringAddChar(s,'=');
-          testToken.attribute.string = s;
+          Token.attribute.string = s;
 
-          testToken.type = ASSIGN;
+          Token.type = ASSIGN;
           continue;
         }
 
@@ -161,9 +161,9 @@ token nextToken() {
           stringInit(s);
           stringAddChar(s,'>');
           stringAddChar(s,'=');
-          testToken.attribute.string = s;
+          Token.attribute.string = s;
 
-          testToken.type = GREATEREQ;
+          Token.type = GREATEREQ;
           break;
         }
         else {
@@ -173,9 +173,9 @@ token nextToken() {
           }
           stringInit(s);
           stringAddChar(s,'>');
-          testToken.attribute.string = s;
+          Token.attribute.string = s;
 
-          testToken.type = GREATER;
+          Token.type = GREATER;
           continue;
         }
 
@@ -189,9 +189,9 @@ token nextToken() {
             stringInit(s);
             stringAddChar(s,'<');
             stringAddChar(s,'=');
-            testToken.attribute.string = s;
+            Token.attribute.string = s;
 
-            testToken.type = LESSEQ;
+            Token.type = LESSEQ;
             break;
           }
           else {
@@ -201,9 +201,9 @@ token nextToken() {
             }
             stringInit(s);
             stringAddChar(s,'<');
-            testToken.attribute.string = s;
+            Token.attribute.string = s;
 
-            testToken.type = LESS;
+            Token.type = LESS;
             continue;
           }
 
@@ -217,9 +217,9 @@ token nextToken() {
         stringInit(s);
         stringAddChar(s,'!');
         stringAddChar(s,'=');
-        testToken.attribute.string = s;
+        Token.attribute.string = s;
 
-        testToken.type = NOTEQ;
+        Token.type = NOTEQ;
         break;
       }
       else {
@@ -249,11 +249,16 @@ token nextToken() {
         c = getchar();
         continue;
 
+
+
+
+
+      default:
       if (isalpha(c) || c == '_'){
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
 
-        testToken.attribute.string = STR;
+        Token.attribute.string = STR;
         if (s == NULL){
             return INTERN_ERR;
         }
