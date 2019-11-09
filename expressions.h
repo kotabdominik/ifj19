@@ -16,6 +16,8 @@
 
 #include "parser.h"
 
+#define TABLESIZE 6
+
 //pravidla pro parsovani expresi
 typedef enum{
   E_EQ_E, // E = E
@@ -34,24 +36,42 @@ typedef enum{
 
 // symboli pro parcovani
 typedef enum {
-  EQ,
-  NOTEQ,
-  L,  // <
-  G,  // >
-  LOREQ, // <=
-  GOREQ, // >=
-  PLUS,
-  MINUS,
-  MUL,
-  DIV,
-  LF, // (
-  RG, // )
-  ID,
-  INT,
-  DOUBLE,
-  STRING
+  S_EQ,
+  S_NOTEQ,
+  S_L,  // <
+  S_G,  // >
+  S_LOREQ, // <=
+  S_GOREQ, // >=
+  S_PLUS,
+  S_MINUS,
+  S_MUL,
+  S_DIV,
+  S_INTDIV, // //(celociselne deleni)
+  S_LF, // (
+  S_RG, // )
+  S_ID,
+  S_INT,
+  S_DOUBLE,
+  S_STRING
 } parseSymbols;
 
+typedef enum {
+  A, // <
+  B, // =
+  C, // >
+  E // ERROR
+} precedenceSign;
 
+typedef enum{
+  PLUS_MINUS,
+  MUL_DIV,
+  RELATION_OP,
+  I_LF, // (
+  I_RG, // )
+  EXPRESSION
+} tableIndex;
+
+
+tableIndex getTableIndex(parseSymbols parsedSymbol);
 
 #endif
