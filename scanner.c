@@ -225,15 +225,6 @@ token nextToken() {
       else {
         return LEXICAL_ERR;
       }
-<<<<<<< HEAD
-
-      case '"':
-        if ((c = getchar) != '"')
-          return LEXICAL_ERR;
-        if ((c = getchar) != '"')
-          return LEXICAL_ERR;
-
-=======
 
       case '"':
         if ((c = getchar) != '"')
@@ -264,7 +255,6 @@ token nextToken() {
 
       default:
       if (isalpha(c) || c == '_'){
->>>>>>> d95cbc380b5296149bfa9aebdf2d68437d1ebff0
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
 
@@ -272,7 +262,6 @@ token nextToken() {
         if (s == NULL){
             return INTERN_ERR;
         }
-<<<<<<< HEAD
         stringInit(s);
         Token.type = DOCCOM;
 
@@ -305,9 +294,6 @@ token nextToken() {
         }
         Token.attribute.string = STR;
 
-=======
-
->>>>>>> d95cbc380b5296149bfa9aebdf2d68437d1ebff0
         while(1){
           if ( !(isalpha(c)) || !(isalnum(c) || (c != '_') ){
             continue;
@@ -317,7 +303,6 @@ token nextToken() {
         }
       }
 
-<<<<<<< HEAD
       if (isalnum(c)){
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
@@ -352,8 +337,6 @@ token nextToken() {
 
       }
 
-=======
->>>>>>> d95cbc380b5296149bfa9aebdf2d68437d1ebff0
 
 
 
