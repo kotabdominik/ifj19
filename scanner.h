@@ -50,7 +50,7 @@
     LEFTBRACKET, // (
     RIGHTBRACKET, // )
     COMMA, // ,
-    SEMICOLON, // ;
+    //SEMICOLON, // ;
     COLON, // :
     ASSIGN, // =
   } tokenType;

@@ -143,7 +143,7 @@ token nextToken(token *Token) {
         Token.type = RIGHTBRACKET;
         break;
 
-      case ';':
+  /*    case ';':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
             return INTERN_ERR;
@@ -153,7 +153,7 @@ token nextToken(token *Token) {
         Token.attribute.string = s;
 
         Token.type = SEMICOLON;
-        break;
+        break;*/
 
       case ':':
         smartString *s = malloc(sizeof(smartString));
