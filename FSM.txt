@@ -1,6 +1,8 @@
+S = start
+
 P1 = integer point
 P2 = exponent
-P3 = exponent with sign 
+P3 = exponent with sign
 P4 = not equal
 P5 = documentation string
 P6 = documentation string
@@ -18,7 +20,7 @@ F3 = double
 F4 = number with exponent
 F5 = line comment
 F6 = left parentheses
-F7 = multiply 
+F7 = multiply
 F8 = minus
 F9 = plus
 F10 = colon
