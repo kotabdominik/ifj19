@@ -11,12 +11,7 @@
   *
   */
 
-#include <stdio.h>
-#include <malloc.h>
-#include <string.h>
 #include "symtable.h"
-#include "scanner.h"
-#include "strings.h"
 
 /*
  * vrací hash hodnotu do symbol table
@@ -59,14 +54,12 @@ void freeSymbolTable(symbolTable *sT) { //zatim freeuju jen variables, funkce ne
       symtableItem *thisItem = tmpItem;
       tmpItem = tmpItem->next; //nejspis bude NULL btw
       if (thisItem->type == VARIABLE) {
-        //free(thisItem->elementType.variable->value.string);
         free(thisItem->elementType.variable);
       }
-      //free(thisItem->key);
+      free(thisItem->key);
       free(thisItem);
     }
   }
-
   free(sT);
 }
 
@@ -88,20 +81,29 @@ void insertSymbolTable(symbolTable *sT, token token, elementType type) {
       fprintf(stderr, "%s\n", "yexd");
     }
     newItem->type = VARIABLE;
-    newItem->elementType.variable->declared = true;
-/*    if (token.type == STR) { ########### token s variablem nemůže mít zároveň nějakou hodnotu, takže toto se nemůže dělat tady
+// token s variablem nemůže mít zároveň nějakou hodnotu, takže toto se nemůže dělat tady
+/*    if (token.type == STR) {
       printf("%s\n", "je to string");
       newItem->elementType.variable->type = DATA_STRING;
       newItem->elementType.variable->value = token.attribute.string->string
     } else if (token.type == INT) {
       printf("%s\n", "je to integer");
+      newItem->elementType.variable->value.INT =
     } else if (token.type == FLOAT) {
       printf("%s\n", "je to float");
     } */
+  } else if (type == FUNCTION) {
+    newItem->elementType.function = (functionData *) malloc(sizeof(functionData));
+    if (newItem->elementType.function == NULL) {
+      fprintf(stderr, "%s\n", "yexxd");
+    }
+    newItem->elementType.function->sT = initSymbolTable(MAX_FUNCTION_PARAMS);
+    newItem->type = FUNCTION;
+    newItem->elementType.function->argCount = 1;
   }
 
+  newItem->declared = true;
   newItem->key = key;
-  newItem->elementType.variable->value.INT = 5;
 
   if (sT->symtabList[hashVal] == NULL) { //ještě není nic na tomto indexu
     newItem->next = NULL;
@@ -113,6 +115,40 @@ void insertSymbolTable(symbolTable *sT, token token, elementType type) {
 
 }
 
+void deleteItemFromSymbolTable(symbolTable *sT, token token) {
+  char* key = token.attribute.string->string; //získáme jmeno variable/fce
+  unsigned long hashVal = hash(key); //získáme hash
+  symtableItem *tmp = sT->symtabList[hashVal];
+
+  while (tmp) {
+    if (!strcmp(key, tmp->key)) {
+      free(tmp);
+      tmp = NULL;
+    } else {
+      tmp = tmp->next;
+    }
+  }
+
+  free(key);
+}
+
+symtableItem *searchSymbolTable(symbolTable *sT, token token) {
+  char* key = token.attribute.string->string; //získáme jmeno variable/fce
+  unsigned long hashVal = hash(key); //získáme hash
+  symtableItem *tmp = sT->symtabList[hashVal];
+
+  while (tmp) {
+    if (!strcmp(key, tmp->key)) {
+      return tmp;
+    }
+
+    tmp = tmp->next;
+  }
+
+  return NULL;
+}
+
+/*
 void main(int argc, char** argv) {
   symbolTable *table = initSymbolTable(MAX_SYMTABLE_SIZE);
 
@@ -129,19 +165,19 @@ void main(int argc, char** argv) {
   Token.attribute.string = s;
   Token.type = STR;
 
-  insertSymbolTable(table, Token, VARIABLE);
-  //printf("%d\n", table->symtabList[5]->elementType.variable->value.INT);
+  insertSymbolTable(table, Token, FUNCTION);
+  if(table->symtabList[hash("uwu")]->elementType.function->argCount) {
+    printf("%s\n", "je zalozena");
+  }
+
+  symtableItem *tmp = searchSymbolTable(table, Token); //vraci ukazatel
+  printf("%s\n", tmp->key);
+  deleteItemFromSymbolTable(table, Token);
+  tmp = searchSymbolTable(table, Token); //vrati NULL
+
   freeSymbolTable(table);
-  stringFree(s);
+//  stringFree(s);
 
-  /*
-  symbolTable *table = initSymbolTable(10); //potom MAX_SYMTABLE_SIZE
-  insertSymbolTable(table, 0);
-  insertSymbolTable(table, 2);
-
-  printf("%d\n", table->symtabList[0]->elementType.variable->value.INT);
-  printf("%d\n", table->symtabList[2]->elementType.variable->value.INT);
-*/
 }
 
 

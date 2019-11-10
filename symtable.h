@@ -12,14 +12,22 @@
   */
 
 #include <stdbool.h>
-
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+#include "scanner.h"
+#include "strings.h"
 
 #define MAX_SYMTABLE_SIZE 17569 //nějaká meme hodnota, která je shodou okolností prvočíslo
+#define MAX_FUNCTION_PARAMS 100 //maximální počet parametrů v uživatelské funkci
 
 #ifndef _SYMBOLTABLE_H_
 #define _SYMBOLTABLE_H_
 
 //init value
+struct symtable;
+struct symtableItm;
+
 typedef union{
     char *string;
     int INT;
@@ -41,22 +49,21 @@ typedef enum {
 } elementType;
 
 typedef struct { //typedef struct var_item{
-	bool declared;
-	//bool used;
+	bool used;
 	value value;
 	dataType type;
 } variableData;
 
 typedef struct { //typedef struct fc_item{
-	bool declared; //je zeloženo
 	bool defined; //je poprvé přiřazena hodnota
 	dataType returnType;
 	int argCount;
-	//struct symtab_item *arguments;
-	//struct symtable *sym_table;
+	struct symtableItm *arguments;
+	struct symtable *sT;
 } functionData;
 
 typedef struct symtableItm {
+  bool declared; //je zeloženo
 	struct symtableItm *next;
 	char *key;
 	union {
@@ -66,17 +73,15 @@ typedef struct symtableItm {
 	elementType type;
 } symtableItem;
 
-typedef struct symtable {
+typedef struct symtable { //tady musi
 	unsigned int size;
 	symtableItem *symtabList[];
 } symbolTable;
 
-// Symbol table
-//typedef Sym_table_item* Sym_table[MAX_SYMTABLE_SIZE]; nejspíš neřešit
 
-//void initSymbolTable(symbolTable *sT, unsigned int size); //inicializace symbol tablu
-symbolTable *initSymbolTable(unsigned int size);
+symbolTable *initSymbolTable(unsigned int size); //init celého symbol tablu
 void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
-
+symtableItem *searchSymbolTable(symbolTable *sT, token token); //vrací ukazatel na prvek v symbol tablu pokud tam je, jinak NULL
+void deleteItemFromSymbolTable(symbolTable *sT, token token); //odstraní deklarovanou variable/fci z symtable
 
 #endif
