@@ -15,80 +15,42 @@
 
 #define STATE_START 100
 
+#define STATE_F2 300
+#define STATE_F3 301
+#define STATE_F4 302
+#define STATE_P1 303
+#define STATE_P2 304
+#define STATE_P3 305
 
-
-#define STATE_EQUAL 101
-#define STATE_GRTER 102
-#define STATE_LSSER 103
-#define STATE_NOTEQ 104
-#define STATE_COMMT 105
-#define STATE_F2 106
-#define STATE_P1 107
-//#define STATE_NUEXP 109
-#define STATE_F3 1091
-#define STATE_P2 1092
-#define STATE_P3 1093
-
-#define STATE_P10
-#define STATE_P11
-#define STATE_P12
-#define STATE_P13
-#define STATE_F22
-
-#define STATE_NUSGN 110
-#define STATE_NUEND 111
-#define STATE_STRNG 112
-#define STATE_STRLT 113
-#define STATE_ESCAP 114
+#define STATE_F22 400
+#define STATE_P10 401
+#define STATE_P11 402
+#define STATE_P12 403
+#define STATE_P13 404
 
 
 
 
- FILE *SourceFile;
- //smartString *s = malloc(sizeof(smartString));
+
+FILE *SourceFile;
 
 
-token nextToken(token *Token) {
-/*
-  smartString *s = malloc(sizeof(smartString)); //check
-  if (s == NULL){
-      return INTERN_ERR;
-  }
-  Token.attribute.string = s;
 
-  int state = STATE_START;
+nextToken() {
 
-  char c,tmp;
-
-
-  while (1){
-    c = getchar()
-    switch (state)
-    {
-      case (STATE_START):
-
-    }
-
-  }*/
  token Token;
 
  char c,tmp;
 
  c = getchar()
  while((c = getchar() != EOF){
-  /* smartString *s = malloc(sizeof(smartString)); //check
-   if (smartString == NULL){
-     return INTERN_ERR;
-   }*/
+
   int state = STATE_START;
   while((c = getchar() != EOF){
-
+/////////////check prepisovanie c s podmienkou while
 
     switch (c) {
                   // SINGULAR //
-      //TODO
-      case ',':
-        break;
 
       case '+':
         smartString *s = malloc(sizeof(smartString));
@@ -321,15 +283,20 @@ token nextToken(token *Token) {
         if (s == NULL){
             return INTERN_ERR;
         }
-        Token.attribute.string = STR;
+        Token.type = STR;
 
         while(1){
           if ( !(isalpha(c)) || !(isalnum(c) || (c != '_') ){
-            continue;
+            break;
           }
           stringAddChar(s,c);
           c = getchar();
         }
+        int i = 0;
+        if ((i = stringIsKeyword(s)) != -1)
+          Token.attribute.keyword = i;
+        else
+          Token.attribute.string = s;
       }
 
       if (isalnum(c)){ //Robíme číslo
@@ -562,10 +529,7 @@ token nextToken(token *Token) {
 
 
     }
-
-
-
-
   }
-
+}
+return Token;
 }

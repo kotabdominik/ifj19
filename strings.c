@@ -54,7 +54,7 @@ int stringIsKeyword(smartString *str) {
   char *keywords[] = {"def\0", "else\0", "if\0", "None\0", "pass\0", "return\0", "while\0"};
   for (int i = 0; i < (sizeof(keywords) / sizeof(keywords[0])); i++) {
     if (strcmp(keywords[i], str->string) == 0)
-      return 1; //ano je
+      return i; //ano je
   }
-  return 0; //ne neni
+  return -1; //ne neni
 }
