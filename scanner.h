@@ -42,6 +42,8 @@
     DIVINT, //dělení integerov
     LESS, //<
     GREATER, //>
+    INDENT,
+    DEDENT,
     LESSEQ, //<=
     GREATEREQ, //>=
     EQ, //==

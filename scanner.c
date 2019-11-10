@@ -12,6 +12,7 @@
   */
 
 #include "scanner.h"
+#include "stack.h"
 
 #define STATE_START 100
 
@@ -39,6 +40,8 @@ FILE *SourceFile;
 nextToken() {
 
  token Token;
+ tStack stack;
+ stackInit(stack);
 
  char c,tmp;
 
@@ -273,7 +276,35 @@ nextToken() {
          break;
 
       case EOL:
-        c = getchar();
+        int tmp, counter = 0;
+        while ((c = getchar()) == ' '){
+          counter++;
+        }
+        if (stackEmpty(stack)){
+          stackPush(stack,counter);
+          break;
+        }
+        stackTop(stack,tmp);
+        if (counter > tmp){
+          stackPush(stack,counter);
+          break;
+        }
+        else if (counter == tmp)
+          break;
+        else {
+          while (counter != tmp){
+            if (stackEmpty(stack))
+              return LEXICAL_ERR;/////////////????????????????
+            stackPop(stack);
+            stackTop(stack,tmp);
+          }
+          stackPush(stack,counter);
+          break;
+        }
+
+
+
+        //c = getchar();
         continue;
 
       default:
