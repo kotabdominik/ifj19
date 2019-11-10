@@ -298,6 +298,8 @@ token nextToken(token *Token) {
               if ((c = getchar()) != '"')
                 else {stringAddChar(s,'"'); stringAddChar(s,'"');}
                 break;
+          if (c == EOF)
+            return LEXICAL_ERR;
           stringAddChar(s,c);
         }
         Token.attribute.string = s;
