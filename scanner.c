@@ -341,6 +341,7 @@ token nextToken(token *Token) {
 
         state = STATE_F2;
         int isINTorFLT = 0; //0 is for INT, 1 is for FLOAT
+        char *ptr; //pri prevode
         while (1){
           switch (state) {
             case (STATE_F2): //Začiatočný state čísla
@@ -360,7 +361,7 @@ token nextToken(token *Token) {
                 state = STATE_F2;
               }
               else{
-                Token.attribute.string = s;
+                Token.attribute.INT = strtod(s,&ptr);
                 Token.type = INT;
                 state = STATE_START;
                 break; //Koniec integer čísla
@@ -390,7 +391,7 @@ token nextToken(token *Token) {
                 state = STATE_F3; //Vráti sa tu
               }
               else{
-                Token.attribute.string = s;
+                Token.attribute.FLOAT = strtod(s,&ptr);
                 Token.type = FLOAT;
                 state = STATE_START;
                 break; //Koniec float čísla
@@ -428,19 +429,21 @@ token nextToken(token *Token) {
                 state = STATE_F4;
               }
               else{
-                Token.attribute.string = s;
                 if (isINTorFLT == 1){
-                  Token.type = FLOATEXP;
+                  Token.attribute.FLOAT = strtod(s,&ptr);
+                  Token.type = FLOAT;
                   isINTorFLT = 0;
-                  break; //Koniec float s e v čísle
+                  break; //Koniec float
                 }
                 else {
-                  Token.type = INTEXP;
-                  break; //Koniec integer s e v čísle
+                  Token.attribute.INT = strtod(s,&ptr);
+                  Token.type = INT;
+                  break; //Koniec integer
                 }
                 state = STATE_START;
               }
           }
+
           break; //Vraciam sa do switch (c)
         }
       }
