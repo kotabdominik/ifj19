@@ -24,4 +24,13 @@
   #define DIVISION_BY_ZERO 9 //běhová chyba dělení nulou.
   #define INTERN_ERR 99 //interní chyba překladače tj. neovlivněná vstupním programem (např. chyba alokace paměti, atd.).
 
-  #endif
+  #define ARGS_ERR 50 // chybny vstup na prikazove radce
+  #define ANAL_ERR 51 // chyba při analýze (lexikální, syntaktická) vstupního kódu v IFJcode19
+  #define SEM_ERR  52 // chyba při sémantických kontrolách vstupního kódu v IFJcode19
+  #define RUN_SEM_ERR 53 //běhová chyba interpretace – špatné typy operandů
+  #define RUN_ACC_ERR 54 // běhová chyba interpretace – přístup k neexistující proměnné (rámec existuje)
+  #define RUN_FRAME_ERR 55 // běhová chyba interpretace – rámec neexistuje (např. čtení z prázdného zásobníkurámců
+  #define RUN_MISVAL_ERR 56 // běhová chyba interpretace – chybějící hodnota (v proměnné, na datovém zásob-níku, nebo v zásobníku volání)
+  #define RUN_BAD_VAL_ERR 57 // běhová chyba interpretace – špatná hodnota operandu (např. dělení nulou, špatnánávratová hodnota instrukce EXIT)
+  #define RUN_STRING_ERR 58// běhová chyba interpretace – chybná práce s řetězcem
+  #define INTERN_INTER 60// interní chyba interpretu tj. neovlivněná vstupním programem (např. chyba alo-kace paměti, chyba při otvírání souboru s řídicím programem atd.)
