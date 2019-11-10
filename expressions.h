@@ -16,43 +16,33 @@
 
 #include "parser.h"
 
-#define TABLESIZE 6
+#define TABLESIZE 8
 
 //pravidla pro parsovani expresi
 typedef enum{
-  E_EQ_E, // E = E
-  E_NOTEQ_E, // E != E
-  E_L_E, // E < E
-  E_G_E, // E > E
-  E_LOREQ_E, // E <= E
-  E_GOREQ_E, // E >= E
   E_PLUS_E, // E + E
-  E_MINUS_E, // E - E
   E_MUL_E, // E * E
-  E_DIV_E, // E / E
   LF_E_RG,  // (E)
+  _I_, // i
+  F_LF_E_RG, // f(E)
+  F_LF_E_E_RG, // f(E,E)
+  F_LF_E_E_E_RG // f(E,E,E)
   FAIL
 } precedenceRules;
 
 // symboli pro parcovani
 typedef enum {
-  S_EQ,
-  S_NOTEQ,
-  S_L,  // <
-  S_G,  // >
-  S_LOREQ, // <=
-  S_GOREQ, // >=
   S_PLUS,
-  S_MINUS,
   S_MUL,
-  S_DIV,
-  S_INTDIV, // //(celociselne deleni)
   S_LF, // (
   S_RG, // )
-  S_ID,
+  S_I, //identifier
   S_INT,
   S_DOUBLE,
-  S_STRING
+  S_STRING,
+  S_COMMA,
+  S_END,
+  S_DOLLAR //im out of money :{
 } parseSymbols;
 
 typedef enum {
@@ -63,15 +53,27 @@ typedef enum {
 } precedenceSign;
 
 typedef enum{
-  PLUS_MINUS,
-  MUL_DIV,
-  RELATION_OP,
+  I_PLUS,
+  I_MUL,
   I_LF, // (
   I_RG, // )
-  EXPRESSION
+  I_I, // identifier
+  I_FUNC,
+  I_COMMA,
+  I_DOLLAR
+  I_E // E
 } tableIndex;
 
+typedef struct sItem{
+  parseSymbols parseSymbol;
+  dataType dataType;
+  struct sItem *another;
+} symbolItem;
 
-tableIndex getTableIndex(parseSymbols parsedSymbol);
+
+parseSymbols convertToSymbol(token *token);
+tableIndex convertToTableIndex(parseSymbols parsedSymbol);
+dataType convertToDataType (token* token, parserToken* pToken);
+precedenceRules testParameters (int decide,symbolItem* operator1, symbolItem* operator2, symbolItem* operator3, symbolItem* operator4, symbolItem* operator5, symbolItem* operator6, symbolItem* operator7, symbolItem* operator8);
 
 #endif
