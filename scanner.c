@@ -33,7 +33,7 @@
 
 
 
-FILE *SourceFile;
+//FILE *SourceFile;
 
 
 
@@ -119,18 +119,6 @@ token nextToken(int *error) {
 
         Token.type = RIGHTBRACKET;
         break;
-
-  /*    case ';':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-            return INTERN_ERR;
-        }
-        stringInit(s);
-        stringAddChar(s,';');
-        Token.attribute.string = s;
-
-        Token.type = SEMICOLON;
-        break;*/
 
       case ':':
         smartString *s = malloc(sizeof(smartString));
@@ -300,6 +288,10 @@ token nextToken(int *error) {
         while ((c = getchar()) == ' '){
           counter++;
         }
+        if (c == '\n'){ //If the line is empty do nothing
+          break;
+        }
+
         if (stackEmpty(stack)){ //Creates Indent token on empty stack
           stackPush(stack,counter);
 
