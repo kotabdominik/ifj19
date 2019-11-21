@@ -15,7 +15,10 @@
   #define _SCANNER_H_
 
   #include "strings.h"
+  #include "error.h"
   #include <ctype.h>
+  #include "stack.c"
+  #include "strings.c"
 
 
   typedef enum {
@@ -44,6 +47,7 @@
     GREATER, //>
     INDENT,
     DEDENT,
+    DOCCOM, //dokumentační komentář
     KEYWORD,
     LESSEQ, //<=
     GREATEREQ, //>=

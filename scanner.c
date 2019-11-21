@@ -11,6 +11,7 @@
   *
   */
 
+#include <malloc.h>
 #include "scanner.h"
 #include "stack.h"
 
@@ -35,24 +36,32 @@
 
 FILE *f;
 
-void setFile(File *sourceFile){
-  f = sourceFile;
+void setFile(char* sourceFile){
+  f = fopen (sourceFile, "r");
 }
 
 
 token nextToken(int *error) {
 
  token Token;
- tStack stack;
+ tStack *stack;
  stackInit(stack);
+ int* tmpNum = 0;
+ int counter = 0;
+ char hexvalue[3] = {0, };
 
  char c,tmp;
-
-  c = getchar()
+ smartString *s = malloc(sizeof(smartString));
+ if (s == NULL){
+  *error = INTERN_ERR;
+  return Token;
+ }
+ stringInit(s);
+  //c = getchar()
 
 
   int state = STATE_START;
-  while((c = getchar() != EOF){
+  while (c = getchar(), c != EOF) {
 /////////////check prepisovanie c s podmienkou while
 
     switch (c) {
@@ -62,87 +71,43 @@ token nextToken(int *error) {
         continue;
 
       case '+':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
         stringAddChar(s,'+');
         Token.attribute.string = s;
         Token.type = PLUS;
         return Token;
 
       case '-':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
         stringAddChar(s,'-');
         Token.attribute.string = s;
         Token.type = MINUS;
         return Token;
 
       case '*':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
         stringAddChar(s,'*');
         Token.attribute.string = s;
         Token.type = TIMES;
         return Token;
 
       case '(':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
         stringAddChar(s,'(');
         Token.attribute.string = s;
         Token.type = LEFTBRACKET;
         return Token;
 
       case ')':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
         stringAddChar(s,')');
         Token.attribute.string = s;
         Token.type = RIGHTBRACKET;
         return Token;
 
       case ':':
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
         stringAddChar(s,':');
         Token.attribute.string = s;
         Token.type = COLON;
         return Token;
                   // MULTIPLE //
       case '=':
-
-        c = getchar();
-        if (c == '='){
-          smartString *s = malloc(sizeof(smartString));
-          if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-          }
-          stringInit(s);
+        if (c = getchar(), c == '=') {
           stringAddChar(s,'=');
           stringAddChar(s,'=');
           Token.attribute.string = s;
@@ -150,12 +115,6 @@ token nextToken(int *error) {
           return Token;
         }
         else {
-          smartString *s = malloc(sizeof(smartString));
-          if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-          }
-          stringInit(s);
           stringAddChar(s,'=');
           Token.attribute.string = s;
           Token.type = ASSIGN;
@@ -163,14 +122,7 @@ token nextToken(int *error) {
         }
 
       case '>':
-        c = getchar();
-        if (c == '='){
-          smartString *s = malloc(sizeof(smartString));
-          if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-          }
-          stringInit(s);
+        if (c = getchar(), c == '='){
           stringAddChar(s,'>');
           stringAddChar(s,'=');
           Token.attribute.string = s;
@@ -178,12 +130,6 @@ token nextToken(int *error) {
           return Token;
         }
         else {
-          smartString *s = malloc(sizeof(smartString));
-          if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-          }
-          stringInit(s);
           stringAddChar(s,'>');
           Token.attribute.string = s;
           Token.type = GREATER;
@@ -192,14 +138,7 @@ token nextToken(int *error) {
         }
 
       case '<':
-          c = getchar();
-          if (c == '='){
-            smartString *s = malloc(sizeof(smartString));
-            if (s == NULL){
-              *error = INTERN_ERR;
-              return Token;
-            }
-            stringInit(s);
+          if (c = getchar(), c == '='){
             stringAddChar(s,'<');
             stringAddChar(s,'=');
             Token.attribute.string = s;
@@ -207,12 +146,6 @@ token nextToken(int *error) {
             return Token;
           }
           else {
-            smartString *s = malloc(sizeof(smartString));
-            if (s == NULL){
-              *error = INTERN_ERR;
-              return Token;
-            }
-            stringInit(s);
             stringAddChar(s,'<');
             Token.attribute.string = s;
 
@@ -222,14 +155,7 @@ token nextToken(int *error) {
           }
 
       case '!':
-      c = getchar();
-      if (c == '='){
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-          *error = INTERN_ERR;
-          return Token;
-        }
-        stringInit(s);
+      if (c = getchar(), c == '='){
         stringAddChar(s,'!');
         stringAddChar(s,'=');
         Token.attribute.string = s;
@@ -242,56 +168,52 @@ token nextToken(int *error) {
       }
 
       case '"':
-        if ((c = getchar) != '"'){
+        if (c = getchar(), c != '"'){
           *error = LEXICAL_ERR;
           return Token;
         }
 
-        if ((c = getchar) != '"'){
+        if (c = getchar(), c != '"'){
           *error = LEXICAL_ERR;
           return Token;
         }
-
-        smartString *s = malloc(sizeof(smartString));
-        if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-        }
-        stringInit(s);
         Token.type = DOCCOM;
 
-        while (1){
-          c = getchar();
-          if ((c = getchar()) != '"')
-            if ((c = getchar()) != '"')
-            else stringAddChar(s,c);
-              if ((c = getchar()) != '"')
-                else {stringAddChar(s,'"'); stringAddChar(s,'"');}
+        while (c = getchar()) {
+          if (c == '"') {
+            if (c = getchar(), c == '"') {
+              if (c = getchar(), c == '"') {
                 break;
-          if (c == EOF)
-            return LEXICAL_ERR;
+              } else {
+                stringAddChar(s,'"');
+                stringAddChar(s,'"');
+              }
+            } else {
+              stringAddChar(s,'"');
+            }
+          }
           stringAddChar(s,c);
         }
         Token.attribute.string = s;
         return Token;
 
       case '#':
-         while ((c = getchar()) != EOL || c = getchar()) != EOF)
+         while ((c = getchar(), c != '\n') || (c = getchar(), c != EOF))
           c = getchar();
          break;
 
       case '\n':
-        int tmp, counter = 0;
-        while ((c = getchar()) == ' '){
+        tmpNum = 0, counter = 0;
+        while (c = getchar(), c == ' ') {
           counter++;
         }
-        if (c == '\n'){ //If the line is empty do nothing
+        if (c == '\n') { //If the line is empty do nothing
           break;
         }
-        ungetc(c,f);
+        ungetc(c, f);
 
-        if (stackEmpty(stack)){ //Creates Indent token on empty stack
-          stackPush(stack,counter);
+        if (stackEmpty(stack)) { //Creates Indent token on empty stack
+          stackPush(stack, counter);
 
           Token.attribute.INT = counter;
           Token.type = INDENT;
@@ -299,52 +221,46 @@ token nextToken(int *error) {
           return Token;
         }
 
-        stackTop(stack,tmp);
-        if (counter > tmp){ //Creates new Indent if counter is higher
-          stackPush(stack,counter);
+        stackTop(stack, tmpNum);
+        if (counter > *tmpNum) { //Creates new Indent if counter is higher
+          stackPush(stack, counter);
           Token.attribute.INT = counter;
           Token.type = INDENT;
           return Token;
         }
-        else if (counter == tmp)  //Ignores equal indents value
+        else if (counter == *tmpNum)  //Ignores equal indents value
           break;
         else {
-          while (counter < tmp){
-            if (stackEmpty(stack)){
+          while (counter < *tmpNum) {
+            if (stackEmpty(stack)) {
                 *error = LEXICAL_ERR;
                 return Token;
             }
             stackPop(stack);
-            stackTop(stack,tmp);
+            stackTop(stack, tmpNum);
           }
           Token.attribute.INT = counter;  ////Consult this
           Token.type = DEDENT;
-          stackPush(stack,counter);
+          stackPush(stack, counter);
           return Token;
         }
 
 
       default:
-      if (isalpha(c) || c == '_'){ //Robíme basic string
-        smartString *s = malloc(sizeof(smartString));
-        stringInit(s);
-        if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-        }
+      if (isalpha(c) || c == '_') { //Robíme basic string
         Token.type = STR;
 
         while(1){
-          if ( !(isalpha(c)) || !(isalnum(c) || (c != '_') ){
+          if ( !(isalpha(c)) || !(isalnum(c) || (c != '_') )) {
             break;
           }
-          stringAddChar(s,c);
+          stringAddChar(s, c);
           c = getchar();
         }
 
-        ungetc(c,f);
+        ungetc(c, f);
         int i = 0;
-        if ((i = stringIsKeyword(s)) != -1){
+        if ((i = stringIsKeyword(s)) != -1) {
           Token.attribute.keyword = i;
           Token.type = KEYWORD;
         }
@@ -355,17 +271,11 @@ token nextToken(int *error) {
         return Token;
       }
 
-      if (isalnum(c)){ //Robíme číslo
-        smartString *s = malloc(sizeof(smartString));
-        stringInit(s);
-        if (s == NULL){
-            *error = INTERN_ERR;
-            return Token;
-        }
-        stringAddChar(s,c);
+      if (isalnum(c)) { //Robíme číslo
+        stringAddChar(s, c);
         int tmpNum = c;
-        getchar(c);
-        if (tmpNum == 0 && (c == 0 || c != '.' || c != 'e' || c != 'E')){ //Spravnost zaciatku cisla Nulou
+        c = getchar();
+        if (tmpNum == 0 && (c == 0 || c != '.' || c != 'e' || c != 'E')) { //Spravnost zaciatku cisla Nulou
           *error = LEXICAL_ERR;
           return Token;
         }
@@ -376,23 +286,23 @@ token nextToken(int *error) {
         while (1){
           switch (state) {
             case (STATE_F2): //Začiatočný state čísla
-              if(c == '.'){ //Bude float
+              if(c == '.') { //Bude float
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_P1;
               }
-              else if(c == 'E' || c == 'e'){ //Bude Exp
+              else if(c == 'E' || c == 'e') { //Bude Exp
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_P2;
               }
-              else if(isalnum(c)){ //Bude cislo
+              else if(isalnum(c)) { //Bude cislo
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_F2;
               }
-              else if (isspace(c) || c == '\n' || c == EOF){
-                Token.attribute.INT = strtod(s,&ptr);
+              else if (isspace(c) || c == '\n' || c == EOF) {
+                Token.attribute.INT = strtod(s->string, &ptr);
                 Token.type = INT;
                 state = STATE_START;
                 return Token;
@@ -404,18 +314,20 @@ token nextToken(int *error) {
 
 
             case (STATE_P1): //Je float
-              if(isalnum(c)){ //Musí nasledovať číslo
+              if(isalnum(c)) { //Musí nasledovať číslo
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_F3;
               }
-              else
-                return LEXICAL_ERR;
+              else {
+                *error = LEXICAL_ERR;
+                return Token;
+              }
               break;
 
             case (STATE_F3): //Je float v tvare (example) 132.1_
             isINTorFLT = 1; ///Kontrola že je TYP FLOATEXP
-              if(c == 'E' || c == 'e'){ //Bude 132.1e
+              if(c == 'E' || c == 'e') { //Bude 132.1e
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_P2;
@@ -425,8 +337,8 @@ token nextToken(int *error) {
                 c = getchar();
                 state = STATE_F3; //Vráti sa tu
               }
-              else if (isspace(c) || c == '\n' || c == EOF){
-                Token.attribute.FLOAT = strtod(s,&ptr);
+              else if (isspace(c) || c == '\n' || c == EOF) {
+                Token.attribute.FLOAT = strtod(s->string,&ptr);
                 Token.type = FLOAT;
                 state = STATE_START;
                 return Token; //Koniec float čísla
@@ -437,25 +349,24 @@ token nextToken(int *error) {
               }
 
             case (STATE_P2):
-              if (isalnum(c)){
-                stringAddChar(s,c);
+              if (isalnum(c)) {
+                stringAddChar(s, c);
                 c = getchar();
                 state = STATE_F4;
-              }
-              else if (c == '+' || c == '-'){
+              } else if (c == '+' || c == '-') {
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_P3;
               }
-              else{
+              else {
                   *error = LEXICAL_ERR;
                   return Token;
               }
               break;
 
               case (STATE_P3):
-                if (isalnum(c)){
-                  stringAddChar(s,c);
+                if (isalnum(c)) {
+                  stringAddChar(s, c);
                   c = getchar();
                   state = STATE_F4;
                 }
@@ -466,20 +377,20 @@ token nextToken(int *error) {
                 break;
 
               case (STATE_F4):
-              if (isalnum(c)){
+              if (isalnum(c)) {
                 stringAddChar(s,c);
                 c = getchar();
                 state = STATE_F4;
               }
               else{
-                if (isINTorFLT == 1){
-                  Token.attribute.FLOAT = strtod(s,&ptr);
+                if (isINTorFLT == 1) {
+                  Token.attribute.FLOAT = strtod(s->string,&ptr);
                   Token.type = FLOAT;
                   isINTorFLT = 0;
                   return Token; //Koniec float
                 }
                 else {
-                  Token.attribute.INT = strtod(s,&ptr);
+                  Token.attribute.INT = strtod(s->string,&ptr);
                   Token.type = INT;
                   return Token; //Koniec integer
                 }
@@ -492,17 +403,11 @@ token nextToken(int *error) {
       }
 
       if (c == '\'') { // Robíme literál
-              smartString *s = malloc(sizeof(smartString));
-              stringInit(s);
-              if (s == NULL){
-                  *error = INTERN_ERR;
-                  return Token;
-              }
               stringAddChar(s,c);
-              getchar(c);
+              c = getchar();
               state = STATE_P10;
 
-              while (1){
+              while (1) {
                 if (c == EOF){
                     *error = LEXICAL_ERR;
                     return Token;
@@ -514,12 +419,12 @@ token nextToken(int *error) {
                       c = getchar();
                       state = STATE_P10;
                     }
-                    else if (c == 39){ //Apostrof teda koniec stringu
+                    else if (c == 39) { //Apostrof teda koniec stringu
                       stringAddChar(s,c);
                       c = getchar();
                       state = STATE_F22;
                     }
-                    else if (c == 92){ // Backslash teda escape seq
+                    else if (c == 92) { // Backslash teda escape seq
                       c = getchar();
                       state = STATE_P11;
                     }
@@ -530,28 +435,28 @@ token nextToken(int *error) {
                     continue;
 
                   case (STATE_P11): //Riešime či escape alebo nah
-                    if (c > 31 && c != 92 && c != 39 && c != 44 c != n && c != t){//nebola
+                    if (c > 31 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't') {//nebola
                       stringAddChar(s,'\\');
                       stringAddChar(s,c);
                       c = getchar();
                       state = STATE_P10;
                     }
-                    else if (c == 92 || c == 39 || c == 34){//  _/_'_"_
+                    else if (c == 92 || c == 39 || c == 34) {//  _/_'_"_
                       stringAddChar(s,c);
                       c = getchar();
                       state = STATE_P10;
                     }
-                    else if (c == n){ // Spraví EOL
+                    else if (c == 'n') { // Spraví EOL
                       stringAddChar(s,'\n'); /////////////////hmmm check?
                       c = getchar();
                       state = STATE_P10;
                     }
-                    else if (c == t){ // Spraví TAB
+                    else if (c == 't') { // Spraví TAB
                       stringAddChar(s,'\t'); /////////////////hmmm check?
                       c = getchar();
                       state = STATE_P10;
                     }
-                    else if (c == x){ //Bude robiť HEX
+                    else if (c == 'x') { //Bude robiť HEX
                       c = getchar();
                       state = STATE_P12;
                     }
@@ -562,8 +467,7 @@ token nextToken(int *error) {
                     continue;
 
                   case (STATE_P12): //Riešime prvú hex val
-                    if ( (c >= 48 && c <= 57) || (c >= 65 && c <= 70) || (c >= 97 && c >= 102)){ // 0..9 || A..F || a..f
-                      char hexvalue[3];
+                    if ( (c >= 48 && c <= 57) || (c >= 65 && c <= 70) || (c >= 97 && c >= 102)) { // 0..9 || A..F || a..f
                       hexvalue[0] = c;
                       c = getchar();
                       state = STATE_P13;
@@ -575,13 +479,13 @@ token nextToken(int *error) {
                     continue;
 
                   case (STATE_P13): //Riešime druhú hex val
-                    if ( (c >= 48 && c <= 57) || (c >= 65 && c <= 70) || (c >= 97 && c >= 102)){ // 0..9 || A..F || a..f
+                    if ( (c >= 48 && c <= 57) || (c >= 65 && c <= 70) || (c >= 97 && c >= 102)) { // 0..9 || A..F || a..f
                       hexvalue[1] = c;
                       int decvalue = (int)strtol(hexvalue, NULL, 16); //convertne hexvalue na int v decimáloch
                       char tmp[2];
                       sprintf(tmp,"%c",decvalue); //convertnem decvalue na ASCII znak
                       c = *tmp;
-                      stringAddChar(s,c);
+                      stringAddChar(s, c);
                       c = getchar();
                       state = STATE_P10;
                     }

@@ -34,3 +34,5 @@
   #define RUN_BAD_VAL_ERR 57 // běhová chyba interpretace – špatná hodnota operandu (např. dělení nulou, špatnánávratová hodnota instrukce EXIT)
   #define RUN_STRING_ERR 58// běhová chyba interpretace – chybná práce s řetězcem
   #define INTERN_INTER 60// interní chyba interpretu tj. neovlivněná vstupním programem (např. chyba alo-kace paměti, chyba při otvírání souboru s řídicím programem atd.)
+
+#endif
