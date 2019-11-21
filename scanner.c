@@ -16,18 +16,18 @@
 
 #define STATE_START 100
 
-#define STATE_F2 300
-#define STATE_F3 301
-#define STATE_F4 302
-#define STATE_P1 303
-#define STATE_P2 304
-#define STATE_P3 305
+#define STATE_F2 300      //Robíme číslo
+#define STATE_F3 301      //Číslo bude float
+#define STATE_F4 302      //Koniec čísla
+#define STATE_P1 303      //Prechod pri '.' znaku floatu
+#define STATE_P2 304      //Bolo použité e/E
+#define STATE_P3 305      //Precho pri '+' a '-' znaku pri exp
 
-#define STATE_F22 400
-#define STATE_P10 401
-#define STATE_P11 402
-#define STATE_P12 403
-#define STATE_P13 404
+#define STATE_F22 400     //Koncový stav literálu
+#define STATE_P10 401     //Zápis charov
+#define STATE_P11 402     //Možná escape sekvencia alebo hex hodnota
+#define STATE_P12 403     //Potvrdenie hex hodnoty
+#define STATE_P13 404     //Hex hodnota
 
 
 
@@ -403,7 +403,6 @@ token nextToken(int *error) {
               }
 
 
-
             case (STATE_P1): //Je float
               if(isalnum(c)){ //Musí nasledovať číslo
                 stringAddChar(s,c);
@@ -426,11 +425,15 @@ token nextToken(int *error) {
                 c = getchar();
                 state = STATE_F3; //Vráti sa tu
               }
-              else{
+              else if (isspace(c) || c == '\n' || c == EOF){
                 Token.attribute.FLOAT = strtod(s,&ptr);
                 Token.type = FLOAT;
                 state = STATE_START;
-                break; //Koniec float čísla
+                return Token; //Koniec float čísla
+              }
+              else {
+                *error = LEXICAL_ERR;
+                return Token;
               }
 
             case (STATE_P2):
@@ -473,12 +476,12 @@ token nextToken(int *error) {
                   Token.attribute.FLOAT = strtod(s,&ptr);
                   Token.type = FLOAT;
                   isINTorFLT = 0;
-                  break; //Koniec float
+                  return Token; //Koniec float
                 }
                 else {
                   Token.attribute.INT = strtod(s,&ptr);
                   Token.type = INT;
-                  break; //Koniec integer
+                  return Token; //Koniec integer
                 }
                 state = STATE_START;
               }
@@ -539,7 +542,7 @@ token nextToken(int *error) {
                       state = STATE_P10;
                     }
                     else if (c == n){ // Spraví EOL
-                      stringAddChar(s,EOL); /////////////////hmmm check?
+                      stringAddChar(s,'\n'); /////////////////hmmm check?
                       c = getchar();
                       state = STATE_P10;
                     }
@@ -592,16 +595,14 @@ token nextToken(int *error) {
                       Token.attribute.string = s;
                       Token.type = LITERAL;
                       state = STATE_START;
-                      c = getchar();
-
+                      //c = getchar(); //Idk prečo to tu bolo..?
+                      return Token;
                     break;
               }
               break;
         }
       }
     }
-    break;///Proly?
   }
-
-return Token;
+//return Token;
 }

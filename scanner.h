@@ -44,6 +44,7 @@
     GREATER, //>
     INDENT,
     DEDENT,
+    KEYWORD,
     LESSEQ, //<=
     GREATEREQ, //>=
     EQ, //==
@@ -59,7 +60,7 @@
   } tokenType;
 
   typedef union {
-    keyword keyword; 
+    keyword keyword;
     smartString *string; //string value
     int INT;
     double FLOAT;
