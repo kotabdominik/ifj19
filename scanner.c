@@ -58,7 +58,8 @@ token nextToken(int *error) {
       case '+':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,'+');
@@ -70,7 +71,8 @@ token nextToken(int *error) {
       case '-':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,'-');
@@ -82,7 +84,8 @@ token nextToken(int *error) {
       case '*':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,'*');
@@ -94,7 +97,8 @@ token nextToken(int *error) {
       case '(':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,'(');
@@ -106,7 +110,8 @@ token nextToken(int *error) {
       case ')':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,')');
@@ -130,7 +135,8 @@ token nextToken(int *error) {
       case ':':
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,':');
@@ -145,7 +151,8 @@ token nextToken(int *error) {
         if (c == '='){
           smartString *s = malloc(sizeof(smartString));
           if (s == NULL){
-              return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
           }
           stringInit(s);
           stringAddChar(s,'=');
@@ -158,7 +165,8 @@ token nextToken(int *error) {
         else {
           smartString *s = malloc(sizeof(smartString));
           if (s == NULL){
-              return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
           }
           stringInit(s);
           stringAddChar(s,'=');
@@ -173,7 +181,8 @@ token nextToken(int *error) {
         if (c == '='){
           smartString *s = malloc(sizeof(smartString));
           if (s == NULL){
-              return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
           }
           stringInit(s);
           stringAddChar(s,'>');
@@ -186,7 +195,8 @@ token nextToken(int *error) {
         else {
           smartString *s = malloc(sizeof(smartString));
           if (s == NULL){
-              return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
           }
           stringInit(s);
           stringAddChar(s,'>');
@@ -200,7 +210,8 @@ token nextToken(int *error) {
           if (c == '='){
             smartString *s = malloc(sizeof(smartString));
             if (s == NULL){
-                return INTERN_ERR;
+              *error = INTERN_ERR;
+              return Token;
             }
             stringInit(s);
             stringAddChar(s,'<');
@@ -213,7 +224,8 @@ token nextToken(int *error) {
           else {
             smartString *s = malloc(sizeof(smartString));
             if (s == NULL){
-                return INTERN_ERR;
+              *error = INTERN_ERR;
+              return Token;
             }
             stringInit(s);
             stringAddChar(s,'<');
@@ -228,7 +240,8 @@ token nextToken(int *error) {
       if (c == '='){
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+          *error = INTERN_ERR;
+          return Token;
         }
         stringInit(s);
         stringAddChar(s,'!');
@@ -239,7 +252,8 @@ token nextToken(int *error) {
         break;
       }
       else {
-        return LEXICAL_ERR;
+        *error = LEXICAL_ERR;
+        return Token;
       }
 
       case '"':
@@ -581,10 +595,7 @@ token nextToken(int *error) {
               }
               break;
         }
-
       }
-
-
     }
   }
 }
