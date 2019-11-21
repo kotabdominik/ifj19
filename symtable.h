@@ -17,9 +17,9 @@
 #include <string.h>
 #include "scanner.h"
 #include "strings.h"
+#include "strings.c"
 
 #define MAX_SYMTABLE_SIZE 17569 //nějaká meme hodnota, která je shodou okolností prvočíslo
-#define MAX_FUNCTION_PARAMS 100 //maximální počet parametrů v uživatelské funkci
 
 #ifndef _SYMBOLTABLE_H_
 #define _SYMBOLTABLE_H_
@@ -63,7 +63,7 @@ typedef struct { //typedef struct fc_item{
 } functionData;
 
 typedef struct symtableItm {
-  bool declared; //je zeloženo
+  bool declared; //je založeno
 	struct symtableItm *next;
 	char *key;
 	union {
@@ -81,6 +81,7 @@ typedef struct symtable { //tady musi
 
 symbolTable *initSymbolTable(unsigned int size); //init celého symbol tablu
 void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
+void insertSymbolTable(symbolTable *sT, token token, elementType type); //přidání prvku do symbol tablu
 symtableItem *searchSymbolTable(symbolTable *sT, token token); //vrací ukazatel na prvek v symbol tablu pokud tam je, jinak NULL
 void deleteItemFromSymbolTable(symbolTable *sT, token token); //odstraní deklarovanou variable/fci z symtable
 
