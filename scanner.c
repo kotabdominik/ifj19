@@ -37,7 +37,7 @@ FILE *SourceFile;
 
 
 
-nextToken() {
+token nextToken(int *error) {
 
  token Token;
  tStack stack;
@@ -243,14 +243,20 @@ nextToken() {
       }
 
       case '"':
-        if ((c = getchar) != '"')
-          return LEXICAL_ERR;
-        if ((c = getchar) != '"')
-          return LEXICAL_ERR;
+        if ((c = getchar) != '"'){
+          *error = LEXICAL_ERR;
+          return Token;
+        }
+
+        if ((c = getchar) != '"'){
+          *error = LEXICAL_ERR;
+          return Token;
+        }
 
         smartString *s = malloc(sizeof(smartString));
         if (s == NULL){
-            return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
         }
         stringInit(s);
         Token.type = DOCCOM;
@@ -280,21 +286,32 @@ nextToken() {
         while ((c = getchar()) == ' '){
           counter++;
         }
-        if (stackEmpty(stack)){
+        if (stackEmpty(stack)){ //Creates Indent token on empty stack
           stackPush(stack,counter);
+
+          Token.attribute.INT = counter;
+          Token.type = INDENT;
+
           break;
         }
+
         stackTop(stack,tmp);
-        if (counter > tmp){
+        if (counter > tmp){ //Creates new Indent if counter is higher
           stackPush(stack,counter);
+          Token.attribute.INT = counter;
+          Token.type = INDENT;
           break;
         }
-        else if (counter == tmp)
+        else if (counter == tmp)  //Ignores equal indents value
           break;
         else {
           while (counter != tmp){
-            if (stackEmpty(stack))
-              return LEXICAL_ERR;/////////////????????????????
+            if (stackEmpty(stack)){
+                *error = LEXICAL_ERR;
+                return Token;
+            }
+            Token.attribute.INT = counter;  ////Consult this
+            Token.type = DEDENT;
             stackPop(stack);
             stackTop(stack,tmp);
           }
@@ -312,7 +329,8 @@ nextToken() {
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
         if (s == NULL){
-            return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
         }
         Token.type = STR;
 
@@ -334,7 +352,8 @@ nextToken() {
         smartString *s = malloc(sizeof(smartString));
         stringInit(s);
         if (s == NULL){
-            return INTERN_ERR;
+            *error = INTERN_ERR;
+            return Token;
         }
         stringAddChar(s,c);
         getchar(c);
@@ -408,8 +427,10 @@ nextToken() {
                 c = getchar();
                 state = STATE_P3;
               }
-              else
-                return LEXICAL_ERR;
+              else{
+                  *error = LEXICAL_ERR;
+                  return Token;
+              }
               break;
 
               case (STATE_P3):
@@ -418,8 +439,10 @@ nextToken() {
                   c = getchar();
                   state = STATE_F4;
                 }
-                else
-                  return LEXICAL_ERR;
+                else{
+                    *error = LEXICAL_ERR;
+                    return Token;
+                }
                 break;
 
               case (STATE_F4):
@@ -452,15 +475,18 @@ nextToken() {
               smartString *s = malloc(sizeof(smartString));
               stringInit(s);
               if (s == NULL){
-                  return INTERN_ERR;
+                  *error = INTERN_ERR;
+                  return Token;
               }
               stringAddChar(s,c);
               getchar(c);
               state = STATE_P10;
 
               while (1){
-                if (c == EOF)
-                  return LEXICAL_ERR;
+                if (c == EOF){
+                    *error = LEXICAL_ERR;
+                    return Token;
+                }
                 switch (state) {
                   case (STATE_P10):
                     if (c > 31 && c != 92 && c != 39){ // '\'' && '\\' && '\,' //normalny znak
@@ -478,7 +504,8 @@ nextToken() {
                       state = STATE_P11;
                     }
                     else{
-                      return LEXICAL_ERR;
+                        *error = LEXICAL_ERR;
+                        return Token;
                     }
                     continue;
 
@@ -509,7 +536,8 @@ nextToken() {
                       state = STATE_P12;
                     }
                     else {
-                      return LEXICAL_ERR;
+                        *error = LEXICAL_ERR;
+                        return Token;
                     }
                     continue;
 
@@ -521,7 +549,8 @@ nextToken() {
                       state = STATE_P13;
                     }
                     else {
-                      return LEXICAL_ERR;
+                        *error = LEXICAL_ERR;
+                        return Token;
                     }
                     continue;
 
@@ -537,7 +566,8 @@ nextToken() {
                       state = STATE_P10;
                     }
                     else {
-                      return LEXICAL_ERR;
+                        *error = LEXICAL_ERR;
+                        return Token;
                     }
                     continue;
 
@@ -551,10 +581,6 @@ nextToken() {
               }
               break;
         }
-
-
-
-
 
       }
 

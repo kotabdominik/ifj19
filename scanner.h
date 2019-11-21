@@ -59,7 +59,7 @@
   } tokenType;
 
   typedef union {
-    keyword keyword; //uhh not sure
+    keyword keyword; 
     smartString *string; //string value
     int INT;
     double FLOAT;
