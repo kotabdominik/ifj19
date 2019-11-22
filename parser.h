@@ -15,11 +15,20 @@
 #define _PARSER_H_
 
 #include "scanner.h"
+#include "scanner.c"
 #include "symtable.h"
+#include "symtable.c"
 #include "list.h"
+//#include "list.c"
 #include "string.h"
 #include "error.h"
 
-
+int parse(symbolTable *ST);
+int program();
+int expression();
+int function();
+int statement();
+void generateInstruction(int instType, void *addr1, void *addr2, void *addr3);
+void generateVariable(smartString *var);
 
 #endif
