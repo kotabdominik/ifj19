@@ -17,6 +17,7 @@
  * vrací hash hodnotu do symbol table
  */
 unsigned long hash(unsigned char *str) { //https://stackoverflow.com/a/7666577
+  return 0;
   unsigned long hash = MAX_SYMTABLE_SIZE;
   int c;
 
@@ -45,7 +46,7 @@ symbolTable *initSymbolTable(unsigned int size){
 /*
  * uvolnění symbol table
  */
-void freeSymbolTable(symbolTable *sT) { //zatim freeuju jen variables, funkce ne
+void freeSymbolTable(symbolTable *sT) {
   symtableItem *tmpItem;
 
   for (unsigned int i = 0; i < sT->size; i++) {
@@ -57,7 +58,11 @@ void freeSymbolTable(symbolTable *sT) { //zatim freeuju jen variables, funkce ne
         free(thisItem->elementType.variable);
       }
       if (thisItem->type == FUNCTION) { //vypadá to legit
-        free(thisItem->elementType.function->sT);
+        for(int i = 0; i < thisItem->elementType.function->argCount; i++) {
+          free(thisItem->elementType.function->arguments[i].elementType.variable);
+        }
+        free(thisItem->elementType.function->arguments);
+        freeSymbolTable(thisItem->elementType.function->sT);
         free(thisItem->elementType.function);
       }
       free(thisItem->key);
@@ -158,8 +163,9 @@ symtableItem *searchSymbolTable(symbolTable *sT, token token) {
 }
 
 /* testy ---- můžete se inspirovat syntaxem i guess
+
 void main(int argc, char** argv) {
-  symbolTable *table = initSymbolTable(5);
+  symbolTable *table = initSymbolTable(MAX_SYMTABLE_SIZE);
   token Token;
   smartString *s = malloc(sizeof(smartString));
   if (s == NULL){
@@ -174,6 +180,7 @@ void main(int argc, char** argv) {
   Token.type = STR;
 
   insertSymbolTable(table, Token, FUNCTION);
+
   smartString *z = malloc(sizeof(smartString));
   if (z == NULL){
       return;
@@ -183,8 +190,18 @@ void main(int argc, char** argv) {
   stringAddChar(z,'w');
   stringAddChar(z,'o');
   Token.attribute.string = z;
-  insertSymbolTable(table, Token, FUNCTION);
+  insertSymbolTable(table, Token, VARIABLE);
 
+  table->symtabList[0]->elementType.function->argCount = 5;
+  table->symtabList[0]->elementType.function->arguments = (symtableItem *) malloc(table->symtabList[0]->elementType.function->argCount * sizeof(symtableItem));
+
+  for (int i = 0; i < table->symtabList[0]->elementType.function->argCount; i++) {
+    table->symtabList[0]->elementType.function->arguments[i] = NULL;
+  }
+
+
+/*  table->symtabList[0]->elementType.function->arguments[0] = *searchSymbolTable(table, Token);
+  table->symtabList[0]->elementType.function->arguments[1] = *searchSymbolTable(table, Token);
   smartString *q = malloc(sizeof(smartString));
   if (q == NULL){
       return;
@@ -194,7 +211,13 @@ void main(int argc, char** argv) {
   stringAddChar(q,'.');
   stringAddChar(q,'q');
   Token.attribute.string = q;
-  insertSymbolTable(table, Token, FUNCTION);
+  insertSymbolTable(table, Token, VARIABLE);
+  table->symtabList[0]->elementType.function->arguments[2] = *searchSymbolTable(table, Token);
+  printf("%s", table->symtabList[0]->elementType.function->arguments[1].key);
+  printf("%s", table->symtabList[0]->elementType.function->arguments[2].key);
+*/
+}
+/*
 
   printf("1. %s\n", table->symtabList[0]->key);
   printf("2. %s\n", table->symtabList[0]->next->key);
@@ -205,6 +228,7 @@ void main(int argc, char** argv) {
   printf("1. %s\n", table->symtabList[0]->key);
   printf("2. %s\n", table->symtabList[0]->next->key);
 }
+/*
   symbolTable *table = initSymbolTable(MAX_SYMTABLE_SIZE);
 
   //muj tmp token variable string

@@ -17,7 +17,6 @@
 #include <string.h>
 #include "scanner.h"
 #include "strings.h"
-#include "strings.c"
 
 #define MAX_SYMTABLE_SIZE 17569 //nějaká meme hodnota, která je shodou okolností prvočíslo
 
@@ -48,13 +47,13 @@ typedef enum {
 	VARIABLE,
 } elementType;
 
-typedef struct { //typedef struct var_item{
+typedef struct {
 	bool used;
 	value value;
 	dataType type;
 } variableData;
 
-typedef struct { //typedef struct fc_item{
+typedef struct {
 	bool defined; //je poprvé přiřazena hodnota
 	dataType returnType;
 	int argCount;
@@ -62,7 +61,7 @@ typedef struct { //typedef struct fc_item{
 	struct symtable *sT;
 } functionData;
 
-typedef struct symtableItm {
+typedef struct symtableItm { //tady musí být
   bool declared; //je založeno
 	struct symtableItm *next;
 	char *key;
