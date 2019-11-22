@@ -17,7 +17,6 @@
  * vrací hash hodnotu do symbol table
  */
 unsigned long hash(unsigned char *str) { //https://stackoverflow.com/a/7666577
-  return 0;
   unsigned long hash = MAX_SYMTABLE_SIZE;
   int c;
 
@@ -46,7 +45,7 @@ symbolTable *initSymbolTable(unsigned int size){
 /*
  * uvolnění symbol table
  */
-void freeSymbolTable(symbolTable *sT) {
+void freeSymbolTable(symbolTable *sT) { //asi nefreeuje všechno
   symtableItem *tmpItem;
 
   for (unsigned int i = 0; i < sT->size; i++) {
@@ -153,20 +152,20 @@ symtableItem *searchSymbolTable(symbolTable *sT, token token) {
 
   while (tmp) {
     if (!strcmp(key, tmp->key)) {
+      tmp->next = NULL; //neukazovat na další, myslím, že by už ukazovat neměl když ho vytahujeme ze symtablu?
       return tmp;
     }
-
     tmp = tmp->next;
   }
 
   return NULL;
 }
 
-/* testy ---- můžete se inspirovat syntaxem i guess
-
+/* testy ---- můžete se inspirovat syntaxem i guess, cleaned up
 void main(int argc, char** argv) {
+  //inicializace věcí se kterýma pracuju
   symbolTable *table = initSymbolTable(MAX_SYMTABLE_SIZE);
-  token Token;
+  token TokenUwu, TokenOwo, TokenQQ;
   smartString *s = malloc(sizeof(smartString));
   if (s == NULL){
       return;
@@ -176,10 +175,9 @@ void main(int argc, char** argv) {
   stringAddChar(s,'w');
   stringAddChar(s,'u');
 
-  Token.attribute.string = s;
-  Token.type = STR;
-
-  insertSymbolTable(table, Token, FUNCTION);
+  TokenUwu.attribute.string = s;
+  TokenUwu.type = STR;
+  insertSymbolTable(table, TokenUwu, FUNCTION);
 
   smartString *z = malloc(sizeof(smartString));
   if (z == NULL){
@@ -189,19 +187,11 @@ void main(int argc, char** argv) {
   stringAddChar(z,'o');
   stringAddChar(z,'w');
   stringAddChar(z,'o');
-  Token.attribute.string = z;
-  insertSymbolTable(table, Token, VARIABLE);
 
-  table->symtabList[0]->elementType.function->argCount = 5;
-  table->symtabList[0]->elementType.function->arguments = (symtableItem *) malloc(table->symtabList[0]->elementType.function->argCount * sizeof(symtableItem));
+  TokenOwo.attribute.string = z;
+  TokenOwo.type = STR;
+  //insertSymbolTable(table, TokenOwo, VARIABLE);
 
-  for (int i = 0; i < table->symtabList[0]->elementType.function->argCount; i++) {
-    table->symtabList[0]->elementType.function->arguments[i] = NULL;
-  }
-
-
-/*  table->symtabList[0]->elementType.function->arguments[0] = *searchSymbolTable(table, Token);
-  table->symtabList[0]->elementType.function->arguments[1] = *searchSymbolTable(table, Token);
   smartString *q = malloc(sizeof(smartString));
   if (q == NULL){
       return;
@@ -210,76 +200,59 @@ void main(int argc, char** argv) {
   stringAddChar(q,'q');
   stringAddChar(q,'.');
   stringAddChar(q,'q');
-  Token.attribute.string = q;
-  insertSymbolTable(table, Token, VARIABLE);
-  table->symtabList[0]->elementType.function->arguments[2] = *searchSymbolTable(table, Token);
-  printf("%s", table->symtabList[0]->elementType.function->arguments[1].key);
-  printf("%s", table->symtabList[0]->elementType.function->arguments[2].key);
-*/
-}
-/*
+  TokenQQ.attribute.string = q;
+  //insertSymbolTable(table, TokenQQ, VARIABLE);
 
-  printf("1. %s\n", table->symtabList[0]->key);
-  printf("2. %s\n", table->symtabList[0]->next->key);
-  printf("3. %s\n", table->symtabList[0]->next->next->key);
+  //funkci "uwu" patří dva parametry, string "owo" a string "q.q"
+  table->symtabList[hash("uwu")]->elementType.function->argCount = 2;
+  functionData *item;
+  item = (functionData *) malloc(sizeof(functionData));
+  item->arguments = (symtableItem *) malloc(sizeof(symtableItem));
+  item->arguments[0].type = VARIABLE;
+  (item->arguments[0]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+  (item->arguments[0]).elementType.variable->type = VARIABLE;
+	(item->arguments[0]).key = z->string;
+  //(item->arguments[0]).elementType.variable->value = ; //hodnota kterou nemáme
 
-  Token.attribute.string = q;
-  deleteItemFromSymbolTable(table, Token); //odstraň owo
-  printf("1. %s\n", table->symtabList[0]->key);
-  printf("2. %s\n", table->symtabList[0]->next->key);
-}
-/*
-  symbolTable *table = initSymbolTable(MAX_SYMTABLE_SIZE);
+  table->symtabList[hash("uwu")]->elementType.function = item;
 
-  //muj tmp token variable string
-  token Token;
-  smartString *s = malloc(sizeof(smartString));
-  if (s == NULL){
-      return;
-  }
-  stringInit(s);
-  stringAddChar(s,'u');
-  stringAddChar(s,'w');
-  stringAddChar(s,'u');
+  //další arg
+  item->arguments = realloc(item->arguments, 2*sizeof(symtableItem)); //alokujeme už pro 2
+  item->arguments[1].type = VARIABLE;
+  (item->arguments[1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+  (item->arguments[1]).elementType.variable->type = VARIABLE;
+	(item->arguments[1]).key = q->string;
 
-  Token.attribute.string = s;
-  Token.type = STR;
+  //tisk toho, že to funguje
+  printf("%s\n", table->symtabList[hash("uwu")]->elementType.function->arguments[0].key);
+  printf("%s\n", table->symtabList[hash("uwu")]->elementType.function->arguments[1].key);
 
-  insertSymbolTable(table, Token, FUNCTION);
-  table->symtabList[hash("uwu")]->elementType.function->argCount = 1;
-
-  if(table->symtabList[hash("uwu")]->elementType.function->argCount) {
-    printf("%s\n", "je zalozena");
-  }
-
+  //jelikož chci testovat freeování symbol table s funkcí, tak musím založit další symbol table pro table pro funkci
   symbolTable *tableVeFunkci = initSymbolTable(MAX_SYMTABLE_SIZE);
-
-  insertSymbolTable(tableVeFunkci, Token, FUNCTION);
-  tableVeFunkci->symtabList[hash("uwu")]->elementType.function->argCount = 1;
   table->symtabList[hash("uwu")]->elementType.function->sT = tableVeFunkci;
-  if (table->symtabList[hash("uwu")]->elementType.function->sT->symtabList[hash("uwu")]->elementType.function->argCount) {
-    printf("%s\n", "je zalozena");
+  insertSymbolTable(tableVeFunkci, TokenQQ, VARIABLE); //něco tam můžu dát idk
+
+  //testování, že searchSymbolTable snad funguje správně
+  insertSymbolTable(table, TokenOwo, VARIABLE);
+  symtableItem *tmp = searchSymbolTable(table, TokenOwo); //vraci ukazatel
+  printf("delete %s\n", tmp->key);
+  deleteItemFromSymbolTable(table, TokenOwo);
+  tmp = searchSymbolTable(table, TokenOwo); //vrati NULL
+  if (tmp) {
+    printf("%s\n", tmp->key);
   }
 
-  freeSymbolTable(table);
-  if (table->symtabList[hash("uwu")]->elementType.function->sT->symtabList[hash("uwu")]->elementType.function->argCount) {
-    printf("%s\n", "je zalozena");
-  }
-}
+  //testování, že deleteItemFromSymbolTable funguje správně na stejném indexu
+    //printf("1. %s\n", table->symtabList[0]->key);
+    //printf("2. %s\n", table->symtabList[0]->next->key);
+    //printf("3. %s\n", table->symtabList[0]->next->next->key);
 
-/*
-  insertSymbolTable(table, Token, FUNCTION);
-  if(table->symtabList[hash("uwu")]->elementType.function->argCount) {
-    printf("%s\n", "je zalozena");
-  }
+    //Token.attribute.string = q;
+    //deleteItemFromSymbolTable(table, Token); //odstraň owo
+    //printf("1. %s\n", table->symtabList[0]->key);
+    //printf("2. %s\n", table->symtabList[0]->next->key);
 
-  symtableItem *tmp = searchSymbolTable(table, Token); //vraci ukazatel
-  printf("%s\n", tmp->key);
-  deleteItemFromSymbolTable(table, Token);
-  tmp = searchSymbolTable(table, Token); //vrati NULL
 
-  freeSymbolTable(table);
-//  stringFree(s);
-
+    freeSymbolTable(table);
 }
 */
