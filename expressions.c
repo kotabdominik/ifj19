@@ -229,4 +229,13 @@ precedenceRules testParameters (int decide,symbolItem* operator1, symbolItem* op
   }
 }
 
-int checkRules()
+/* checks semantics of operands */
+int checkRules(precedenceRules rule, symbolItem* operator1, symbolItem* operator2, symbolItem* operator3, symbolItem* operator4, symbolItem* operator5, symbolItem* operator6, symbolItem* operator7, symbolItem* operator8){
+  if(rule == _I_){
+    if(operator1->dataType == DATA_UNDEFINED){
+      return SEM_DEF_ERR;
+    }
+
+    if()
+  }
+}

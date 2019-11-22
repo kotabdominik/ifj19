@@ -18,8 +18,16 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
+typedef struct
+{
+  int instType;  // typ instrukce
+  void *addr1; // adresa 1
+  void *addr2; // adresa 2
+  void *addr3; // adresa 3
+} tInstr;
+
 typedef struct tDLElem {                 /* prvek dvousměrně vázaného seznamu */
-        char *tokenPointer;              /* ukazatel na token */
+        tInstr Instruction;            /* ukazatel na token */
         struct tDLElem *lptr;          /* ukazatel na předchozí prvek seznamu */
         struct tDLElem *rptr;        /* ukazatel na následující prvek seznamu */
 } *tDLElemPtr;
