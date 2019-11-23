@@ -201,7 +201,7 @@ int statement(){
     else if(tokenAct.attribute.keyword == PASS){ // PASS --------------------------------------
         tokenAct = nextToken(&error, stack);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL || tokenAct.type != EOFTOKEN){
+        if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN){
             return PARSING_ERR;
         }
 
