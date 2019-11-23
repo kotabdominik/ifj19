@@ -27,17 +27,17 @@
 int precedenceTable[TABLESIZE][TABLESIZE] =
 {
   //   +-  *///    (     )     i     r     $
-    {  C  ,  A  ,  A  ,  C  ,  A  ,  C  ,  C  }// +-
-    {  C  ,  C  ,  A  ,  C  ,  A  ,  C  ,  C  }// *///
-    {  A  ,  A  ,  A  ,  B  ,  A  ,  A  ,  E  }// (
-    {  C  ,  C  ,  E  ,  C  ,  E  ,  C  ,  C  }// )
-    {  C  ,  C  ,  E  ,  C  ,  E  ,  C  ,  C  }// i
-    {  A  ,  A  ,  A  ,  C  ,  A  ,  E  ,  C  }// r (relationship operators)
-    {  A  ,  A  ,  A  ,  E  ,  A  ,  A  ,  E  }// $
+    {  C  ,  A  ,  A  ,  C  ,  A  ,  C  ,  C  }, // +-
+    {  C  ,  C  ,  A  ,  C  ,  A  ,  C  ,  C  }, // *///
+    {  A  ,  A  ,  A  ,  B  ,  A  ,  A  ,  E  }, // (
+    {  C  ,  C  ,  E  ,  C  ,  E  ,  C  ,  C  }, // )
+    {  C  ,  C  ,  E  ,  C  ,  E  ,  C  ,  C  }, // i
+    {  A  ,  A  ,  A  ,  C  ,  A  ,  E  ,  C  }, // r (relationship operators)
+    {  A  ,  A  ,  A  ,  E  ,  A  ,  A  ,  E  }  // $
 };
 
 int expression(token tokenAct){
-  
+
 }
 
 

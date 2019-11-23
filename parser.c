@@ -26,34 +26,29 @@ int counterVar = 1;
 tStack *stack;
 int doIndent = 0;
 
-void generateVariable(smartString *var)
 // generuje jedinecne nazvy identifikatoru
 // nazev se sklada ze znaku $ nasledovanym cislem
 // postupne se tu generuji prirozena cisla a do nazvu promenne se ukladaji
 // v reverzovanem poradi - na funkcnost to nema vliv, ale je jednodussi implementace
-
-{
-    stringClear(var);
-    stringAddChar(var, '$');
-    int i;
-    i = counterVar;
-    while (i != 0)
-    {
-        stringAddChar(var, (char)(i % 10 + '0'));
-        i = i / 10;
-    }
-    counterVar ++;
+void generateVariable(smartString *var) {
+  stringClear(var);
+  stringAddChar(var, '$');
+  int i = counterVar; //counterVar je globalní proměnná, kdyžtak změnit na argument i guess
+  while (i != 0) {
+    stringAddChar(var, (char)(i % 10 + '0'));
+    i = i / 10;
+  }
+  counterVar ++;
 }
 
-void generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 // vlozi novou instrukci do seznamu instrukci
-{
-    tInstr I;
-    I.instType = instType;
-    I.addr1 = addr1;
-    I.addr2 = addr2;
-    I.addr3 = addr3;
-    //DLInsertLast(list, I); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+void generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
+   tInstr I;
+   I.instType = instType;
+   I.addr1 = addr1;
+   I.addr2 = addr2;
+   I.addr3 = addr3;
+   DLInsertLast(list, I);
 }
 
 // ==================================================================

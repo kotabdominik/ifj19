@@ -15,6 +15,8 @@
 #define _EXPRESSION_H_
 
 #include "parser.h"
+#include "list.h"
+#include "list.c"
 
 #define TABLESIZE 7
 
@@ -26,7 +28,7 @@ typedef enum{
   _I_, // i
   F_LF_E_RG, // f(E)
   F_LF_E_E_RG, // f(E,E)
-  F_LF_E_E_E_RG // f(E,E,E)
+  F_LF_E_E_E_RG, // f(E,E,E)
   FAIL
 } precedenceRules;
 
@@ -60,7 +62,7 @@ typedef enum{
   I_I, // identifier
   I_FUNC,
   I_COMMA,
-  I_DOLLAR
+  I_DOLLAR,
   I_E // E
 } tableIndex;
 
@@ -73,7 +75,7 @@ typedef struct sItem{
 
 parseSymbols convertToSymbol(token *token);
 tableIndex convertToTableIndex(parseSymbols parsedSymbol);
-dataType convertToDataType (token* token, parserToken* pToken);
-precedenceRules testParameters (int decide,symbolItem* operator1, symbolItem* operator2, symbolItem* operator3, symbolItem* operator4, symbolItem* operator5, symbolItem* operator6, symbolItem* operator7, symbolItem* operator8);
+//dataType convertToDataType(token* token, parserToken* pToken);
+precedenceRules testParameters(int decide,symbolItem* operator1, symbolItem* operator2, symbolItem* operator3, symbolItem* operator4, symbolItem* operator5, symbolItem* operator6, symbolItem* operator7, symbolItem* operator8);
 
 #endif

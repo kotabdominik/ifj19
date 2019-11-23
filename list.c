@@ -28,8 +28,8 @@ int errflg;
 ** Tato funkce bude volána z některých dále implementovaných operací.
 **/
 void DLError() {
-    printf ("*ERROR* The program has performed an illegal operation.\n");
-    errflg = 1;             /* globální proměnná -- příznak ošetření chyby */
+    //printf ("*ERROR* The program has performed an illegal operation.\n");
+    errflg = INTERN_ERR;             /* globální proměnná -- příznak ošetření chyby */
     return;
 }
 
@@ -197,7 +197,7 @@ tInstr *listGetData(tDLList *L)
 {
   if (L->Act == NULL)
   {
-    *error = INTERN_ERR;
+    errflg = INTERN_ERR;
     return NULL;
   }
   else return &(L->Act->Instruction);
