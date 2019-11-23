@@ -205,18 +205,28 @@ token nextToken(int *error, tStack *stack, int doIndent) {
             case '\n':
 
                 if (doIndent == 0){
-                  Token.type = EOL;
-                  return Token;
+                    Token.type = EOL;
+                    return Token;
                 }
 
                 tmpNum = 0, counter = 0;
 
-                while (c = getc(f), c == ' ' || c == '\n') {
-                  counter++;
-                  if (c == '\n') { //If the line is empty start again
-                    counter = 0;
-                  }
+                while (c = getc(f), c == ' ' || c == '\n' || c == EOF) {
+                    counter++;
+                    if (c == '\n') { //If the line is empty start again
+                        counter = 0;
+                    }
+                    if (c == EOF) {
+                        Token.type = EOFTOKEN;
+                        return Token;
+                    }
+
                 }
+                if (counter == 0){ //Prazdny indent čiže nič
+                    Token.type = BROKEN;
+                    return Token;
+                }
+
                 ungetc(c, f); //Vrati znak buduceho tokenu
 
                 if (stackEmpty(stack)) { //Creates Indent token on empty stack
@@ -237,7 +247,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 } else if (counter == *tmpNum){  //Indents are same, returns broken token because has to return smth
                     Token.type = BROKEN;
                     return Token;
-                  }
+                }
                 else {
                     while (counter < *tmpNum) {
                         if (stackEmpty(stack)) {
@@ -311,6 +321,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
                                     state = STATE_START;
+                                    ungetc(c, f);
                                     return Token;
                                 } else {
                                     ungetc(c, f);

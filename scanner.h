@@ -11,17 +11,17 @@
   *
   */
 
-  #ifndef _SCANNER_H_
-  #define _SCANNER_H_
+#ifndef _SCANNER_H_
+#define _SCANNER_H_
 
-  #include "strings.h"
-  #include "error.h"
-  #include <ctype.h>
-  #include "stack.c"
-  #include "strings.c"
+#include "strings.h"
+#include "error.h"
+#include <ctype.h>
+#include "stack.c"
+#include "strings.c"
 
 
-  typedef enum {
+typedef enum {
     DEF,
     ELSE,
     IF,
@@ -29,9 +29,9 @@
     PASS,
     RETURN,
     WHILE,
-  } keyword;
+} keyword;
 
-  typedef enum {
+typedef enum {
     PLUS, //+
     MINUS, //-
     TIMES, //*
@@ -49,6 +49,7 @@
     KEYWORD,
     LESSEQ, //<=
     GREATEREQ, //>=
+    BROKEN,
     EQ, //==
     NOTEQ, //!=
     EOL, //konec radku
@@ -57,29 +58,29 @@
     RIGHTBRACKET, // )
     COMMA, // ,
     //SEMICOLON, // ;
-    COLON, // :
+            COLON, // :
     ASSIGN, // =
-  } tokenType;
+} tokenType;
 
-  typedef union {
+typedef union {
     keyword keyword;
     smartString *string; //string value
     int INT;
     double FLOAT;
-  } tokenAttribute;
+} tokenAttribute;
 
-  typedef struct {
-  	tokenType type; //type
-  	tokenAttribute attribute; //value
-  } token;
+typedef struct {
+    tokenType type; //type
+    tokenAttribute attribute; //value
+} token;
 
-  ////*    Here may be other functions such as opening source file etc    *////
+////*    Here may be other functions such as opening source file etc    *////
 
 
-  // Proly na ziskavanie tokenov
-  token nextToken(int *error, tStack *stack);
+// Proly na ziskavanie tokenov
+token nextToken(int *error, tStack *stack, int doIndent);
 
-  void setFile(char* sourceFile);
+void setFile(char* sourceFile);
 //  Exemplar token insertion  //
 /*
   * token Token;
