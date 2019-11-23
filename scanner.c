@@ -41,7 +41,7 @@ void setFile(char* sourceFile){
 }
 
 
-token nextToken(int *error, tStack *stack) {
+token nextToken(int *error, tStack *stack, int doIndent) {
 
     token Token;
 
@@ -52,6 +52,9 @@ token nextToken(int *error, tStack *stack) {
 
 
     char c, tmp;
+
+
+
     smartString *s = malloc(sizeof(smartString));
     if (s == NULL) {
         *error = INTERN_ERR;
@@ -200,14 +203,21 @@ token nextToken(int *error, tStack *stack) {
                 break;
 
             case '\n':
+
+                if (doIndent == 0){
+                  Token.type = EOL;
+                  return Token;
+                }
+
                 tmpNum = 0, counter = 0;
-                while (c = getc(f), c == ' ') {
-                    counter++;
+
+                while (c = getc(f), c == ' ' || c == '\n') {
+                  counter++;
+                  if (c == '\n') { //If the line is empty start again
+                    counter = 0;
+                  }
                 }
-                if (c == '\n') { //If the line is empty do nothing
-                    break;
-                }
-                ungetc(c, f);
+                ungetc(c, f); //Vrati znak buduceho tokenu
 
                 if (stackEmpty(stack)) { //Creates Indent token on empty stack
                     stackPush(stack, counter);
@@ -224,8 +234,10 @@ token nextToken(int *error, tStack *stack) {
                     Token.attribute.INT = counter;
                     Token.type = INDENT;
                     return Token;
-                } else if (counter == *tmpNum)  //Ignores equal indents value
-                    break;
+                } else if (counter == *tmpNum){  //Indents are same, returns broken token because has to return smth
+                    Token.type = BROKEN;
+                    return Token;
+                  }
                 else {
                     while (counter < *tmpNum) {
                         if (stackEmpty(stack)) {
