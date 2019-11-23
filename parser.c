@@ -212,6 +212,10 @@
       tokenAct = nextToken(&error);
       if(error != OK) return error; // zkoumani lexikalniho erroru
       result = expression();
+      if(result != OK) return result;
+
+      printf("JESS\n");
+      fflush(stdout);
 
       tokenAct = nextToken(&error);
       if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -338,10 +342,11 @@
     int result;
     //tableVar = ST;
     //list = instrList;
-    tokenAct = nextToken(&error);
+    tokenAct = nextToken(fml);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    else
-       result = program();
+    else{
+        result = program();
+    }
     return result;
   }
 
@@ -349,12 +354,11 @@
     return OK;
   }
 
-  void main(){
-      printf("yeeees\n");
+  int main(){
       symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
-      printf("yees\n");
       setFile("txt.txt");
-      parse(tableVar);
+      int result = parse(tableVar);
+      return result;
   }
 
 
