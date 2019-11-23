@@ -45,7 +45,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
     token Token;
 
-    int *tmpNum = 0;
+    int tmpNum = 0;
     int counter = 0;
     char hexvalue[3] = {0,};
 
@@ -206,6 +206,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
                 if (doIndent == 0){
                     Token.type = EOL;
+                    ungetc(c,f);
                     return Token;
                 }
 
@@ -224,6 +225,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 }
                 if (counter == 0){ //Prazdny indent čiže nič
                     Token.type = BROKEN;
+                    ungetc(c ,f);
                     return Token;
                 }
 
@@ -238,24 +240,24 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     return Token;
                 }
 
-                stackTop(stack, tmpNum);
-                if (counter > *tmpNum) { //Creates new Indent if counter is higher
+                stackTop(stack, &tmpNum);
+                if (counter > tmpNum) { //Creates new Indent if counter is higher
                     stackPush(stack, counter);
                     Token.attribute.INT = counter;
                     Token.type = INDENT;
                     return Token;
-                } else if (counter == *tmpNum){  //Indents are same, returns broken token because has to return smth
+                } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
                     Token.type = BROKEN;
                     return Token;
                 }
                 else {
-                    while (counter < *tmpNum) {
+                    while (counter < tmpNum) {
                         if (stackEmpty(stack)) {
                             *error = LEXICAL_ERR;
                             return Token;
                         }
                         stackPop(stack);
-                        stackTop(stack, tmpNum);
+                        stackTop(stack, &tmpNum);
                     }
                     Token.attribute.INT = counter;  ////Consult this
                     Token.type = DEDENT;

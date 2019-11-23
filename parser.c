@@ -85,15 +85,15 @@ int statement(){
             return PARSING_ERR;
         }
 
-        doIndent = 1;                 // očakáva indent
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL){
             return PARSING_ERR;
         }
-        doIndent = 0;
 
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
+        doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT){
             return PARSING_ERR;
@@ -121,15 +121,15 @@ int statement(){
             return PARSING_ERR;
         }
 
-        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL){
             return PARSING_ERR;
         }
-        doIndent = 0;
 
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
+        doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT){
             return PARSING_ERR;
@@ -142,15 +142,14 @@ int statement(){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
-        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL){
             return PARSING_ERR;
         }
-        doIndent = 0;
-
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
+        doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != DEDENT){
             return PARSING_ERR;
@@ -170,15 +169,14 @@ int statement(){
             return PARSING_ERR;
         }
 
-        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL){
             return PARSING_ERR;
         }
-        doIndent = 0;
-
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
+        doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT){
             return PARSING_ERR;
@@ -265,7 +263,6 @@ int statement(){
         }*/
     else{ //pokud jsou to jine keywordy, tak se nejspis jedna o expression, za kterou nasleduje eof nebo eol
         result = expression();
-        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type == EOFTOKEN){
@@ -274,8 +271,9 @@ int statement(){
         else if(tokenAct.type != EOL){
             return PARSING_ERR;
         }
-        doIndent = 0;
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
+        doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return result;
     }
@@ -327,15 +325,15 @@ int function(){
     }
 
     //musi nasledovat EOL -> INDENT -> statement
-    doIndent = 1;
     tokenAct = nextToken(&error, stack, doIndent);
-    doIndent = 0;
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != EOL){
         return PARSING_ERR;
     }
 
+    doIndent = 1;
     tokenAct = nextToken(&error, stack, doIndent);
+    doIndent = 0;
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != INDENT){
         return PARSING_ERR;
