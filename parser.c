@@ -208,14 +208,25 @@ int statement(){
         return OK;
     }
     else if(tokenAct.attribute.keyword == PASS){ // PASS --------------------------------------
-        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN){
             return PARSING_ERR;
         }
-        doIndent = 0;
+        if(tokenAct.type == EOFTOKEN){
+            return OK;
+        }
 
+        doIndent = 1;
+
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
+        //nesmi tady byt indent
+        if(tokenAct.type == INDENT) return PARSING_ERR;
+        doIndent = 0;
+        //pokud je dedent, posleme ten token dal;
+        if(tokenAct.type == DEDENT) return OK;
+        //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
@@ -231,7 +242,19 @@ int statement(){
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN){
             return PARSING_ERR;
         }
+        if(tokenAct.type == EOFTOKEN){ // pokud je to konec filu, nezkoumame dalsi token
+            return OK;
+        }
 
+        doIndent = 1;
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
+        //nesmi tady byt indent
+        if(tokenAct.type == INDENT) return PARSING_ERR;
+        doIndent = 0;
+        //pokud je dedent, posleme ten token dal;
+        if(tokenAct.type == DEDENT) return OK;
+        //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
