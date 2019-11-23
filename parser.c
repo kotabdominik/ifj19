@@ -106,12 +106,16 @@ int statement(){
         do{
             result = statement();
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
-        } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
+            if(tokenAct.type == EOFTOKEN) return PARSING_ERR;
+        } while(tokenAct.type != DEDENT); //&& tokenAct.type != EOFTOKEN
 
-        if(tokenAct.type != KEYWORD){
+        /*if(tokenAct.type != KEYWORD){
             return OK;
+        }*/
+        if(tokenAct.type != KEYWORD){
+            return PARSING_ERR;
         }
-        else if(tokenAct.attribute.keyword != ELSE){
+        if(tokenAct.attribute.keyword != ELSE){
             return PARSING_ERR;
         }
 
@@ -142,6 +146,9 @@ int statement(){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
+          return OK;
+
+        /*
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL){
@@ -156,7 +163,7 @@ int statement(){
         }
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;
+        return OK;*/
     }
     else if(tokenAct.attribute.keyword == WHILE){ // WHILE ---------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
@@ -184,17 +191,14 @@ int statement(){
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INDENT){
-            return PARSING_ERR;
-        }
-
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
         do{
             result = statement();
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
+        return OK;
+
+        /*
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != DEDENT){
@@ -203,7 +207,7 @@ int statement(){
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;
+        return OK;*/
     }
     else if(tokenAct.attribute.keyword == PASS){ // PASS --------------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
