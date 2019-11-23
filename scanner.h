@@ -77,7 +77,7 @@
 
 
   // Proly na ziskavanie tokenov
-  token nextToken();
+  token nextToken(int *error, tStack *stack);
 
   void setFile(char* sourceFile);
 //  Exemplar token insertion  //

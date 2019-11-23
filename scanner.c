@@ -41,11 +41,10 @@ void setFile(char* sourceFile){
 }
 
 
-token nextToken(int *error) {
+token nextToken(int *error, tStack *stack) {
 
     token Token;
-    tStack *stack = malloc(sizeof(tStack));
-    stackInit(stack);
+
     int *tmpNum = 0;
     int counter = 0;
     char hexvalue[3] = {0,};
