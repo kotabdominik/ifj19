@@ -68,7 +68,7 @@ void DLInsertFirst (tDLList *L, tInstr val) {
     return;
   }
 
-  temp->data = val;
+  temp->Instruction = val;
   temp->lptr = NULL;
   temp->rptr = L->First; //L->First může být NULL
 
@@ -93,7 +93,7 @@ void DLInsertLast(tDLList *L, tInstr val) {
     return;
   }
 
-  temp->data = val;
+  temp->Instruction = val;
   temp->rptr = NULL;
   temp->lptr = L->Last;
 
@@ -168,7 +168,7 @@ void DLPostInsert (tDLList *L, tInstr val) {
       return;
     }
 
-    temp->data = val; //přiřazení dat a předchozích/následujících prvků
+    temp->Instruction = val; //přiřazení dat a předchozích/následujících prvků
     temp->lptr = L->Act;
     temp->rptr = L->Act->rptr;
 
