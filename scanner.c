@@ -109,6 +109,12 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 Token.attribute.string = s;
                 Token.type = COLON;
                 return Token;
+
+            case ',':
+                stringAddChar(s, ',');
+                Token.attribute.string = s;
+                Token.type = COMMA;
+                return Token;
                 // MULTIPLE //
             case '=':
                 if (c = getc(f), c == '=') {
