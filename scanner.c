@@ -44,7 +44,7 @@ void setFile(char* sourceFile){
 token nextToken(int *error) {
 
  token Token;
- tStack *stack;
+ tStack *stack = malloc(sizeof(tStack));
  stackInit(stack);
  int* tmpNum = 0;
  int counter = 0;
