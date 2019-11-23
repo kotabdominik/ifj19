@@ -16,7 +16,7 @@
 
 #include "parser.h"
 
-#define TABLESIZE 8
+#define TABLESIZE 7
 
 //pravidla pro parsovani expresi
 typedef enum{
