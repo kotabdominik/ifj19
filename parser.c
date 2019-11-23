@@ -214,9 +214,6 @@
       result = expression();
       if(result != OK) return result;
 
-      printf("JESS\n");
-      fflush(stdout);
-
       tokenAct = nextToken(&error);
       if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
@@ -333,6 +330,7 @@
         result = statement();
       }
     }
+    return result;
   }
 
 
@@ -342,7 +340,7 @@
     int result;
     //tableVar = ST;
     //list = instrList;
-    tokenAct = nextToken(fml);
+    tokenAct = nextToken(&error);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     else{
         result = program();
@@ -358,6 +356,7 @@
       symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
       setFile("txt.txt");
       int result = parse(tableVar);
+      printf("%d\n", result);
       return result;
   }
 
