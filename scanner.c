@@ -223,11 +223,11 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
 
                 }
-                if (counter == 0){ //Prazdny indent čiže nič
+               /* if (counter == 0){ //Prazdny indent čiže nič
                     Token.type = BROKEN;
                     ungetc(c ,f);
                     return Token;
-                }
+                }*/
 
                 ungetc(c, f); //Vrati znak buduceho tokenu
 
@@ -258,10 +258,14 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         }
                         stackPop(stack);
                         stackTop(stack, &tmpNum);
+                        if (tmpNum < counter){
+                            *error = LEXICAL_ERR;
+                            return Token;
+                        }
                     }
                     Token.attribute.INT = counter;  ////Consult this
                     Token.type = DEDENT;
-                    stackPush(stack, counter);
+                    stackPush(stack, counter); ////vrat c
                     return Token;
                 }
 

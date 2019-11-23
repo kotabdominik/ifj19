@@ -108,6 +108,8 @@ int statement(){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
             if(tokenAct.type == EOFTOKEN) return PARSING_ERR;
         } while(tokenAct.type != DEDENT); //&& tokenAct.type != EOFTOKEN
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
 
         /*if(tokenAct.type != KEYWORD){
             return OK;
@@ -146,7 +148,7 @@ int statement(){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
-          return OK;
+        return OK;
 
         /*
         tokenAct = nextToken(&error, stack, doIndent);
@@ -306,26 +308,34 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
-    if(tokenAct.type != STR){
+    if(tokenAct.type != STR && tokenAct.type != RIGHTBRACKET){
         return PARSING_ERR;
     }
 
-    while(tokenAct.type != RIGHTBRACKET){
-        //dalsi token musi byt ','
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+    if (tokenAct.type == STR) {
+        while (tokenAct.type != RIGHTBRACKET) {
+            //dalsi token musi byt ','
+            tokenAct = nextToken(&error, stack, doIndent);
+            if (error != OK) return error; // zkoumani lexikalniho erroru
 
-        if(tokenAct.type != COMMA){
-            return PARSING_ERR;
+            if (tokenAct.type != COMMA) {
+                return PARSING_ERR;
+            }
+
+            //dalsi token musi byt identifikator
+            tokenAct = nextToken(&error, stack, doIndent);
+            if (error != OK) return error; // zkoumani lexikalniho erroru
+
+            if (tokenAct.type != STR) {
+                return PARSING_ERR;
+            }
         }
+    }
 
-        //dalsi token musi byt identifikator
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-
-        if(tokenAct.type != STR){
-            return PARSING_ERR;
-        }
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    if(tokenAct.type != COLON){
+        return PARSING_ERR;
     }
 
     //musi nasledovat EOL -> INDENT -> statement
@@ -362,7 +372,7 @@ int program(){
     int result;
     while(tokenAct.type != EOFTOKEN){ // prochazi se cely program
         // muze se jednat bud o funkci, statement
-        if(tokenAct.type == STR && tokenAct.attribute.keyword == DEF){
+        if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
             tokenAct = nextToken(&error, stack, doIndent);
             if(error != OK) return error; // zkoumani lexikalniho erroru
             result = function();
@@ -398,6 +408,7 @@ int expression(){
 int main(){
     stack = malloc(sizeof(tStack));
     stackInit(stack);
+    stackPush(stack, 0);
     symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
     setFile("txt.txt");
     int result = parse(tableVar);
