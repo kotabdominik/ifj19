@@ -20,9 +20,10 @@
   //tDLList *list; // globalni promenna uchovavajici seznam instrukci
   token tokenAct;          // globalni promenna, ve ktere bude ulozen aktualni token
   //smartString attr;        // globalni promenna, ve ktere bude ulozen atribut tokenu
-  //int *error = OK;
+  int error = OK;
 
   int counterVar = 1;
+
 
   void generateVariable(smartString *var)
   // generuje jedinecne nazvy identifikatoru
@@ -66,37 +67,37 @@
     //pokud nezacina statement keywordem, jedna se bud o chybu, nebo o expression
     if(tokenAct.type != KEYWORD){
       result = expression();
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return result;
     }
 
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       result = expression();
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != COLON){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != INDENT){
         return PARSING_ERR;
       }
 
       //musi nasledovat statement/y
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       do{
         result = statement();
@@ -110,116 +111,116 @@
           return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != COLON){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != INDENT){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       do{
         result = statement();
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
       } while(tokenAct.type != DEDENT || tokenAct.type != EOFTOKEN);
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != DEDENT){
         return PARSING_ERR;
       }
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return OK;
     }
     else if(tokenAct.attribute.keyword == WHILE){ // WHILE ---------------------------------
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       result = expression();
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != COLON){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != INDENT){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != INDENT){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       do{
         result = statement();
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
       } while(tokenAct.type != DEDENT || tokenAct.type != EOFTOKEN);
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != DEDENT){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return OK;
     }
     else if(tokenAct.attribute.keyword == PASS){ // PASS --------------------------------------
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return OK;
     }
     else if(tokenAct.attribute.keyword == RETURN){ // RETURN -------------------------------------
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       result = expression();
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return OK;
     }
     /*else if(tokenAct.attribute.keyword == DEF){
@@ -228,16 +229,16 @@
     }*/
     else{ //pokud jsou to jine keywordy, tak se nejspis jedna o expression, za kterou nasleduje eof nebo eol
       result = expression();
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type == EOFTOKEN){
         return result;
       }
       else if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return result;
     }
 
@@ -254,16 +255,16 @@
       //insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
 
       //musi nasledovat '('
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       if(tokenAct.type != LEFTBRACKET){
         return PARSING_ERR;
       }
 
       //musi nasledovat identifikator
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       if(tokenAct.type != STR){
         return PARSING_ERR;
@@ -271,16 +272,16 @@
 
       while(tokenAct.type != RIGHTBRACKET){
           //dalsi token musi byt ','
-          tokenAct = nextToken(error);
-          if(*error != OK) return *error; // zkoumani lexikalniho erroru
+          tokenAct = nextToken(&error);
+          if(error != OK) return error; // zkoumani lexikalniho erroru
 
           if(tokenAct.type != COMMA){
             return PARSING_ERR;
           }
 
           //dalsi token musi byt identifikator
-          tokenAct = nextToken(error);
-          if(*error != OK) return *error; // zkoumani lexikalniho erroru
+          tokenAct = nextToken(&error);
+          if(error != OK) return error; // zkoumani lexikalniho erroru
 
           if(tokenAct.type != STR){
             return PARSING_ERR;
@@ -288,29 +289,29 @@
       }
 
       //musi nasledovat EOL -> INDENT -> statement
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL){
         return PARSING_ERR;
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != INDENT){
         return PARSING_ERR;
       }
 
       //musi nasledovat statement/y
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       while(tokenAct.type != DEDENT || tokenAct.type != EOFTOKEN){
         result = statement();
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
       }
 
-      tokenAct = nextToken(error);
-      if(*error != OK) return *error; // zkoumani lexikalniho erroru
+      tokenAct = nextToken(&error);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return OK;
   }
 
@@ -320,8 +321,8 @@
     while(tokenAct.type != EOFTOKEN){ // prochazi se cely program
       // muze se jednat bud o funkci, statement
       if(tokenAct.type == STR && tokenAct.attribute.keyword == DEF){
-        tokenAct = nextToken(error);
-        if(*error != OK) return *error; // zkoumani lexikalniho erroru
+        tokenAct = nextToken(&error);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
         result = function();
       }
       else{
@@ -337,8 +338,8 @@
     int result;
     //tableVar = ST;
     //list = instrList;
-    tokenAct = nextToken(error);
-    if(*error != OK) return *error; // zkoumani lexikalniho erroru
+    tokenAct = nextToken(&error);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
     else
        result = program();
     return result;
@@ -348,13 +349,13 @@
     return OK;
   }
 
-
   void main(){
-      printf("yeeees");
+      printf("yeeees\n");
       symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
-      printf("yees");
+      printf("yees\n");
       setFile("txt.txt");
       parse(tableVar);
   }
+
 
 /* keywordy .. dedenty .. vkladani(search) do symtable*/
