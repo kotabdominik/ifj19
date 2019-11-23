@@ -509,5 +509,6 @@ token nextToken(int *error) {
       }
     }
   }
-//return Token;
+  Token.type = EOFTOKEN;
+  return Token;
 }
