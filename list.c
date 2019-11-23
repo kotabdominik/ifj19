@@ -191,3 +191,14 @@ void DLSucc (tDLList *L) {
     L->Act = L->Act->rptr; //aktivita se přesouvá na prvek za aktivním
   }
 }
+
+tInstr *listGetData(tDLList *L)
+// vrati aktivni instrukci
+{
+  if (L->Act == NULL)
+  {
+    *error = INTERN_ERR;
+    return NULL;
+  }
+  else return &(L->Act->Instruction);
+}
