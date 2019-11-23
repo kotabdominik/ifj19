@@ -23,7 +23,7 @@
 #include "string.h"
 #include "error.h"
 
-int parse(symbolTable *ST);
+int parse(symbolTable *STV, symbolTable *STF);
 int program();
 int expression();
 int function();

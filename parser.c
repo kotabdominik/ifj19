@@ -15,8 +15,8 @@
 #include "parser.h"
 
 
-//symbolTable *tableVar;// globalni promenna uchovavajici tabulku symbolu
-//symbolTable *tableFunc;// globalni promenna uchovavajici tabulku funkci
+symbolTable *tableVar;// globalni promenna uchovavajici tabulku symbolu
+symbolTable *tableFunc;// globalni promenna uchovavajici tabulku funkci
 //tDLList *list; // globalni promenna uchovavajici seznam instrukci
 token tokenAct;          // globalni promenna, ve ktere bude ulozen aktualni token
 //smartString attr;        // globalni promenna, ve ktere bude ulozen atribut tokenu
@@ -313,15 +313,15 @@ int function(){
     }
 
     if (tokenAct.type == STR) {
+        tokenAct = nextToken(&error, stack, doIndent);
+        if (error != OK) return error; // zkoumani lexikalniho erroru
         while (tokenAct.type != RIGHTBRACKET) {
-            //dalsi token musi byt ','
-            tokenAct = nextToken(&error, stack, doIndent);
-            if (error != OK) return error; // zkoumani lexikalniho erroru
 
+            //dalsi token musi byt ','
             if (tokenAct.type != COMMA) {
                 return PARSING_ERR;
             }
-
+printf("REEEE\n");
             //dalsi token musi byt identifikator
             tokenAct = nextToken(&error, stack, doIndent);
             if (error != OK) return error; // zkoumani lexikalniho erroru
@@ -329,8 +329,12 @@ int function(){
             if (tokenAct.type != STR) {
                 return PARSING_ERR;
             }
+
+            tokenAct = nextToken(&error, stack, doIndent);
+            if (error != OK) return error; // zkoumani lexikalniho erroru
         }
     }
+
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -388,10 +392,11 @@ int program(){
 
 
 
-int parse(symbolTable *ST)
+int parse(symbolTable *STV, symbolTable *STF)
 {
     int result;
-    //tableVar = ST;
+    tableVar = STV;
+    tableFunc = STF;
     //list = instrList;
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -410,8 +415,11 @@ int main(){
     stackInit(stack);
     stackPush(stack, 0);
     symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
+    symbolTable *tableFunc = initSymbolTable(MAX_SYMTABLE_SIZE);
+
     setFile("txt.txt");
-    int result = parse(tableVar);
+    int result = parse(tableVar, tableFunc);
+
     printf("%d\n", result);
     return result;
 }
