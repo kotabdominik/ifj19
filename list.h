@@ -40,11 +40,11 @@ typedef struct {                                  /* dvousměrně vázaný sezna
 
 void DLInitList (tDLList *);
 void DLDisposeList (tDLList *);
-void DLInsertFirst (tDLList *, token);
-void DLInsertLast(tDLList *, token);
+void DLInsertFirst (tDLList *, tInstr);
+void DLInsertLast(tDLList *, tInstr);
 void DLDeleteFirst (tDLList *);
 void DLDeleteLast (tDLList *);
-void DLPostInsert (tDLList *, token);
+void DLPostInsert (tDLList *, tInstr);
 void DLSucc (tDLList *);
 
 #endif

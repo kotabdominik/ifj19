@@ -61,7 +61,7 @@ void DLDisposeList (tDLList *L) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLInsertFirst (tDLList *L, token val) {
+void DLInsertFirst (tDLList *L, tInstr val) {
 	tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
   if (temp == NULL) { //vypořádání se s errorem
     DLError();
@@ -86,7 +86,7 @@ void DLInsertFirst (tDLList *L, token val) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLInsertLast(tDLList *L, token val) {
+void DLInsertLast(tDLList *L, tInstr val) {
   tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
   if (temp == NULL) { //vypořádání se s errorem
     DLError();
@@ -160,7 +160,7 @@ void DLDeleteLast (tDLList *L) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLPostInsert (tDLList *L, token val) {
+void DLPostInsert (tDLList *L, tInstr val) {
   if(L->Act) { //musí být aktivní
     tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
     if (temp == NULL) { //vypořádání se s errorem
