@@ -214,8 +214,14 @@ token nextToken(int *error, tStack *stack, int doIndent) {
             case '\n':
 
                 if (doIndent == 0){
+                    if(c = getc(f), c == EOF){
+                      Token.type = EOFTOKEN;
+                      return Token;
+                    }
+                    else ungetc(c,f);
+
                     Token.type = EOL;
-                    //ungetc(c,f);
+                    ungetc(c,f);
                     return Token;
                 }
 
