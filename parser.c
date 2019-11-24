@@ -41,13 +41,14 @@ void generateVariable(smartString *var) {
 }
 
 // vlozi novou instrukci do seznamu instrukci
-void generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
+tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
     tInstr I;
     I.instType = instType;
     I.addr1 = addr1;
     I.addr2 = addr2;
     I.addr3 = addr3;
-    DLInsertLast(list, I);
+
+    return DLInsertLast(list, I);
 }
 
 // ==================================================================
@@ -57,6 +58,7 @@ void generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
 
 int statement(){
     int result;
+    tInstr *jmp1, *jmp2;
 
     //pokud nezacina statement keywordem, jedna se bud o chybu, nebo o expression
     if(tokenAct.type != KEYWORD){
@@ -71,6 +73,7 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         result = expression();
         if(result != OK) return result;
+        generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -114,6 +117,9 @@ int statement(){
         doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT) return PARSING_ERR;
+
+        generateInstruction(I_JUMP, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
+        generateInstruction(I_LABEL, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru

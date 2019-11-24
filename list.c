@@ -86,11 +86,11 @@ void DLInsertFirst (tDLList *L, tInstr val) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
-void DLInsertLast(tDLList *L, tInstr val) {
+tInstr *DLInsertLast(tDLList *L, tInstr val) {
   tDLElemPtr temp = (tDLElemPtr) malloc(sizeof(struct tDLElem));
   if (temp == NULL) { //vypořádání se s errorem
     DLError();
-    return;
+    return NULL;
   }
 
   temp->Instruction = val;
@@ -104,6 +104,7 @@ void DLInsertLast(tDLList *L, tInstr val) {
   }
 
   L->Last = temp;
+  return &(temp->Instruction);
 }
 
 /*

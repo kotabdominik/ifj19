@@ -100,7 +100,7 @@ typedef struct {                                  /* dvousměrně vázaný sezna
 void DLInitList (tDLList *);
 void DLDisposeList (tDLList *);
 void DLInsertFirst (tDLList *, tInstr);
-void DLInsertLast(tDLList *, tInstr);
+tInstr *DLInsertLast(tDLList *, tInstr);
 void DLDeleteFirst (tDLList *);
 void DLDeleteLast (tDLList *);
 void DLPostInsert (tDLList *, tInstr);
