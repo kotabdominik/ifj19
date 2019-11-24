@@ -39,8 +39,23 @@
 #define I_MULS 17
 #define I_DIVS 18
 #define I_IDIVS 19
+#define I_LT
+#define I_GT
+#define I_EQ
+#define I_LTS
+#define I_ETS
+#define I_EQS
+#define I_AND
+#define I_OR
+#define I_NOT
+#define I_ANDS
+#define I_ORS
+#define I_NOTS
+#define I_INT2FLOAT
+#define I_FLOAT2INT
+#define I_INT2CHAR
+#define I_STRI2INT
 /*#define I_
-#define I_
 #define I_
 #define I_
 #define I_

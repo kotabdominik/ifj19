@@ -1,5 +1,4 @@
 if 5 :
   pass
-  #agoijaiodgj
 else:
   pass

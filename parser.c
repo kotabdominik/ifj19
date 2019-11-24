@@ -375,7 +375,11 @@ int initFunctions(){
   if(error != OK) return error;
 
   while(tokenAct.type != EOFTOKEN){
-
+    if(tokenAct.type == EOL){
+      doIndent = 1;
+      tokenAct = nextToken(&error, stack, doIndent);
+      doIndent = 0;
+    }
     if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
 
       tokenAct = nextToken(&error, stack, doIndent);
