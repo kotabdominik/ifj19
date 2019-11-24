@@ -215,7 +215,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
                 if (doIndent == 0){
                     Token.type = EOL;
-                    ungetc(c,f);
+                    //ungetc(c,f);
                     return Token;
                 }
 
