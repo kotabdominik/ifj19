@@ -30,18 +30,20 @@
 #define STATE_P12 403     //Potvrdenie hex hodnoty
 #define STATE_P13 404     //Hex hodnota
 
-
-
+#define TRUE 1            //Pri stacku
+#define FALSE 0           //Pri stacku
 
 
 FILE *f;
+int stackReset = FALSE;
 
 void setFile(char* sourceFile){
     f = fopen (sourceFile, "r");
 }
 
 void resetToken(){
-  rewind(f);
+    rewind(f);
+    stackReset = TRUE;
 }
 
 token nextToken(int *error, tStack *stack, int doIndent) {
@@ -52,10 +54,12 @@ token nextToken(int *error, tStack *stack, int doIndent) {
     int counter = 0;
     char hexvalue[3] = {0,};
 
-
+    if (stackReset == TRUE){
+        stackInit(stack);
+        stackReset = FALSE;
+    }
 
     char c, tmp;
-
 
 
     smartString *s = malloc(sizeof(smartString));
@@ -119,6 +123,20 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 Token.type = COMMA;
                 return Token;
                 // MULTIPLE //
+            case '/':
+                if (c = getc(f), c == '/') {
+                    stringAddChar(s, '/');
+                    stringAddChar(s, '/');
+                    Token.attribute.string = s;
+                    Token.type = DIVINT;
+                    return Token;
+                } else {
+                    stringAddChar(s, '/');
+                    Token.attribute.string = s;
+                    Token.type = DIVFLT;
+                    ungetc(c, f);
+                }
+
             case '=':
                 if (c = getc(f), c == '=') {
                     stringAddChar(s, '=');
@@ -207,7 +225,8 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 return Token;
 
             case '#':
-                while ((c = getc(f), c != '\n') || (c = getc(f), c != EOF))
+                c = getc(f);
+                while ((c != '\n') && (c != EOF))
                     c = getc(f);
                 break;
 
@@ -238,17 +257,17 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
 
                 }
-               /* if (counter == 0){ //Prazdny indent čiže nič
-                    Token.type = BROKEN;
-                    ungetc(c ,f);
-                    return Token;
-                }*/
+                /* if (counter == 0){ //Prazdny indent čiže nič
+                     Token.type = BROKEN;
+                     ungetc(c ,f);
+                     return Token;
+                 }*/
 
                 ungetc(c, f); //Vrati znak buduceho tokenu
 
                 if (stackEmpty(stack)) { //Creates Indent token on empty stack
+                    stackPush(stack,0);
                     stackPush(stack, counter);
-
                     Token.attribute.INT = counter;
                     Token.type = INDENT;
 

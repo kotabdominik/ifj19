@@ -31,24 +31,24 @@ int doIndent = 0;
 // postupne se tu generuji prirozena cisla a do nazvu promenne se ukladaji
 // v reverzovanem poradi - na funkcnost to nema vliv, ale je jednodussi implementace
 void generateVariable(smartString *var) {
-  stringClear(var);
-  stringAddChar(var, '$');
-  int i = counterVar; //counterVar je globalní proměnná, kdyžtak změnit na argument i guess
-  while (i != 0) {
-    stringAddChar(var, (char)(i % 10 + '0'));
-    i = i / 10;
-  }
-  counterVar ++;
+    stringClear(var);
+    stringAddChar(var, '$');
+    int i = counterVar; //counterVar je globalní proměnná, kdyžtak změnit na argument i guess
+    while (i != 0) {
+        stringAddChar(var, (char)(i % 10 + '0'));
+        i = i / 10;
+    }
+    counterVar ++;
 }
 
 // vlozi novou instrukci do seznamu instrukci
 void generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
-   tInstr I;
-   I.instType = instType;
-   I.addr1 = addr1;
-   I.addr2 = addr2;
-   I.addr3 = addr3;
-   DLInsertLast(list, I);
+    tInstr I;
+    I.instType = instType;
+    I.addr1 = addr1;
+    I.addr2 = addr2;
+    I.addr3 = addr3;
+    DLInsertLast(list, I);
 }
 
 // ==================================================================
@@ -318,7 +318,7 @@ int function(){
 
 //---------------------------------------------PROGRAM-------------------------------------
 int program(){
-    int result;
+    int result = OK; ////Inicializacia v prípade že máš hned EOF (Ne/10:28)
 
     //prvni token
     tokenAct = nextToken(&error, stack, doIndent);
@@ -341,62 +341,62 @@ int program(){
 }
 
 int defParams(){
-  tokenAct = nextToken(&error, stack, doIndent);
-  if(error != OK) return error; // zkoumani lexikalniho erroru
-  if(tokenAct.type == RIGHTBRACKET) return OK;
-  else if(tokenAct.type == STR){
-    //chybi pridat symbol do funkce ?
-    if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
-    generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
-    return defParamsN();
-  }
-  else return PARSING_ERR;
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    if(tokenAct.type == RIGHTBRACKET) return OK;
+    else if(tokenAct.type == STR){
+        //chybi pridat symbol do funkce ?
+        if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+        generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
+        return defParamsN();
+    }
+    else return PARSING_ERR;
 }
 
 int defParamsN(){
-  tokenAct = nextToken(&error, stack, doIndent);
-  if(error != OK) return error; // zkoumani lexikalniho erroru
-  if(tokenAct.type == RIGHTBRACKET) return OK;
-  if(tokenAct.type != COMMA) return PARSING_ERR;
-  tokenAct = nextToken(&error, stack, doIndent);
-  if(error != OK) return error; // zkoumani lexikalniho erroru
-  if(tokenAct.type != STR) return PARSING_ERR;
-  //chybi pridat symbol do funkce ?
-  //checknout jestli se 2 parametry nejmenuji stejne
-  if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
-  generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
-  return defParamsN();
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    if(tokenAct.type == RIGHTBRACKET) return OK;
+    if(tokenAct.type != COMMA) return PARSING_ERR;
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    if(tokenAct.type != STR) return PARSING_ERR;
+    //chybi pridat symbol do funkce ?
+    //checknout jestli se 2 parametry nejmenuji stejne
+    if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+    generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
+    return defParamsN();
 }
 
 /*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
 int initFunctions(){
 
-  tokenAct = nextToken(&error, stack, doIndent);
-  if(error != OK) return error;
-
-  while(tokenAct.type != EOFTOKEN){
-    if(tokenAct.type == EOL){
-      doIndent = 1;
-      tokenAct = nextToken(&error, stack, doIndent);
-      doIndent = 0;
-    }
-    if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
-
-      tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
-
-      if(tokenAct.type != STR) return PARSING_ERR;
-
-      if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
-      insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
-    }
-
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error;
-  }
 
-  resetToken();
-  return OK;
+    while(tokenAct.type != EOFTOKEN){
+        if(tokenAct.type == EOL){
+            doIndent = 1;
+            tokenAct = nextToken(&error, stack, doIndent);
+            doIndent = 0;
+        }
+        if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
+
+            tokenAct = nextToken(&error, stack, doIndent);
+            if(error != OK) return error; // zkoumani lexikalniho erroru
+
+            if(tokenAct.type != STR) return PARSING_ERR;
+
+            if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+            insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+        }
+
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error;
+    }
+
+    resetToken();
+    return OK;
 }
 
 
@@ -430,7 +430,7 @@ int expression(){
 
 
 
- // DEBUGGING
+// DEBUGGING
 int main(){
     stack = malloc(sizeof(tStack));
     stackInit(stack);
