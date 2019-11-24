@@ -286,6 +286,8 @@ int function(){
     result = defParams();
     if(result != OK) return result;
 
+    generateInstruction(I_CLEARS, NULL, NULL, NULL);
+
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != COLON) return PARSING_ERR;
@@ -305,16 +307,22 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
+
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
         result = statement();
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
+
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     return OK;
 }
 
+//---------------------------------------------ASSIGNMENT-----------------------------------
+int assignment(){
+  
+}
 
 //---------------------------------------------PROGRAM-------------------------------------
 int program(){

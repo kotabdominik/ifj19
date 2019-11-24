@@ -29,6 +29,12 @@ typedef enum {
     PASS,
     RETURN,
     WHILE,
+    INPUTS,
+    INPUTI,
+    INPUTF,
+    PRINT,
+    LEN,
+    SUBSTR
 } keyword;
 
 typedef enum {
@@ -59,7 +65,7 @@ typedef enum {
     COMMA, // ,
     //SEMICOLON, // ;
             COLON, // :
-    ASSIGN, // =
+    ASSIGN // =
 } tokenType;
 
 typedef union {
