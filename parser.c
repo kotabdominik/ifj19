@@ -55,7 +55,6 @@ void generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
 // jednotlive funkce odpovidajici jednotlivym nonterminalum gramatiky
 // ==================================================================
 
-// pomocna funkce na preskakovani prazdnych radku
 
 int statement(){
     int result;
@@ -76,23 +75,17 @@ int statement(){
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != COLON){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != COLON) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != EOL) return PARSING_ERR;
 
         doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INDENT){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != INDENT) return PARSING_ERR;
 
         //musi nasledovat statement/y
         tokenAct = nextToken(&error, stack, doIndent);
@@ -106,35 +99,22 @@ int statement(){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
-        /*if(tokenAct.type != KEYWORD){
-            return OK;
-        }*/
-        if(tokenAct.type != KEYWORD){
-            return PARSING_ERR;
-        }
-        if(tokenAct.attribute.keyword != ELSE){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != KEYWORD) return PARSING_ERR;
+        if(tokenAct.attribute.keyword != ELSE) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != COLON){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != COLON) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != EOL) return PARSING_ERR;
 
         doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INDENT){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != INDENT) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -169,22 +149,16 @@ int statement(){
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != COLON){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != COLON) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != EOL) return PARSING_ERR;
         doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         doIndent = 0;
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INDENT){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type != INDENT) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -209,12 +183,8 @@ int statement(){
     else if(tokenAct.attribute.keyword == PASS){ // PASS --------------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN){
-            return PARSING_ERR;
-        }
-        if(tokenAct.type == EOFTOKEN){
-            return OK;
-        }
+        if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+        if(tokenAct.type == EOFTOKEN) return PARSING_ERR;
 
         doIndent = 1;
 
@@ -238,12 +208,8 @@ int statement(){
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN){
-            return PARSING_ERR;
-        }
-        if(tokenAct.type == EOFTOKEN){ // pokud je to konec filu, nezkoumame dalsi token
-            return OK;
-        }
+        if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+        if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
 
         doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
@@ -266,12 +232,9 @@ int statement(){
         result = expression();
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type == EOFTOKEN){
-            return result;
-        }
-        else if(tokenAct.type != EOL){
-            return PARSING_ERR;
-        }
+        if(tokenAct.type == EOFTOKEN) return result;
+        else if(tokenAct.type != EOL) return PARSING_ERR;
+        
         doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         doIndent = 0;
@@ -282,29 +245,23 @@ int statement(){
     return OK;
 }
 
+
+//---------------------------------------FUNCTION-------------------------------------------
 int function(){
     int result;
 
-    if(tokenAct.type != STR) { //za def musi nasledovat identifikator
-        return PARSING_ERR;
-    }
-
+    if(tokenAct.type != STR) return PARSING_ERR; //za def musi nasledovat identifikator
 
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-
-    if(tokenAct.type != LEFTBRACKET){
-        return PARSING_ERR;
-    }
+    if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
 
     //musi nasledovat identifikator
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
-    if(tokenAct.type != STR && tokenAct.type != RIGHTBRACKET){
-        return PARSING_ERR;
-    }
+    if(tokenAct.type != STR && tokenAct.type != RIGHTBRACKET) return PARSING_ERR;
 
     if (tokenAct.type == STR) {
         tokenAct = nextToken(&error, stack, doIndent);
@@ -312,17 +269,13 @@ int function(){
         while (tokenAct.type != RIGHTBRACKET) {
 
             //dalsi token musi byt ','
-            if (tokenAct.type != COMMA) {
-                return PARSING_ERR;
-            }
+            if (tokenAct.type != COMMA) return PARSING_ERR;
 
             //dalsi token musi byt identifikator
             tokenAct = nextToken(&error, stack, doIndent);
             if (error != OK) return error; // zkoumani lexikalniho erroru
 
-            if (tokenAct.type != STR) {
-                return PARSING_ERR;
-            }
+            if (tokenAct.type != STR) return PARSING_ERR;
 
             tokenAct = nextToken(&error, stack, doIndent);
             if (error != OK) return error; // zkoumani lexikalniho erroru
@@ -332,24 +285,18 @@ int function(){
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != COLON){
-        return PARSING_ERR;
-    }
+    if(tokenAct.type != COLON) return PARSING_ERR;
 
     //musi nasledovat EOL -> INDENT -> statement
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != EOL){
-        return PARSING_ERR;
-    }
+    if(tokenAct.type != EOL) return PARSING_ERR;
 
     doIndent = 1;
     tokenAct = nextToken(&error, stack, doIndent);
     doIndent = 0;
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != INDENT){
-        return PARSING_ERR;
-    }
+    if(tokenAct.type != INDENT) return PARSING_ERR;
 
     //musi nasledovat statement/y
     tokenAct = nextToken(&error, stack, doIndent);
@@ -365,7 +312,8 @@ int function(){
     return OK;
 }
 
-// neterminal pro cely program(library)
+
+//---------------------------------------------PROGRAM-------------------------------------
 int program(){
     int result;
 
