@@ -31,7 +31,9 @@ int statement();
 tInstr* generateInstruction(int instType, void *addr1, void *addr2, void *addr3);
 void generateVariable(smartString *var);
 int initFunctions();
-int defParams();
-int defParamsN();
+int defParams(char* funName);
+int defParamsN(char* funName, int argc);
+int callParams(char* funName);
+int callParamsN(char* funName);
 
 #endif

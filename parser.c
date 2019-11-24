@@ -55,7 +55,7 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 // jednotlive funkce odpovidajici jednotlivym nonterminalum gramatiky
 // ==================================================================
 
-
+//-----------------------------------------STATEMENT--------------------------------------
 int statement(){
     int result;
     tInstr *jmp1, *jmp2;
@@ -73,7 +73,7 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         result = expression();
         if(result != OK) return result;
-        generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
+        jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -118,8 +118,10 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT) return PARSING_ERR;
 
-        generateInstruction(I_JUMP, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
+        jmp2 = generateInstruction(I_JUMP, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
         generateInstruction(I_LABEL, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
+
+        jmp1->addr1 = list->Last;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -127,6 +129,9 @@ int statement(){
             result = statement();
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
+
+        generateInstruction(I_LABEL, NULL, NULL, NULL);
+        jmp2->addr1 = list->Last;
 
         return OK;
 
@@ -150,7 +155,14 @@ int statement(){
     else if(tokenAct.attribute.keyword == WHILE){ // WHILE ---------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
+
+        jmp2 = generateInstruction(I_JUMP, NULL, NULL, NULL);
+        generateInstruction(I_LABEL, NULL, NULL, NULL);
+        jmp2->addr1 = list->Last;
+
         result = expression();
+
+        jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -171,6 +183,10 @@ int statement(){
             result = statement();
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
+
+        generateInstruction(jmp2->instType, jmp2->addr1, jmp2->addr2, jmp2->addr3);
+        generateInstruction(I_LABEL, NULL, NULL, NULL);
+        jmp1->addr1 = list->Last;
 
         return OK;
 
@@ -211,6 +227,9 @@ int statement(){
         result = expression();
         if(result != OK) return result;
 
+        generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
+        generateInstruction(I_RETURN, NULL, NULL, NULL);
+
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
@@ -229,7 +248,7 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
     }
-        /*else if(tokenAct.attribute.keyword == DEF){
+        /*else if(tokenAct.attribute.keyword == DEF){ //bonusove reseni?
           result = function();
           return result;
         }*/
@@ -417,6 +436,16 @@ int defParamsN(char* funName, int argc){
     if (tmp && tmp->type == FUNCTION) return SEM_DEF_ERR;
     generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
     return defParamsN(funName, argc);
+}
+
+//---------------------------------------------CALLPARAMS----------------------------------
+int callParams(char* funName){
+  return 0;
+}
+
+//---------------------------------------------CALLPARAMSN----------------------------------
+int callParamsN(char* funName){
+  return 0;
 }
 
 /*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
