@@ -184,7 +184,7 @@ int statement(){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
-        if(tokenAct.type == EOFTOKEN) return PARSING_ERR;
+        if(tokenAct.type == EOFTOKEN) return OK;
 
         doIndent = 1;
 
