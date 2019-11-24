@@ -317,7 +317,7 @@ int function(){
             if (tokenAct.type != COMMA) {
                 return PARSING_ERR;
             }
-printf("REEEE\n");
+            
             //dalsi token musi byt identifikator
             tokenAct = nextToken(&error, stack, doIndent);
             if (error != OK) return error; // zkoumani lexikalniho erroru
