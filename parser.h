@@ -30,5 +30,6 @@ int function();
 int statement();
 void generateInstruction(int instType, void *addr1, void *addr2, void *addr3);
 void generateVariable(smartString *var);
+int initFunctions();
 
 #endif

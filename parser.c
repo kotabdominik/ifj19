@@ -234,7 +234,7 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type == EOFTOKEN) return result;
         else if(tokenAct.type != EOL) return PARSING_ERR;
-        
+
         doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         doIndent = 0;
@@ -257,6 +257,7 @@ int function(){
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
 
+    /*
     //musi nasledovat identifikator
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -281,7 +282,9 @@ int function(){
             if (error != OK) return error; // zkoumani lexikalniho erroru
         }
     }
-
+*/
+    result = defParams();
+    if(result != OK) return result;
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -335,6 +338,34 @@ int program(){
         }
     }
     return result;
+}
+
+int defParams(){
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+  if(tokenAct.type == RIGHTBRACKET) return OK;
+  else if(tokenAct.type == STR){
+    //chybi pridat symbol do funkce ?
+    if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+    generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
+    return defParamsN();
+  }
+  else return PARSING_ERR;
+}
+
+int defParamsN(){
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+  if(tokenAct.type == RIGHTBRACKET) return OK;
+  if(tokenAct.type != COMMA) return PARSING_ERR;
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+  if(tokenAct.type != STR) return PARSING_ERR;
+  //chybi pridat symbol do funkce ?
+  //checknout jestli se 2 parametry nejmenuji stejne
+  if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+  generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
+  return defParamsN();
 }
 
 /*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
