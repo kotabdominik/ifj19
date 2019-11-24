@@ -389,7 +389,7 @@ int program(){
     return result;
 }
 
-
+/*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
 int initFunctions(){
 
   tokenAct = nextToken(&error, stack, doIndent);
@@ -398,6 +398,7 @@ int initFunctions(){
   while(tokenAct.type != EOFTOKEN){
 
     if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
+
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
 
@@ -431,6 +432,8 @@ int parse(symbolTable *STV, symbolTable *STF, tDLList *instrList)
     return result;
 }
 
+
+//for the MEMES
 int expression(){
     return OK;
 }
