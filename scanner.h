@@ -80,6 +80,8 @@ typedef struct {
 // Proly na ziskavanie tokenov
 token nextToken(int *error, tStack *stack, int doIndent);
 
+void resetToken();
+
 void setFile(char* sourceFile);
 //  Exemplar token insertion  //
 /*

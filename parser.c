@@ -17,7 +17,7 @@
 
 symbolTable *tableVar;// globalni promenna uchovavajici tabulku symbolu
 symbolTable *tableFunc;// globalni promenna uchovavajici tabulku funkci
-//tDLList *list; // globalni promenna uchovavajici seznam instrukci
+tDLList *list; // globalni promenna uchovavajici seznam instrukci
 token tokenAct;          // globalni promenna, ve ktere bude ulozen aktualni token
 //smartString attr;        // globalni promenna, ve ktere bude ulozen atribut tokenu
 int error = OK;
@@ -289,8 +289,6 @@ int function(){
         return PARSING_ERR;
     }
 
-    if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
-    insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
 
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
@@ -317,7 +315,7 @@ int function(){
             if (tokenAct.type != COMMA) {
                 return PARSING_ERR;
             }
-            
+
             //dalsi token musi byt identifikator
             tokenAct = nextToken(&error, stack, doIndent);
             if (error != OK) return error; // zkoumani lexikalniho erroru
@@ -370,6 +368,11 @@ int function(){
 // neterminal pro cely program(library)
 int program(){
     int result;
+
+    //prvni token
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+
     while(tokenAct.type != EOFTOKEN){ // prochazi se cely program
         // muze se jednat bud o funkci, statement
         if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
@@ -387,18 +390,44 @@ int program(){
 }
 
 
+int initFunctions(){
 
-int parse(symbolTable *STV, symbolTable *STF)
-{
-    int result;
-    tableVar = STV;
-    tableFunc = STF;
-    //list = instrList;
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-    else{
-        result = program();
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error;
+
+  while(tokenAct.type != EOFTOKEN){
+
+    if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+
+      if(tokenAct.type != STR) return PARSING_ERR;
+
+      if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+      insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
     }
+
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error;
+  }
+
+  resetToken();
+  return OK;
+}
+
+
+int parse(symbolTable *STV, symbolTable *STF, tDLList *instrList)
+{
+    int result; //to co budeme vracet (bud error, nebo OK)
+    tableVar = STV; // globalni promenna pro globalni promenne
+    tableFunc = STF; //globalni promenna pro funkce
+    list = instrList; //list do ktereho se budou davat instrukce
+
+    result = initFunctions();
+    if(result != OK) return result;
+
+    result = program();
+
     return result;
 }
 
@@ -406,15 +435,28 @@ int expression(){
     return OK;
 }
 
+
+
+
+
+
+
+
+
+
+ // DEBUGGING
 int main(){
     stack = malloc(sizeof(tStack));
     stackInit(stack);
     stackPush(stack, 0);
+
+    tDLList *instrList = malloc(sizeof(tDLList));
+    DLInitList(instrList);
     symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
     symbolTable *tableFunc = initSymbolTable(MAX_SYMTABLE_SIZE);
 
     setFile("txt.txt");
-    int result = parse(tableVar, tableFunc);
+    int result = parse(tableVar, tableFunc, instrList);
 
     printf("%d\n", result);
     return result;

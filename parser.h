@@ -19,11 +19,11 @@
 #include "symtable.h"
 #include "symtable.c"
 #include "list.h"
-//#include "list.c"
+#include "list.c"
 #include "string.h"
 #include "error.h"
 
-int parse(symbolTable *STV, symbolTable *STF);
+int parse(symbolTable *STV, symbolTable *STF, tDLList *instrList);
 int program();
 int expression();
 int function();

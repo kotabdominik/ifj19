@@ -40,6 +40,9 @@ void setFile(char* sourceFile){
     f = fopen (sourceFile, "r");
 }
 
+void resetToken(){
+  rewind(f);
+}
 
 token nextToken(int *error, tStack *stack, int doIndent) {
 
