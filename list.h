@@ -18,6 +18,47 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
+//typy instrukci
+#define I_MOVE 0
+#define I_CREATEFRAME 1
+#define I_PUSHFRAME 2
+#define I_POPFRAME 3
+#define I_DEFVAR 4
+#define I_CALL 5
+#define I_RETURN 6
+#define I_PUSHS 7
+#define I_POPS 8
+#define I_CLEARS 9
+#define I_ADD 10
+#define I_SUB 11
+#define I_MUL 12
+#define I_DIV 13
+#define I_IDIV 14
+#define I_ADDS 15
+#define I_SUBS 16
+#define I_MULS 17
+#define I_DIVS 18
+#define I_IDIVS 19
+/*#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_
+#define I_*/
+
+
+
 typedef struct
 {
   int instType;  // typ instrukce

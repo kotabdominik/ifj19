@@ -37,8 +37,8 @@ typedef enum {
     TIMES, //*
     INT, //integer
     FLOAT, //float
-    LITERAL, //LITERALLY SHAKING RIGHT NOW
-    STR, //string
+    LITERAL, //LITERALLY SHAKING RIGHT NOW == String   print('foidaiofd')  'foidaiofd' je LITERAL(string)
+    STR, //string == ID print('foidaiofd')     print je STR(ID)
     DIVFLT, //dělení floatov
     DIVINT, //dělení integerov
     LESS, //<

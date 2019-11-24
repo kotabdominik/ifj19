@@ -289,7 +289,8 @@ int function(){
         return PARSING_ERR;
     }
 
-    //insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+    if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+    insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
 
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
