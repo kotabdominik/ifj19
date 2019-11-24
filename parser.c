@@ -15,8 +15,7 @@
 #include "parser.h"
 
 
-symbolTable *tableVar;// globalni promenna uchovavajici tabulku symbolu
-symbolTable *tableFunc;// globalni promenna uchovavajici tabulku funkci
+symbolTable *tableG;// globalni promenna uchovavajici tabulku symbolu
 tDLList *list; // globalni promenna uchovavajici seznam instrukci
 token tokenAct;          // globalni promenna, ve ktere bude ulozen aktualni token
 //smartString attr;        // globalni promenna, ve ktere bude ulozen atribut tokenu
@@ -252,6 +251,7 @@ int function(){
 
     if(tokenAct.type != STR) return PARSING_ERR; //za def musi nasledovat identifikator
 
+    smartString *s = tokenAct.attribute.string;
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -283,7 +283,7 @@ int function(){
         }
     }
 */
-    result = defParams();
+    result = defParams(s->string);
     if(result != OK) return result;
 
     generateInstruction(I_CLEARS, NULL, NULL, NULL);
@@ -321,7 +321,17 @@ int function(){
 
 //---------------------------------------------ASSIGNMENT-----------------------------------
 int assignment(){
-  
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+
+  if(tokenAct.type == KEYWORD){
+    if(tokenAct.attribute.keyword == INPUTS){
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
+
+    }
+  }
 }
 
 //---------------------------------------------PROGRAM-------------------------------------
@@ -348,20 +358,34 @@ int program(){
     return result;
 }
 
-int defParams(){
+//---------------------------------------------DEFPARAMS----------------------------------
+int defParams(char* funName){
+    int argc = 0;
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == RIGHTBRACKET) return OK;
     else if(tokenAct.type == STR){
         //chybi pridat symbol do funkce ?
-        if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+        functionData *item;
+        item = (functionData *) malloc(sizeof(functionData));
+        item->arguments = (symtableItem *) malloc(sizeof(symtableItem));
+        item->arguments[argc].type = VARIABLE;
+        (item->arguments[argc]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+        (item->arguments[argc]).elementType.variable->type = VARIABLE;
+        (item->arguments[argc]).key = tokenAct.attribute.string->string;
+        item->argCount = argc+1;
+        tableG->symtabList[hash(funName)]->elementType.function = item;
+
+        symtableItem *tmp = searchSymbolTable(tableG, tokenAct);
+        if (tmp && tmp->type == FUNCTION) return SEM_DEF_ERR;
         generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
-        return defParamsN();
+        return defParamsN(funName, ++argc);
     }
     else return PARSING_ERR;
 }
 
-int defParamsN(){
+//---------------------------------------------DEFPARAMSN----------------------------------
+int defParamsN(char* funName, int argc){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == RIGHTBRACKET) return OK;
@@ -369,11 +393,24 @@ int defParamsN(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != STR) return PARSING_ERR;
-    //chybi pridat symbol do funkce ?
+    argc++;
+
+    //chybi pridat symbol do tabulky funkce
     //checknout jestli se 2 parametry nejmenuji stejne
-    if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
+    functionData *item = tableG->symtabList[hash(funName)]->elementType.function;
+    item->argCount = argc;
+    item->arguments = realloc(item->arguments, argc*sizeof(symtableItem));
+    item->arguments[argc-1].type = VARIABLE;
+    (item->arguments[argc-1]).key = tokenAct.attribute.string->string;
+
+    for (int i = 0; i < (argc-1); i++) {
+      if(!strcmp((item->arguments[i]).key, (item->arguments[argc-1]).key)) return SEM_DEF_ERR;
+    }
+
+    symtableItem *tmp = searchSymbolTable(tableG, tokenAct);
+    if (tmp && tmp->type == FUNCTION) return SEM_DEF_ERR;
     generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
-    return defParamsN();
+    return defParamsN(funName, argc);
 }
 
 /*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
@@ -395,8 +432,8 @@ int initFunctions(){
 
             if(tokenAct.type != STR) return PARSING_ERR;
 
-            if(searchSymbolTable(tableFunc, tokenAct) != NULL) return SEM_DEF_ERR;
-            insertSymbolTable(tableFunc, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+            if(searchSymbolTable(tableG, tokenAct) != NULL) return SEM_DEF_ERR;
+            insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
         }
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -408,11 +445,10 @@ int initFunctions(){
 }
 
 
-int parse(symbolTable *STV, symbolTable *STF, tDLList *instrList)
+int parse(symbolTable *ST,  tDLList *instrList)
 {
     int result; //to co budeme vracet (bud error, nebo OK)
-    tableVar = STV; // globalni promenna pro globalni promenne
-    tableFunc = STF; //globalni promenna pro funkce
+    tableG = ST; // globalni promenna pro globalni promenne
     list = instrList; //list do ktereho se budou davat instrukce
 
     result = initFunctions();
@@ -446,11 +482,10 @@ int main(){
 
     tDLList *instrList = malloc(sizeof(tDLList));
     DLInitList(instrList);
-    symbolTable *tableVar = initSymbolTable(MAX_SYMTABLE_SIZE);
-    symbolTable *tableFunc = initSymbolTable(MAX_SYMTABLE_SIZE);
+    symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
 
     setFile("txt.txt");
-    int result = parse(tableVar, tableFunc, instrList);
+    int result = parse(tableGG, instrList);
 
     printf("%d\n", result);
     return result;
