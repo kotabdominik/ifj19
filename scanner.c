@@ -229,6 +229,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 while ((c != '\n') && (c != EOF)){
                     c = getc(f);
                   }
+                ungetc(c, f);
                 continue;
                 break;
 
