@@ -354,8 +354,30 @@ int assignment(){
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
+      // ?????????????????????????????????????????????????????????????????????????????????????????????
+      //smartString *s = tokenAct.attribute.string;
+      //callParams(funName);
+      /*tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      if(tokenAct.type != RIGHTBRACKET) return PARSING_ERR;*/
+      //generateInstruction
+    }
+    else if(tokenAct.attribute.keyword == INPUTI){
 
     }
+    else if(tokenAct.attribute.keyword == INPUTF){
+
+    }
+    else if(tokenAct.attribute.keyword == PRINT){
+
+    }
+    else if(tokenAct.attribute.keyword == LEN){
+
+    }
+    else if(tokenAct.attribute.keyword == SUBSTR){
+
+    }
+
   }
 }
 
@@ -485,6 +507,11 @@ int parse(symbolTable *ST,  tDLList *instrList)
     int result; //to co budeme vracet (bud error, nebo OK)
     tableG = ST; // globalni promenna pro globalni promenne
     list = instrList; //list do ktereho se budou davat instrukce
+
+    /* namrdat sem vsechny keywordy ktery jsou funkce
+    token tmp =
+    insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+    */
 
     result = initFunctions();
     if(result != OK) return result;
