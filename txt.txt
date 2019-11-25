@@ -1,4 +1,1 @@
-if 5 :
-  pass
-else:
-  pass
++*-
