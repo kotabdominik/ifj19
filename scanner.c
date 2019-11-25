@@ -240,6 +240,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         ungetc(c, f);
                         return Token;
                     }
+                 if (c == EOF){
+                     Token.type = EOFTOKEN;
+                     return Token;
+                 }
                 }
                 break;
 
@@ -253,7 +257,12 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     else ungetc(c,f);*/
 
                     Token.type = EOL;
-                    ungetc(c,f);
+                    c = getc(f);
+                    if (c == EOF){
+                        ungetc(EOF, f);
+                        return Token;
+                    }
+                    ungetc('\n',f);
                     return Token;
                 }
 
