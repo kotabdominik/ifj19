@@ -109,6 +109,7 @@ void insertSymbolTable(symbolTable *sT, token token, elementType type) {
     newItem->type = FUNCTION;
     symbolTable *tableVeFunkci = initSymbolTable(MAX_SYMTABLE_SIZE); //vytvoreni symbol table pro variables ve funkci
     newItem->elementType.function->sT = tableVeFunkci;
+    newItem->elementType.function->argCount = 0;
   }
 
   newItem->declared = true;
