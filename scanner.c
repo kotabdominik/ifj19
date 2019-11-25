@@ -226,8 +226,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
             case '#':
                 c = getc(f);
-                while ((c != '\n') && (c != EOF))
+                while ((c != '\n') && (c != EOF)){
                     c = getc(f);
+                  }
+                continue;
                 break;
 
             case '\n':
