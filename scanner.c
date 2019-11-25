@@ -569,6 +569,11 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         break;
                     }
                 }
+
+                //literally defaultný state na chybne chary
+                *error = LEXICAL_ERR;
+                Token.type = BROKEN;
+                return Token;
         }
     }
     Token.type = EOFTOKEN;
