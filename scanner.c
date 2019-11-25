@@ -228,9 +228,19 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 c = getc(f);
                 while ((c != '\n') && (c != EOF)){
                     c = getc(f);
-                  }
-                ungetc(c, f);
-                continue;
+                }
+                if (c == '\n'){
+                    c = getc(f);
+                    if (c == '#'){
+                        ungetc(c, f);
+                        continue;
+                    }
+                    else {
+                        Token.type = EOL;
+                        ungetc(c, f);
+                        return Token;
+                    }
+                }
                 break;
 
             case '\n':
