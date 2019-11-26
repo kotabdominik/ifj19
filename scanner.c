@@ -50,83 +50,83 @@ void resetToken(){
 
 token nextToken(int *error, tStack *stack, int doIndent) {
 
-  token Token;
+    token Token;
 
-  int tmpNum = 0;
-  int counter = 0;
-  char hexvalue[3] = {0,};
-  static int DedentyVMojejPici = FALSE;
-  static int CurrentIndentCount;
+    int tmpNum = 0;
+    int counter = 0;
+    char hexvalue[3] = {0,};
+    static int CurrentIndentCount;
 
-  if (stackReset == TRUE){
-      stackInit(stack);
-      stackReset = FALSE;
-  }
+    if (stackReset == TRUE){
+        stackInit(stack);
+        stackReset = FALSE;
+    }
 
-  char c, tmp;
-
+    char c, tmp;
 
 
-  //=========================================================================//
-  //============================INDENTS/DEDENTS==============================//
-  //=========================================================================//
 
-  if (doIndent == TRUE){
+    //=========================================================================//
+    //============================INDENTS/DEDENTS==============================//
+    //=========================================================================//
 
-      if (DedentyVMojejPici == FALSE){
+    if (doIndent == TRUE){
 
-          //Počíta počet medzier
-          while (c = getc(f), c == ' ' || c == '\n' || c == EOF) {
-              counter++;
-              if (c == '\n') { //If the line is empty start again
-                  counter = 0;
-              }
-              if (c == EOF) {
-                  Token.type = EOFTOKEN;
-                  return Token;
-              }
-          }
-          ungetc(c, f); //Vrati znak buduceho tokenu
+            c = getc(f);
+            //Počíta počet medzier
+            while (c == ' ' || c == '\n' || c == EOF) {
+                counter++;
+                if (c == '\n') { //If the line is empty start again
+                    counter = 0;
+                }
+                if (c == EOF) {
+                    Token.type = EOFTOKEN;
+                    return Token;
+                }
+                c = getc(f);
+            }
+            ungetc(c, f); //Vrati znak buduceho tokenu
 
-          if (stackEmpty(stack)) { //Creates Indent token on empty stack
-              stackPush(stack,0);
-              stackPush(stack, counter);
-              Token.attribute.INT = counter;
-              Token.type = INDENT;
+            if (stackEmpty(stack)) { //Creates Indent token on empty stack
+                stackPush(stack,0);
+                stackPush(stack, counter);
+                Token.attribute.INT = counter;
+                Token.type = INDENT;
 
-              return Token;
-          }
+                return Token;
+            }
 
-          stackTop(stack, &tmpNum);
-          if (counter > tmpNum) { //Creates new Indent if counter is higher
-              stackPush(stack, counter);
-              Token.attribute.INT = counter;
-              Token.type = INDENT;
-              return Token;
-          } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
-              Token.type = BROKEN;
-              return Token;
-          } else {                //Robim dedenty
-              DedentyVMojejPici = TRUE;
-              CurrentIndentCount = counter;
-              stackPop(stack);
-          }
-      }
+            stackTop(stack, &tmpNum);
+            if (counter > tmpNum) { //Creates new Indent if counter is higher
+                stackPush(stack, counter);
+                Token.attribute.INT = counter;
+                Token.type = INDENT;
+                return Token;
+            } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
+                Token.type = BROKEN;
+                return Token;
+            } else {                //Robim dedenty
+                CurrentIndentCount = counter;
+                do {                        //Prejde indentami na stacku a kontroluje správnosť momentálneho
+                    stackPop(stack);
+                    stackTop(stack, &tmpNum);
+                    if (tmpNum < CurrentIndentCount){   //Error,  YEET out
+                        *error = PARSING_ERR;
+                        //Token.type = BROKEN;
+                        return Token;
+                    }
+                } while (tmpNum != CurrentIndentCount);
+            }
 
-      stackTop(stack, &tmpNum);
-      Token.attribute.INT = tmpNum;
-      Token.type = DEDENT;
+        Token.attribute.INT = counter;
+        Token.type = DEDENT;
 
-      if (CurrentIndentCount == tmpNum){
-          DedentyVMojejPici = FALSE;
-      }
-      if (tmpNum != 0) stackPop(stack); //Chcem nechať 0 na vrchole zasobnika
-      return Token;
-  }
+        return Token;
+    }
 
-  //=========================================================================//
-  //========================END OF INDENTS/DEDENTS===========================//
-  //=========================================================================//
+    //=========================================================================//
+    //========================END OF INDENTS/DEDENTS===========================//
+    //=========================================================================//
 
 
 
@@ -308,24 +308,16 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         ungetc(c, f);
                         return Token;
                     }
-                 if (c == EOF){
-                     Token.type = EOFTOKEN;
-                     return Token;
-                 }
+                    if (c == EOF){
+                        Token.type = EOFTOKEN;
+                        return Token;
+                    }
                 }
                 break;
 
             case '\n':
-
-                if (doIndent == 0){
-                    /*if(c = getc(f), c == EOF){
-                      Token.type = EOFTOKEN;
-                      return Token;
-                    }
-                    else ungetc(c,f);*/
-
                     Token.type = EOL;
-                    c = getc(f);
+                    /*c = getc(f);
                     if (c == EOF){
                         ungetc(EOF, f);
                         return Token;
@@ -334,9 +326,9 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         ungetc('\n',f);
                         return Token;
                     }
-                    ungetc(c, f);
+                    ungetc(c, f);*/
                     return Token;
-                }
+
 
                 /*tmpNum = 0, counter = 0;
 
@@ -637,7 +629,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
                 }
 
-                
+
         }
     }
     Token.type = EOFTOKEN;
