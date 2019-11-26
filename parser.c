@@ -128,7 +128,7 @@ int statement(token funName){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
-        /*doIndent = 1;
+        doIndent = 1;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -140,7 +140,7 @@ int statement(token funName){
         //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;*/
+        return OK;
 
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp2->addr1 = list->Last;
@@ -203,7 +203,7 @@ int statement(token funName){
         generateInstruction(jmp2->instType, jmp2->addr1, jmp2->addr2, jmp2->addr3);
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp1->addr1 = list->Last;
-/*
+
         doIndent = 1;
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -218,7 +218,7 @@ int statement(token funName){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
 
-        
+
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != DEDENT){
@@ -227,7 +227,7 @@ int statement(token funName){
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;*/
+        return OK;
     }
     else if(tokenAct.attribute.keyword == PASS){ // PASS --------------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
@@ -492,7 +492,7 @@ int assignment(){
 int program(){
     int result = OK; ////Inicializacia v prípade že máš hned EOF (Ne/10:28)
     token tmpToken;
-    tmpToken.attribute.string->string = "globalTable";
+    //tmpToken.attribute.string->string = "globalTable";
     //prvni token
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
