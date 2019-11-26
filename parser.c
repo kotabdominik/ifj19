@@ -236,7 +236,6 @@ int statement(){
         if(tokenAct.type == EOFTOKEN) return OK;
 
         doIndent = 1;
-
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         //nesmi tady byt indent
@@ -294,15 +293,37 @@ int statement(){
               }
               //callParams atd atd
     }
+    else if(tokenAct.attribute.keyword == NONE){
+      result = expression();
+      if(result != OK) return result;
+
+      if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+      if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
+
+      doIndent = 1;
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      //nesmi tady byt indent
+      if(tokenAct.type == INDENT) return PARSING_ERR;
+      doIndent = 0;
+      //pokud je dedent, posleme ten token dal;
+      if(tokenAct.type == DEDENT) return OK;
+      //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      return OK;
+    }
     else{
       fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
       return PARSING_ERR;
     }
   }
   else if(tokenAct.type == STR){
+    token tmpToken = tokenAct;
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == ASSIGN){
+      //insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
       assignment();
       /*probably jeste nejaky konce radku atd? mozna se to udela v assignment ... we'll have to see about it*/
       return OK;
@@ -315,9 +336,25 @@ int statement(){
       return PARSING_ERR;
     }
   }
-  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL){
+  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET){
     result = expression();
     if(result != OK) return result;
+
+    if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+    if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
+
+    doIndent = 1;
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    //nesmi tady byt indent
+    if(tokenAct.type == INDENT) return PARSING_ERR;
+    doIndent = 0;
+    //pokud je dedent, posleme ten token dal;
+    if(tokenAct.type == DEDENT) return OK;
+    //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    return OK;
   }
   else{
     fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
