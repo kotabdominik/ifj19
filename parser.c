@@ -212,13 +212,13 @@ int statement(token funName){
         if(tokenAct.type == INDENT) return PARSING_ERR;
         doIndent = 0;
         //pokud je dedent, posleme ten token dal;
-        if(tokenAct.type == DEDENT) return OK;*/
+        if(tokenAct.type == DEDENT) return OK;
         //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
 
-        /*
+        
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != DEDENT){
