@@ -56,7 +56,7 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 // ==================================================================
 
 //-----------------------------------------STATEMENT--------------------------------------
-int statement(){
+int statement(char* funName){
   int result;
   tInstr *jmp1, *jmp2;
 
@@ -92,7 +92,7 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
         do{
-            result = statement();
+            result = statement(funName);
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
             if(tokenAct.type == EOFTOKEN) return PARSING_ERR;
         } while(tokenAct.type != DEDENT); //&& tokenAct.type != EOFTOKEN
@@ -124,7 +124,7 @@ int statement(){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         do{
-            result = statement();
+            result = statement(funName);
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
@@ -196,7 +196,7 @@ int statement(){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         do{
-            result = statement();
+            result = statement(funName);
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
@@ -323,7 +323,10 @@ int statement(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == ASSIGN){
-      //insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+      if(strcmp(funName, "globalTable") == 0){
+        //insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+      }
+
       assignment();
       /*probably jeste nejaky konce radku atd? mozna se to udela v assignment ... we'll have to see about it*/
       return OK;
@@ -438,7 +441,7 @@ int function(){
 
 
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
-        result = statement();
+        result = statement(s->string);
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
 
@@ -506,7 +509,7 @@ int program(){
               fprintf(stderr, "V tele programu se nesmi nachazet return\n");
               return PARSING_ERR;
             }
-            result = statement();
+            result = statement("globalTable");
             if(result != OK) return result;
         }
     }
@@ -735,6 +738,7 @@ void addBuildInFunc(){
   tableG->symtabList[hash("substr")]->elementType.function = item2;
 }
 
+// hlavni funkce ktera udela parse :]]]
 int parse(symbolTable *ST,  tDLList *instrList){
     int result; //to co budeme vracet (bud error, nebo OK)
     tableG = ST; // globalni promenna pro globalni promenne
