@@ -501,6 +501,110 @@ int initFunctions(){
     return OK;
 }
 
+/*prida vestavene funkce do symtable*/
+void addBuildInFunc(){
+  //--------------------INPUTS
+  token tmpToken;
+  smartString *tmpString = malloc(sizeof(smartString));
+  stringInit(tmpString);
+  stringAddChar(tmpString,'i');
+  stringAddChar(tmpString,'n');
+  stringAddChar(tmpString,'p');
+  stringAddChar(tmpString,'u');
+  stringAddChar(tmpString,'t');
+  stringAddChar(tmpString,'s');
+
+  tmpToken.attribute.string = tmpString;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  //-------------------------INPUTI
+  smartString *tmpString0 = malloc(sizeof(smartString));
+  stringInit(tmpString0);
+  stringAddChar(tmpString0,'i');
+  stringAddChar(tmpString0,'n');
+  stringAddChar(tmpString0,'p');
+  stringAddChar(tmpString0,'u');
+  stringAddChar(tmpString0,'t');
+  stringAddChar(tmpString0,'i');
+
+  tmpToken.attribute.string = tmpString0;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  //----------------------INPUTF
+  smartString *tmpString1 = malloc(sizeof(smartString));
+  stringInit(tmpString1);
+  stringAddChar(tmpString1,'i');
+  stringAddChar(tmpString1,'n');
+  stringAddChar(tmpString1,'p');
+  stringAddChar(tmpString1,'u');
+  stringAddChar(tmpString1,'t');
+  stringAddChar(tmpString1,'f');
+
+  tmpToken.attribute.string = tmpString1;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  //-------------------PRINT
+  smartString *tmpString2 = malloc(sizeof(smartString));
+  stringInit(tmpString2);
+  stringAddChar(tmpString2,'p');
+  stringAddChar(tmpString2,'r');
+  stringAddChar(tmpString2,'i');
+  stringAddChar(tmpString2,'n');
+  stringAddChar(tmpString2,'t');
+
+  tmpToken.attribute.string = tmpString2;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  functionData *item0;
+  item0 = (functionData *) malloc(sizeof(functionData));
+  item0->argCount = -1;
+  tableG->symtabList[hash("print")]->elementType.function = item0;
+
+
+  //-------------------LEN
+  smartString *tmpString3 = malloc(sizeof(smartString));
+  stringInit(tmpString3);
+  stringAddChar(tmpString3,'l');
+  stringAddChar(tmpString3,'e');
+  stringAddChar(tmpString3,'n');
+
+  tmpToken.attribute.string = tmpString3;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  functionData *item1;
+  item1 = (functionData *) malloc(sizeof(functionData));
+  /*item1->arguments = (symtableItem *) malloc(sizeof(symtableItem));
+  item1->arguments[0].type = VARIABLE;
+  (item1->arguments[0]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+  (item1->arguments[0]).elementType.variable->type = VARIABLE;
+  (item1->arguments[0]).key = "s";*/  //????????????????????????????????????????????????????????? maybe? kdyztak dodelat i u substr
+  item1->argCount = 1;
+  tableG->symtabList[hash("len")]->elementType.function = item1;
+
+  //-------------------SUBSTR
+  smartString *tmpString4 = malloc(sizeof(smartString));
+  stringInit(tmpString4);
+  stringAddChar(tmpString4,'s');
+  stringAddChar(tmpString4,'u');
+  stringAddChar(tmpString4,'b');
+  stringAddChar(tmpString4,'s');
+  stringAddChar(tmpString4,'t');
+  stringAddChar(tmpString4,'r');
+
+  tmpToken.attribute.string = tmpString4;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  functionData *item2;
+  item2 = (functionData *) malloc(sizeof(functionData));
+  item2->argCount = -1;
+  tableG->symtabList[hash("substr")]->elementType.function = item2;
+}
 
 int parse(symbolTable *ST,  tDLList *instrList)
 {
@@ -508,10 +612,7 @@ int parse(symbolTable *ST,  tDLList *instrList)
     tableG = ST; // globalni promenna pro globalni promenne
     list = instrList; //list do ktereho se budou davat instrukce
 
-    /* namrdat sem vsechny keywordy ktery jsou funkce
-    token tmp =
-    insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
-    */
+    addBuildInFunc();
 
     result = initFunctions();
     if(result != OK) return result;
@@ -552,6 +653,3 @@ int main(){
     printf("%d\n", result);
     return result;
 }
-
-
-/* keywordy .. dedenty .. vkladani(search) do symtable*/
