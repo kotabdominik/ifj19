@@ -56,7 +56,7 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 // ==================================================================
 
 //-----------------------------------------STATEMENT--------------------------------------
-int statement(char* funName){
+int statement(token funName){
   int result;
   tInstr *jmp1, *jmp2;
 
@@ -323,9 +323,9 @@ int statement(char* funName){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == ASSIGN){
-      if(strcmp(funName, "globalTable") == 0){
+      /*if(strcmp(funName, "globalTable") == 0){
         //insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
-      }
+      }*/
 
       assignment();
       /*probably jeste nejaky konce radku atd? mozna se to udela v assignment ... we'll have to see about it*/
@@ -372,7 +372,7 @@ int function(){
     int result;
 
     if(tokenAct.type != STR) return PARSING_ERR; //za def musi nasledovat identifikator
-
+    token tmpToken = tokenAct;
     smartString *s = tokenAct.attribute.string;
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
@@ -441,7 +441,7 @@ int function(){
 
 
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
-        result = statement(s->string);
+        result = statement(tmpToken);
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
 
@@ -491,7 +491,8 @@ int assignment(){
 //---------------------------------------------PROGRAM-------------------------------------
 int program(){
     int result = OK; ////Inicializacia v prípade že máš hned EOF (Ne/10:28)
-
+    token tmpToken;
+    tmpToken.attribute.string->string = "globalTable";
     //prvni token
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -509,7 +510,7 @@ int program(){
               fprintf(stderr, "V tele programu se nesmi nachazet return\n");
               return PARSING_ERR;
             }
-            result = statement("globalTable");
+            result = statement(tmpToken);
             if(result != OK) return result;
         }
     }
