@@ -30,8 +30,8 @@
 #define STATE_P12 403     //Potvrdenie hex hodnoty
 #define STATE_P13 404     //Hex hodnota
 
-#define TRUE 1            //Pri stacku
-#define FALSE 0           //Pri stacku
+#define TRUE 1            //
+#define FALSE 0           //
 
 
 FILE *f;
@@ -46,20 +46,88 @@ void resetToken(){
     stackReset = TRUE;
 }
 
+
+
 token nextToken(int *error, tStack *stack, int doIndent) {
 
-    token Token;
+  token Token;
 
-    int tmpNum = 0;
-    int counter = 0;
-    char hexvalue[3] = {0,};
+  int tmpNum = 0;
+  int counter = 0;
+  char hexvalue[3] = {0,};
+  static int DedentyVMojejPici = FALSE;
+  static int CurrentIndentCount;
 
-    if (stackReset == TRUE){
-        stackInit(stack);
-        stackReset = FALSE;
-    }
+  if (stackReset == TRUE){
+      stackInit(stack);
+      stackReset = FALSE;
+  }
 
-    char c, tmp;
+  char c, tmp;
+
+
+
+  //=========================================================================//
+  //============================INDENTS/DEDENTS==============================//
+  //=========================================================================//
+
+  if (doIndent == TRUE){
+
+      if (DedentyVMojejPici == FALSE){
+
+          //Počíta počet medzier
+          while (c = getc(f), c == ' ' || c == '\n' || c == EOF) {
+              counter++;
+              if (c == '\n') { //If the line is empty start again
+                  counter = 0;
+              }
+              if (c == EOF) {
+                  Token.type = EOFTOKEN;
+                  return Token;
+              }
+          }
+          ungetc(c, f); //Vrati znak buduceho tokenu
+
+          if (stackEmpty(stack)) { //Creates Indent token on empty stack
+              stackPush(stack,0);
+              stackPush(stack, counter);
+              Token.attribute.INT = counter;
+              Token.type = INDENT;
+
+              return Token;
+          }
+
+          stackTop(stack, &tmpNum);
+          if (counter > tmpNum) { //Creates new Indent if counter is higher
+              stackPush(stack, counter);
+              Token.attribute.INT = counter;
+              Token.type = INDENT;
+              return Token;
+          } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
+              Token.type = BROKEN;
+              return Token;
+          } else {                //Robim dedenty
+              DedentyVMojejPici = TRUE;
+              CurrentIndentCount = counter;
+              stackPop(stack);
+          }
+      }
+
+      stackTop(stack, &tmpNum);
+      Token.attribute.INT = tmpNum;
+      Token.type = DEDENT;
+
+      if (CurrentIndentCount == tmpNum){
+          DedentyVMojejPici = FALSE;
+      }
+      if (tmpNum != 0) stackPop(stack); //Chcem nechať 0 na vrchole zasobnika
+      return Token;
+  }
+
+  //=========================================================================//
+  //========================END OF INDENTS/DEDENTS===========================//
+  //=========================================================================//
+
 
 
     smartString *s = malloc(sizeof(smartString));
@@ -270,7 +338,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     return Token;
                 }
 
-                tmpNum = 0, counter = 0;
+                /*tmpNum = 0, counter = 0;
 
                 while (c = getc(f), c == ' ' || c == '\n' || c == EOF) {
                     counter++;
@@ -283,11 +351,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
 
                 }
-                /* if (counter == 0){ //Prazdny indent čiže nič
-                     Token.type = BROKEN;
-                     ungetc(c ,f);
-                     return Token;
-                 }*/
+
 
                 ungetc(c, f); //Vrati znak buduceho tokenu
 
@@ -327,7 +391,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     Token.type = DEDENT;
                     stackPush(stack, counter); ////vrat c
                     return Token;
-                }
+                }*/
 
 
             default:
@@ -549,8 +613,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 if ((c >= 48 && c <= 57) || (c >= 65 && c <= 70) ||
                                     (c >= 97 && c >= 102)) { // 0..9 || A..F || a..f
                                     hexvalue[1] = c;
-                                    int decvalue = (int) strtol(hexvalue, NULL,
-                                                                16); //convertne hexvalue na int v decimáloch
+                                    int decvalue = (int) strtol(hexvalue, NULL, 16); //convertne hexvalue na int v decimáloch
                                     char tmp[2];
                                     sprintf(tmp, "%c", decvalue); //convertnem decvalue na ASCII znak
                                     c = *tmp;
