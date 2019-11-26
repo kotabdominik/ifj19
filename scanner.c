@@ -262,7 +262,11 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         ungetc(EOF, f);
                         return Token;
                     }
-                    ungetc('\n',f);
+                    else if (c == ' '){
+                        ungetc('\n',f);
+                        return Token;
+                    }
+                    ungetc(c, f);
                     return Token;
                 }
 
@@ -473,7 +477,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 }
 
                 if (c == '\'') { // Robíme literál
-                    stringAddChar(s, c);
+                    //stringAddChar(s, c);
                     c = getc(f);
                     state = STATE_P10;
 
@@ -489,9 +493,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     c = getc(f);
                                     state = STATE_P10;
                                 } else if (c == 39) { //Apostrof teda koniec stringu
-                                    stringAddChar(s, c);
-                                    c = getc(f);
+                                    //stringAddChar(s, c);
+                                    //c = getc(f);
                                     state = STATE_F22;
+                                    continue;
                                 } else if (c == 92) { // Backslash teda escape seq
                                     c = getc(f);
                                     state = STATE_P11;
@@ -502,7 +507,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 continue;
 
                             case (STATE_P11): //Riešime či escape alebo nah
-                                if (c > 31 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't') {//nebola
+                                if (c > 31 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't' && c != 'x') {//nebola
                                     stringAddChar(s, '\\');
                                     stringAddChar(s, c);
                                     c = getc(f);
@@ -562,18 +567,12 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 Token.attribute.string = s;
                                 Token.type = LITERAL;
                                 state = STATE_START;
-                                //c = getc(f); //Idk prečo to tu bolo..?
                                 return Token;
                                 break;
                         }
                         break;
                     }
                 }
-
-                //literally defaultný state na chybne chary
-                *error = LEXICAL_ERR;
-                Token.type = BROKEN;
-                return Token;
         }
     }
     Token.type = EOFTOKEN;
