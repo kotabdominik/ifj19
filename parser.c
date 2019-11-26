@@ -57,26 +57,24 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 
 //-----------------------------------------STATEMENT--------------------------------------
 int statement(){
-    int result;
-    tInstr *jmp1, *jmp2;
+  int result;
+  tInstr *jmp1, *jmp2;
 
-    //pokud nezacina statement keywordem, jedna se bud o chybu, nebo o expression
-    if(tokenAct.type != KEYWORD){
-        result = expression();
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-        return result;
-    }
 
+  if(tokenAct.type == KEYWORD){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR){
+          fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
+          return PARSING_ERR;
+        }
         result = expression();
         if(result != OK) return result;
         jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+        /*tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru*/
         if(tokenAct.type != COLON) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -160,12 +158,16 @@ int statement(){
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp2->addr1 = list->Last;
 
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR){
+          fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
+          return PARSING_ERR;
+        }
         result = expression();
 
         jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+        /*tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru*/
         if(tokenAct.type != COLON) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -224,14 +226,18 @@ int statement(){
     else if(tokenAct.attribute.keyword == RETURN){ // RETURN -------------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR){
+          fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
+          return PARSING_ERR;
+        }
         result = expression();
         if(result != OK) return result;
 
         generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
         generateInstruction(I_RETURN, NULL, NULL, NULL);
 
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+        /*tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru*/
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
         if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
 
@@ -248,27 +254,48 @@ int statement(){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
     }
-        /*else if(tokenAct.attribute.keyword == DEF){ //bonusove reseni?
-          result = function();
-          return result;
-        }*/
-    else{ //pokud jsou to jine keywordy, tak se nejspis jedna o expression, za kterou nasleduje eof nebo eol
-        result = expression();
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type == EOFTOKEN) return result;
-        else if(tokenAct.type != EOL) return PARSING_ERR;
-
-        doIndent = 1;
-        tokenAct = nextToken(&error, stack, doIndent);
-        doIndent = 0;
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-        return result;
+    else if(tokenAct.attribute.keyword == INPUTS ||
+            tokenAct.attribute.keyword == INPUTF ||
+            tokenAct.attribute.keyword == INPUTI ||
+            tokenAct.attribute.keyword == PRINT  ||
+            tokenAct.attribute.keyword == LEN    ||
+            tokenAct.attribute.keyword == SUBSTR ){
+              tokenAct = nextToken(&error, stack, doIndent);
+              if(error != OK) return error; // zkoumani lexikalniho erroru
+              if(tokenAct.type == LEFTBRACKET){
+                fprintf(stderr, "za nazvem vestavene funkce musi nasledovat ( \n");
+                return PARSING_ERR;
+              }
+              //callParams atd atd
     }
+    else{
+      fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
+      return PARSING_ERR;
+    }
+  }
+  else if(tokenAct.type == STR){
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    if(tokenAct.type == ASSIGN){
+      assignment();
+      /*probably jeste nejaky konce radku atd? mozna se to udela v assignment ... we'll have to see about it*/
+      return OK;
+    }
+    else if(tokenAct.type == LEFTBRACKET){
+      //call params i quess
+    }
+    else{
+      fprintf(stderr, "ocekavalo se ze se do identifikatoru bude bud zapisovat, nebo se pomoci nej bude volat funkce.. nenastalo ani jedno\n");
+      return PARSING_ERR;
+    }
+  }
+  else{
+    fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
+    return PARSING_ERR;
+  }
 
-    return OK;
+  return OK;
 }
-
 
 //---------------------------------------FUNCTION-------------------------------------------
 int function(){
@@ -280,7 +307,10 @@ int function(){
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
+    if(tokenAct.type != LEFTBRACKET){
+      fprintf(stderr, "Za DEF ID musi nasledovat ( \n");
+      return PARSING_ERR;
+    }
 
     /*
     //musi nasledovat identifikator
@@ -315,19 +345,26 @@ int function(){
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != COLON) return PARSING_ERR;
-
+    if(tokenAct.type != COLON){
+      fprintf(stderr, "Za DEF ID ( pripadne argumenty ) musi nasledovat : \n");
+      return PARSING_ERR;
+    }
     //musi nasledovat EOL -> INDENT -> statement
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != EOL) return PARSING_ERR;
+    if(tokenAct.type != EOL){
+      fprintf(stderr, "Za DEF ID ( pripadne argumenty ): musi nasledovat konec radku \n");
+      return PARSING_ERR;
+    }
 
     doIndent = 1;
     tokenAct = nextToken(&error, stack, doIndent);
     doIndent = 0;
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != INDENT) return PARSING_ERR;
-
+    if(tokenAct.type != INDENT){
+      fprintf(stderr, "Za DEF ID ( pripadne argumenty ) : EOL musi nasledovat indent \n");
+      return PARSING_ERR;
+    }
     //musi nasledovat statement/y
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -398,6 +435,10 @@ int program(){
             if(result != OK) return result;
         }
         else{
+            if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == RETURN){
+              fprintf(stderr, "V tele programu se nesmi nachazet return\n");
+              return PARSING_ERR;
+            }
             result = statement();
             if(result != OK) return result;
         }
@@ -424,11 +465,17 @@ int defParams(char* funName){
         tableG->symtabList[hash(funName)]->elementType.function = item;
 
         symtableItem *tmp = searchSymbolTable(tableG, tokenAct);
-        if (tmp && tmp->type == FUNCTION) return SEM_DEF_ERR;
+        if (tmp && tmp->type == FUNCTION){
+          fprintf(stderr, "Snazite se definovat variable(jako argument funkce), ktery je stejny jako nejaky nazev funkce\n");
+          return SEM_DEF_ERR;
+        }
         generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
         return defParamsN(funName, ++argc);
     }
-    else return PARSING_ERR;
+    else {
+      fprintf(stderr, "za DEF ID (  musi nasledovat bud ) nebo nejaky identifikator\n");
+      return PARSING_ERR;
+    }
 }
 
 //---------------------------------------------DEFPARAMSN----------------------------------
@@ -436,10 +483,16 @@ int defParamsN(char* funName, int argc){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == RIGHTBRACKET) return OK;
-    if(tokenAct.type != COMMA) return PARSING_ERR;
+    if(tokenAct.type != COMMA){
+      fprintf(stderr, "Za DEF ID ( ID  musi nasledovat bud ) nebo , \n");
+      return PARSING_ERR;
+    }
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != STR) return PARSING_ERR;
+    if(tokenAct.type != STR){
+      fprintf(stderr, "Za DEF ID ( ID ,  musi nasledovat ID   ( ID , se mohlo pred timto opakovat nekolikrat)\n");
+      return PARSING_ERR;
+    }
     argc++;
 
     //chybi pridat symbol do tabulky funkce
@@ -455,7 +508,10 @@ int defParamsN(char* funName, int argc){
     }
 
     symtableItem *tmp = searchSymbolTable(tableG, tokenAct);
-    if (tmp && tmp->type == FUNCTION) return SEM_DEF_ERR;
+    if (tmp && tmp->type == FUNCTION){
+      fprintf(stderr, "Snazite se definovat variable(jako argument funkce), ktery je stejny jako nejaky nazev funkce\n");
+      return SEM_DEF_ERR;
+    }
     generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
     return defParamsN(funName, argc);
 }
@@ -487,9 +543,15 @@ int initFunctions(){
             tokenAct = nextToken(&error, stack, doIndent);
             if(error != OK) return error; // zkoumani lexikalniho erroru
 
-            if(tokenAct.type != STR) return PARSING_ERR;
+            if(tokenAct.type != STR){
+              fprintf(stderr, "Za keywordem DEF musi nasledovat identifikator\n");
+              return PARSING_ERR;
+            }
 
-            if(searchSymbolTable(tableG, tokenAct) != NULL) return SEM_DEF_ERR;
+            if(searchSymbolTable(tableG, tokenAct) != NULL){
+              fprintf(stderr, "Chyba, kvuli snaze o redefinici funkce\n");
+              return SEM_DEF_ERR;
+            }
             insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
         }
 
@@ -606,8 +668,7 @@ void addBuildInFunc(){
   tableG->symtabList[hash("substr")]->elementType.function = item2;
 }
 
-int parse(symbolTable *ST,  tDLList *instrList)
-{
+int parse(symbolTable *ST,  tDLList *instrList){
     int result; //to co budeme vracet (bud error, nebo OK)
     tableG = ST; // globalni promenna pro globalni promenne
     list = instrList; //list do ktereho se budou davat instrukce
@@ -653,3 +714,13 @@ int main(){
     printf("%d\n", result);
     return result;
 }
+
+
+// expression ... predpoklada se, ze do expression prijde rovnou novy token ktery se ma rozparsovat
+//                a ze z expression jeden token vyjde
+
+
+// DODELAT 269, 281, 285, callParams, assignment
+// 269 = keywordy, ktere jsou vestavene funkce
+// 281 = kdyz je string a pak assign
+// 285 = kdyz je string a pak leva zavorka (volani funkce)
