@@ -203,6 +203,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     Token.attribute.string = s;
                     Token.type = DIVFLT;
                     ungetc(c, f);
+                    return Token;
                 }
 
             case '=':
@@ -217,6 +218,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     Token.attribute.string = s;
                     Token.type = ASSIGN;
                     ungetc(c, f);
+                    return Token;
                 }
 
             case '>':
