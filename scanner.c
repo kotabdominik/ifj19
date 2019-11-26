@@ -65,14 +65,88 @@ token nextToken(int *error, tStack *stack, int doIndent) {
     char c, tmp;
 
 
-
+/*
     //=========================================================================//
     //============================INDENTS/DEDENTS==============================//
     //=========================================================================//
 
     if (doIndent == TRUE){
 
+        c = getc(f);
+        //Počíta počet medzier
+        while (c == ' ' || c == '\n' || c == EOF) {
+            counter++;
+            if (c == '\n') { //If the line is empty start again
+                counter = 0;
+            }
+            if (c == EOF) {
+                Token.type = EOFTOKEN;
+                return Token;
+            }
             c = getc(f);
+        }
+        ungetc(c, f); //Vrati znak buduceho tokenu
+
+
+        if (stackEmpty(stack)) { //Creates Indent token on empty stack
+            stackPush(stack,0);
+            stackPush(stack, counter);
+            Token.attribute.INT = counter;
+            Token.type = INDENT;
+
+            return Token;
+        }
+
+        stackTop(stack, &tmpNum);
+        if (counter > tmpNum) { //Creates new Indent if counter is higher
+            stackPush(stack, counter);
+            Token.attribute.INT = counter;
+            Token.type = INDENT;
+            return Token;
+        } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
+            Token.type = BROKEN;
+            return Token;
+        } else {                //Robim dedenty
+            CurrentIndentCount = counter;
+            stackPop(stack);
+            stackTop(stack, &tmpNum);
+
+            Token.attribute.INT = counter;
+            Token.type = DEDENT;
+        }
+        for (int i = 0; i < counter; i++) {
+            ungetc(' ',f);
+        }
+        return Token;
+
+    }
+
+    //=========================================================================//
+    //========================END OF INDENTS/DEDENTS===========================//
+    //=========================================================================//
+*/
+
+
+    smartString *s = malloc(sizeof(smartString));
+    if (s == NULL) {
+        *error = INTERN_ERR;
+        return Token;
+    }
+    stringInit(s);
+    //c = getc(f)
+
+    int state = STATE_START;
+    while (c = getc(f), c != EOF) {
+/////////////check prepisovanie c s podmienkou while
+
+
+        //=========================================================================//
+        //============================INDENTS/DEDENTS==============================//
+        //=========================================================================//
+
+        if (doIndent == TRUE){
+
+            //c = getc(f); lebo shifted
             //Počíta počet medzier
             while (c == ' ' || c == '\n' || c == EOF) {
                 counter++;
@@ -85,6 +159,11 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 }
                 c = getc(f);
             }
+
+            if (c == '#'){
+                break; ////////////////////////???Domi tasukete, odtialto chcem pokračovat na case(c)
+            }
+
             ungetc(c, f); //Vrati znak buduceho tokenu
 
 
@@ -110,38 +189,27 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 CurrentIndentCount = counter;
                 stackPop(stack);
                 stackTop(stack, &tmpNum);
-                /*if (tmpNum < CurrentIndentCount){   //Error,  YEET out
+                if (tmpNum < CurrentIndentCount){
                     *error = PARSING_ERR;
-                    //Token.type = BROKEN;
                     return Token;
-                    }*/
+                }
                 Token.attribute.INT = counter;
                 Token.type = DEDENT;
-                }
-                for (int i = 0; i < counter; i++) {
-                    ungetc(' ',f);
-                }
-                return Token;
+            }
+            for (int i = 0; i < counter; i++) {
+                ungetc(' ',f);
+            }
+            return Token;
 
-    }
+        }
 
-    //=========================================================================//
-    //========================END OF INDENTS/DEDENTS===========================//
-    //=========================================================================//
+        //=========================================================================//
+        //========================END OF INDENTS/DEDENTS===========================//
+        //=========================================================================//
 
 
 
-    smartString *s = malloc(sizeof(smartString));
-    if (s == NULL) {
-        *error = INTERN_ERR;
-        return Token;
-    }
-    stringInit(s);
-    //c = getc(f)
 
-    int state = STATE_START;
-    while (c = getc(f), c != EOF) {
-/////////////check prepisovanie c s podmienkou while
 
 
         switch (c) {
@@ -204,6 +272,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     Token.attribute.string = s;
                     Token.type = DIVFLT;
                     ungetc(c, f);
+                    return Token;
                 }
 
             case '=':
@@ -246,7 +315,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 } else {
                     stringAddChar(s, '<');
                     Token.attribute.string = s;
-
                     Token.type = LESS;
                     ungetc(c, f);
                     return Token;
@@ -301,9 +369,13 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 }
                 if (c == '\n'){
                     c = getc(f);
-                    if (c == '#'){
+                    if (c == '#' ){
                         ungetc(c, f);
                         continue;
+                    }
+                    else if (c == ' '){ ///lebo budeme robit indent a preto jednu medzeru zožerie while(getc())
+                        ungetc(c, f);
+                        ungetc(c, f);
                     }
                     else {
                         Token.type = EOL;
