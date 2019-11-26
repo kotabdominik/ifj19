@@ -65,7 +65,7 @@ int statement(){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -158,12 +158,12 @@ int statement(){
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp2->addr1 = list->Last;
 
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
         result = expression();
-
+        if(result != OK) return result;
         jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         /*tokenAct = nextToken(&error, stack, doIndent);
@@ -226,7 +226,7 @@ int statement(){
     else if(tokenAct.attribute.keyword == RETURN){ // RETURN -------------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -288,6 +288,10 @@ int statement(){
       fprintf(stderr, "ocekavalo se ze se do identifikatoru bude bud zapisovat, nebo se pomoci nej bude volat funkce.. nenastalo ani jedno\n");
       return PARSING_ERR;
     }
+  }
+  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL){
+    result = expression();
+    if(result != OK) return result;
   }
   else{
     fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
