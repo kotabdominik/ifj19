@@ -1,1 +1,5 @@
-🎈🎈🎈
+if 5:
+  while 5:
+    pass
+else:
+  pass
