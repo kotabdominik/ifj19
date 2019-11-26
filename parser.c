@@ -128,7 +128,7 @@ int statement(char* funName){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
-        doIndent = 1;
+        /*doIndent = 1;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -140,7 +140,7 @@ int statement(char* funName){
         //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;
+        return OK;*/
 
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp2->addr1 = list->Last;
@@ -203,7 +203,7 @@ int statement(char* funName){
         generateInstruction(jmp2->instType, jmp2->addr1, jmp2->addr2, jmp2->addr3);
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp1->addr1 = list->Last;
-
+/*
         doIndent = 1;
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -212,7 +212,7 @@ int statement(char* funName){
         if(tokenAct.type == INDENT) return PARSING_ERR;
         doIndent = 0;
         //pokud je dedent, posleme ten token dal;
-        if(tokenAct.type == DEDENT) return OK;
+        if(tokenAct.type == DEDENT) return OK;*/
         //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
