@@ -56,7 +56,7 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 // ==================================================================
 
 //-----------------------------------------STATEMENT--------------------------------------
-int statement(token funName){
+int statement(char *funName){
   int result;
   tInstr *jmp1, *jmp2;
 
@@ -372,7 +372,6 @@ int function(){
     int result;
 
     if(tokenAct.type != STR) return PARSING_ERR; //za def musi nasledovat identifikator
-    token tmpToken = tokenAct;
     smartString *s = tokenAct.attribute.string;
     //musi nasledovat '('
     tokenAct = nextToken(&error, stack, doIndent);
@@ -441,7 +440,7 @@ int function(){
 
 
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
-        result = statement(tmpToken);
+        result = statement(s->string);
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
 
@@ -491,8 +490,6 @@ int assignment(){
 //---------------------------------------------PROGRAM-------------------------------------
 int program(){
     int result = OK; ////Inicializacia v prípade že máš hned EOF (Ne/10:28)
-    token tmpToken;
-    //tmpToken.attribute.string->string = "globalTable";
     //prvni token
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -510,7 +507,7 @@ int program(){
               fprintf(stderr, "V tele programu se nesmi nachazet return\n");
               return PARSING_ERR;
             }
-            result = statement(tmpToken);
+            result = statement("globalTable");
             if(result != OK) return result;
         }
     }

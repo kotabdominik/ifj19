@@ -27,7 +27,7 @@ int parse(symbolTable *ST, tDLList *instrList);
 int program();
 int expression();
 int function();
-int statement(token funName);
+int statement(char *funName);
 tInstr* generateInstruction(int instType, void *addr1, void *addr2, void *addr3);
 void generateVariable(smartString *var);
 int initFunctions();
