@@ -190,8 +190,10 @@ int statement(){
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp1->addr1 = list->Last;
 
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
+        doIndent = 0;
 
         return OK;
 
