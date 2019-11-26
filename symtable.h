@@ -82,6 +82,7 @@ symbolTable *initSymbolTable(unsigned int size); //init celého symbol tablu
 void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
 void insertSymbolTable(symbolTable *sT, token token, elementType type); //přidání prvku do symbol tablu
 symtableItem *searchSymbolTable(symbolTable *sT, token token); //vrací ukazatel na prvek v symbol tablu pokud tam je, jinak NULL
+symtableItem *searchSymbolTableWithString(symbolTable *sT, char* string); //vrací ukazatel na prvek v symbol tablu pokud tam je, jinak NULL
 void deleteItemFromSymbolTable(symbolTable *sT, token token); //odstraní deklarovanou variable/fci z symtable
 
 #endif

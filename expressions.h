@@ -22,7 +22,18 @@
 #include "absTree.h"
 #include "scanner.h"
 
-#define TABLESIZE 7
+#define TABLESIZE 7 //velikost precedenční tabulky
+
+typedef enum {
+	ADD_RULE,	// E -> E + E
+	SUB_RULE,	// E -> E - E
+	MUL_RULE,	// E -> E * E
+	DIV_RULE,	// E -> E / E
+	LESSGREAT_RULE, // E -> E > E, E -> E >= E, ...
+	PAR_RULE,	// E -> (E)
+	ID_E_RULE,	// E -> i
+	FUNC_RULE	// E -> f(E)
+} ruleType;
 
 typedef struct{
     int StatusCode;

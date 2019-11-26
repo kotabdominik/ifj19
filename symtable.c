@@ -164,6 +164,21 @@ symtableItem *searchSymbolTable(symbolTable *sT, token token) {
   return NULL;
 }
 
+symtableItem *searchSymbolTableWithString(symbolTable *sT, char* string) {
+  unsigned long hashVal = hash(string); //získáme hash
+  symtableItem *tmp = sT->symtabList[hashVal];
+
+  while (tmp) {
+    if (!strcmp(string, tmp->key)) {
+      tmp->next = NULL; //neukazovat na další, myslím, že by už ukazovat neměl když ho vytahujeme ze symtablu?
+      return tmp;
+    }
+    tmp = tmp->next;
+  }
+
+  return NULL;
+}
+
 /* testy ---- můžete se inspirovat syntaxem i guess, cleaned up
 void main(int argc, char** argv) {
   //inicializace věcí se kterýma pracuju
