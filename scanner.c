@@ -447,7 +447,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     c = getc(f);
                                     state = STATE_F2;
                                     break;
-                                } else if (isspace(c) || c == '\n' || c == EOF) {
+                                } else if (isspace(c) || c == '\n' || c == EOF || c == ':') {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
                                     state = STATE_START;
@@ -480,7 +480,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     stringAddChar(s, c);
                                     c = getc(f);
                                     state = STATE_F3; //Vráti sa tu
-                                } else if (isspace(c) || c == '\n' || c == EOF) {
+                                } else if (isspace(c) || c == '\n' || c == EOF || c == ':') {
                                     Token.attribute.FLOAT = strtod(s->string, &ptr);
                                     Token.type = FLOAT;
                                     state = STATE_START;
@@ -636,6 +636,8 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         break;
                     }
                 }
+
+                
         }
     }
     Token.type = EOFTOKEN;
