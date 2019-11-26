@@ -323,9 +323,13 @@ int statement(char *funName){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == ASSIGN){
-      /*if(strcmp(funName, "globalTable") == 0){
+      if(strcmp(funName, "globalTable") == 0){
         //insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
-      }*/
+      } else {
+        symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
+        insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
+        printf("%s\n", tableG->symtabList[hash(funName)]->elementType.function->sT->symtabList[hash(tmpToken.attribute.string->string)]->key);
+      }
 
       assignment();
       /*probably jeste nejaky konce radku atd? mozna se to udela v assignment ... we'll have to see about it*/
