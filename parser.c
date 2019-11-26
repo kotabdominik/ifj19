@@ -690,7 +690,9 @@ int parse(symbolTable *ST,  tDLList *instrList){
 
 //for the MEMES
 int expression(){
-    return OK;
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+  return OK;
 }
 
 
