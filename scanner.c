@@ -87,6 +87,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
             }
             ungetc(c, f); //Vrati znak buduceho tokenu
 
+
             if (stackEmpty(stack)) { //Creates Indent token on empty stack
                 stackPush(stack,0);
                 stackPush(stack, counter);
@@ -107,21 +108,21 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 return Token;
             } else {                //Robim dedenty
                 CurrentIndentCount = counter;
-                do {                        //Prejde indentami na stacku a kontroluje správnosť momentálneho
-                    stackPop(stack);
-                    stackTop(stack, &tmpNum);
-                    if (tmpNum < CurrentIndentCount){   //Error,  YEET out
-                        *error = PARSING_ERR;
-                        //Token.type = BROKEN;
-                        return Token;
-                    }
-                } while (tmpNum != CurrentIndentCount);
-            }
+                stackPop(stack);
+                stackTop(stack, &tmpNum);
+                /*if (tmpNum < CurrentIndentCount){   //Error,  YEET out
+                    *error = PARSING_ERR;
+                    //Token.type = BROKEN;
+                    return Token;
+                    }*/
+                Token.attribute.INT = counter;
+                Token.type = DEDENT;
+                }
+                for (int i = 0; i < counter; i++) {
+                    ungetc(' ',f);
+                }
+                return Token;
 
-        Token.attribute.INT = counter;
-        Token.type = DEDENT;
-
-        return Token;
     }
 
     //=========================================================================//
