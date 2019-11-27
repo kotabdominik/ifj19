@@ -18,6 +18,8 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
+
+// aka kdyz zapomenete ze existuje enum ((:
 //typy instrukci
 #define I_MOVE 0
 #define I_CREATEFRAME 1
