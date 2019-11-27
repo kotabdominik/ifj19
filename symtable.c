@@ -112,7 +112,7 @@ void insertSymbolTable(symbolTable *sT, token token, elementType type) {
     newItem->elementType.function->argCount = 0;
   }
 
-  newItem->declared = true;
+  //newItem->declared = true;
   newItem->key = key;
 
   if (sT->symtabList[hashVal] == NULL) { //ještě není nic na tomto indexu

@@ -48,13 +48,11 @@ typedef enum {
 } elementType;
 
 typedef struct {
-	bool used;
 	value value;
 	dataType type;
 } variableData;
 
 typedef struct {
-	bool defined; //je poprvé přiřazena hodnota
 	dataType returnType;
 	int argCount;
 	struct symtableItm *arguments;
@@ -62,7 +60,7 @@ typedef struct {
 } functionData;
 
 typedef struct symtableItm { //tady musí být
-  bool declared; //je založeno
+  bool defined; //je poprvé přiřazena hodnota
 	struct symtableItm *next;
 	char *key;
 	union {

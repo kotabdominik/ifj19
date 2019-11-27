@@ -65,7 +65,7 @@ int statement(char *funName){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -172,7 +172,7 @@ int statement(char *funName){
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp2->addr1 = list->Last;
 
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -251,7 +251,7 @@ int statement(char *funName){
     else if(tokenAct.attribute.keyword == RETURN){ // RETURN -------------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -323,27 +323,85 @@ int statement(char *funName){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == ASSIGN){
+      symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken);
+      if(tmpItem != NULL){
+        if(tmpItem->type == FUNCTION){
+          fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
+          return SEM_DEF_ERR;
+        }
+      }
       if(strcmp(funName, "globalTable") == 0){
-        //insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+        if(tmpItem == NULL){
+          insertSymbolTable(tableG, tmpToken, VARIABLE); //vlozeni variable do tabulky
+          tmpItem = searchSymbolTable(tableG, tmpToken);
+          tmpItem->defined = false;
+        }
+        else{
+          tmpItem = searchSymbolTable(tableG, tmpToken);
+        }
       } else {
         symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
-        insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
-        printf("%s\n", tableG->symtabList[hash(funName)]->elementType.function->sT->symtabList[hash(tmpToken.attribute.string->string)]->key);
+        tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+        if(tmpItem == NULL){
+          insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
+          tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+          tmpItem->defined = false;
+        }
+        else{
+          tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+        }
+        //printf("%s\n", tableG->symtabList[hash(funName)]->elementType.function->sT->symtabList[hash(tmpToken.attribute.string->string)]->key);
       }
 
-      assignment();
-      /*probably jeste nejaky konce radku atd? mozna se to udela v assignment ... we'll have to see about it*/
+      result = expression();
+      if(result != OK) return result;
+
+      tmpItem->defined = true;
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TADY BY SE DO PROMENNE MELA ZAPSAT VALUE
+      /*tmpItem->elementType->variable->value = ;
+      tmpItem->elementType->variable->type = ;
+      */
+      if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+      if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
+
+      doIndent = 1;
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      //nesmi tady byt indent
+      if(tokenAct.type == INDENT) return PARSING_ERR;
+      doIndent = 0;
+      //pokud je dedent, posleme ten token dal;
+      if(tokenAct.type == DEDENT) return OK;
+      //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
       return OK;
     }
     else if(tokenAct.type == LEFTBRACKET){
       //call params i quess
     }
     else{
-      fprintf(stderr, "ocekavalo se ze se do identifikatoru bude bud zapisovat, nebo se pomoci nej bude volat funkce.. nenastalo ani jedno\n");
-      return PARSING_ERR;
+      result = expression();
+      if(result != OK) return result;
+
+      if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+      if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
+
+      doIndent = 1;
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      //nesmi tady byt indent
+      if(tokenAct.type == INDENT) return PARSING_ERR;
+      doIndent = 0;
+      //pokud je dedent, posleme ten token dal;
+      if(tokenAct.type == DEDENT) return OK;
+      //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      return OK;
     }
   }
-  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET){
+  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET || DOCCOM){
     result = expression();
     if(result != OK) return result;
 
@@ -452,43 +510,6 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     return OK;
-}
-
-//---------------------------------------------ASSIGNMENT-----------------------------------
-int assignment(){
-  tokenAct = nextToken(&error, stack, doIndent);
-  if(error != OK) return error; // zkoumani lexikalniho erroru
-
-  if(tokenAct.type == KEYWORD){
-    if(tokenAct.attribute.keyword == INPUTS){
-      tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
-      if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
-      // ?????????????????????????????????????????????????????????????????????????????????????????????
-      //smartString *s = tokenAct.attribute.string;
-      //callParams(funName);
-      /*tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
-      if(tokenAct.type != RIGHTBRACKET) return PARSING_ERR;*/
-      //generateInstruction
-    }
-    else if(tokenAct.attribute.keyword == INPUTI){
-
-    }
-    else if(tokenAct.attribute.keyword == INPUTF){
-
-    }
-    else if(tokenAct.attribute.keyword == PRINT){
-
-    }
-    else if(tokenAct.attribute.keyword == LEN){
-
-    }
-    else if(tokenAct.attribute.keyword == SUBSTR){
-
-    }
-
-  }
 }
 
 //---------------------------------------------PROGRAM-------------------------------------
