@@ -59,6 +59,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
     if (stackReset == TRUE){
         stackInit(stack);
+        stackPush(stack,0);
         stackReset = FALSE;
     }
 
@@ -95,14 +96,14 @@ token nextToken(int *error, tStack *stack, int doIndent) {
             ungetc(c, f); //Vrati znak buduceho tokenu
 
 
-            if (stackEmpty(stack)) { //Creates Indent token on empty stack
+            /*if (stackEmpty(stack)) { //Creates Indent token on empty stack
                 stackPush(stack,0);
                 stackPush(stack, counter);
                 Token.attribute.INT = counter;
                 Token.type = INDENT;
 
                 return Token;
-            }
+            }*/
 
             stackTop(stack, &tmpNum);
             if (counter > tmpNum) { //Creates new Indent if counter is higher
