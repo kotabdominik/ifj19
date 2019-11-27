@@ -323,13 +323,15 @@ int statement(char *funName){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type == ASSIGN){
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+        
       symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken);
-      if(tmpItem != NULL){
-        if(tmpItem->type == FUNCTION){
-          fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
-          return SEM_DEF_ERR;
-        }
+      if(tmpItem != NULL && tmpItem->type == FUNCTION){
+        fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
+        return SEM_DEF_ERR;
       }
+
       if(strcmp(funName, "globalTable") == 0){
         if(tmpItem == NULL){
           insertSymbolTable(tableG, tmpToken, VARIABLE); //vlozeni variable do tabulky
@@ -340,26 +342,42 @@ int statement(char *funName){
           tmpItem = searchSymbolTable(tableG, tmpToken);
         }
       } else {
+        int succMePls = 0;
         symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
+        //checkujeme jestli nedefinujeme neco z argumentu funkce
         for(int i = 0; i < tmp->elementType.function->argCount; i++){
           //porovnat tmpToken s argumentama
-          strcmp()
+          if(strcmp(tmp->elementType.function->arguments[i].key, funName) == 0){
+            tmpItem = &(tmp->elementType.function->arguments[i]);
+            succMePls = 1;
+            if(tmpItem->defined != true){
+              tmpItem->defined = false;
+            }
+            break;
+          }
         }
-        tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
-        if(tmpItem == NULL){
-          insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
+        if(succMePls == 1){
           tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
-          tmpItem->defined = false;
-        }
-        else{
-          tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+          if(tmpItem == NULL){
+            insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
+            tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+            tmpItem->defined = false;
+          }
+          else{
+            tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+          }
         }
         //printf("%s\n", tableG->symtabList[hash(funName)]->elementType.function->sT->symtabList[hash(tmpToken.attribute.string->string)]->key);
       }
 
+
       result = expression();
       if(result != OK) return result;
 
+
+      if(tmpItem->defined == true){
+        //porovnat type s typem co vrati expression
+      }
       tmpItem->defined = true;
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TADY BY SE DO PROMENNE MELA ZAPSAT VALUE
       /*tmpItem->elementType.variable->value = ;
