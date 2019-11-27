@@ -455,6 +455,9 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     ungetc(c, f);
                                     return Token;
                                 } else {
+                                    Token.attribute.INT = strtod(s->string, &ptr);
+                                    Token.type = INT;
+                                    state = STATE_START;
                                     ungetc(c, f);
                                     return Token;
                                 }
