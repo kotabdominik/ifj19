@@ -117,7 +117,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 CurrentIndentCount = counter;
                 stackPop(stack);
                 stackTop(stack, &tmpNum);
-
+                if (tmpNum < CurrentIndentCount){
+                    *error = PARSING_ERR;
+                    return Token;
+                }
                 Token.attribute.INT = counter;
                 Token.type = DEDENT;
                 }
