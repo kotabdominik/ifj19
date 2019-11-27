@@ -341,6 +341,10 @@ int statement(char *funName){
         }
       } else {
         symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
+        for(int i = 0; i < tmp->elementType.function->argCount; i++){
+          //porovnat tmpToken s argumentama
+          strcmp()
+        }
         tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
         if(tmpItem == NULL){
           insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
@@ -358,8 +362,8 @@ int statement(char *funName){
 
       tmpItem->defined = true;
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TADY BY SE DO PROMENNE MELA ZAPSAT VALUE
-      /*tmpItem->elementType->variable->value = ;
-      tmpItem->elementType->variable->type = ;
+      /*tmpItem->elementType.variable->value = ;
+      tmpItem->elementType.variable->type = ;
       */
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -821,7 +825,8 @@ int main(){
 //                a ze z expression jeden token vyjde
 
 
-// DODELAT 269, 281, 285, callParams, assignment
+// DODELAT 269, 281, 285, callParams
 // 269 = keywordy, ktere jsou vestavene funkce
 // 281 = kdyz je string a pak assign
 // 285 = kdyz je string a pak leva zavorka (volani funkce)
+// 345 =   //porovnat tmpToken s argumentama
