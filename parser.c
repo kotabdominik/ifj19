@@ -534,7 +534,11 @@ int defParams(char* funName){
         (item->arguments[argc]).elementType.variable->type = VARIABLE;
         (item->arguments[argc]).key = tokenAct.attribute.string->string;
         item->argCount = argc+1;
-        tableG->symtabList[hash(funName)]->elementType.function = item;
+
+        symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+        tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
+        tmpIT->elementType.function = item;
+        tableG->symtabList[hash(funName)] = tmpIT;
 
         symtableItem *tmp = searchSymbolTable(tableG, tokenAct);
         if (tmp && tmp->type == FUNCTION){
@@ -569,7 +573,8 @@ int defParamsN(char* funName, int argc){
 
     //chybi pridat symbol do tabulky funkce
     //checknout jestli se 2 parametry nejmenuji stejne
-    functionData *item = tableG->symtabList[hash(funName)]->elementType.function;
+    symtableItem *tmpAAAAAA = searchSymbolTableWithString(tableG, funName); //hledáme nejen na indexu, ale i jestli někam neukazuje yk
+    functionData *item = tmpAAAAAA->elementType.function;
     item->argCount = argc;
     item->arguments = realloc(item->arguments, argc*sizeof(symtableItem));
     item->arguments[argc-1].type = VARIABLE;
