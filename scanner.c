@@ -391,7 +391,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     stringAddChar(s, c);
                                     c = getc(f);
                                     state = STATE_F2;
-                                    break;
                                 } else {//if (isspace(c) || c == '\n' || c == EOF || c == ':') {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
@@ -399,7 +398,9 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     ungetc(c, f);
                                     free(s);
                                     return Token;
-                                } /*else {
+                                }
+                                break;
+                                /*else {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
                                     state = STATE_START;
@@ -427,7 +428,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     stringAddChar(s, c);
                                     c = getc(f);
                                     state = STATE_P2;
-                                } else if (isalnum(c)) { //Bude 132.12
+                                } else if (isdigit(c)) { //Bude 132.12
                                     stringAddChar(s, c);
                                     c = getc(f);
                                     state = STATE_F3; //Vráti sa tu
@@ -438,7 +439,9 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_START;
                                     free(s);
                                     return Token; //Koniec float čísla
-                                } /*else {
+                                }
+                                break;
+                                /*else {
                                     *error = LEXICAL_ERR;
                                     free(s);
                                     return Token;
@@ -494,6 +497,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     }
                                     state = STATE_START;
                                 }
+                                break;
                         }
 
                         //break; //Vraciam sa do switch (c)
