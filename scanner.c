@@ -36,6 +36,7 @@
 
 FILE *f;
 int stackReset = FALSE;
+static int TotalTokenCount = 0;
 
 void setFile(char* sourceFile){
     f = fopen (sourceFile, "r");
@@ -45,6 +46,20 @@ void resetToken(){
     rewind(f);
     stackReset = TRUE;
 }
+
+token ungetToken(int *error, tStack *stack, int doIndent){
+
+    resetToken();
+    token Token;
+    int tmp = TotalTokenCount - 1;
+    TotalTokenCount = 0;
+
+    for (int i = 0; i < tmp; i++){
+        Token = nextToken(error, stack, doIndent);
+    }
+
+    return Token;
+};
 
 
 
@@ -56,6 +71,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
     int counter = 0;
     char hexvalue[3] = {0,};
     static int CurrentIndentCount;
+    TotalTokenCount++;
 
     if (stackReset == TRUE){
         stackInit(stack);
@@ -73,62 +89,52 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
     if (doIndent == TRUE){
 
-            c = getc(f);
-            //Počíta počet medzier
-            while (c == ' ' || c == '\n' || c == EOF || c == '#') {
-                counter++;
-                if (c == '\n') { //If the line is empty start again
-                    counter = 0;
-                }
-                if (c == EOF) {
-                    Token.type = EOFTOKEN;
-                    return Token;
-                }
-                if (c == '#'){
-                    c = getc(f);
-                    while ((c != '\n') && (c != EOF)){
-                        c = getc(f);
-                    }
-                    ungetc(c, f);
-                }
-                c = getc(f);
+        c = getc(f);
+        //Počíta počet medzier
+        while (c == ' ' || c == '\n' || c == EOF || c == '#') {
+            counter++;
+            if (c == '\n') { //If the line is empty start again
+                counter = 0;
             }
-            ungetc(c, f); //Vrati znak buduceho tokenu
-
-
-            /*if (stackEmpty(stack)) { //Creates Indent token on empty stack
-                stackPush(stack,0);
-                stackPush(stack, counter);
-                Token.attribute.INT = counter;
-                Token.type = INDENT;
-
+            if (c == EOF) {
+                Token.type = EOFTOKEN;
                 return Token;
-            }*/
+            }
+            if (c == '#'){
+                c = getc(f);
+                while ((c != '\n') && (c != EOF)){
+                    c = getc(f);
+                }
+                ungetc(c, f);
+            }
+            c = getc(f);
+        }
+        ungetc(c, f); //Vrati znak buduceho tokenu
 
+        stackTop(stack, &tmpNum);
+        if (counter > tmpNum) { //Creates new Indent if counter is higher
+            stackPush(stack, counter);
+            Token.attribute.INT = counter;
+            Token.type = INDENT;
+            return Token;
+        } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
+            Token.type = BROKEN;
+            return Token;
+        } else {                //Robim dedenty
+            CurrentIndentCount = counter;
+            stackPop(stack);
             stackTop(stack, &tmpNum);
-            if (counter > tmpNum) { //Creates new Indent if counter is higher
-                stackPush(stack, counter);
-                Token.attribute.INT = counter;
-                Token.type = INDENT;
+            if (tmpNum < CurrentIndentCount){
+                *error = PARSING_ERR;
                 return Token;
-            } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
-                Token.type = BROKEN;
-                return Token;
-            } else {                //Robim dedenty
-                CurrentIndentCount = counter;
-                stackPop(stack);
-                stackTop(stack, &tmpNum);
-                if (tmpNum < CurrentIndentCount){
-                    *error = PARSING_ERR;
-                    return Token;
-                }
-                Token.attribute.INT = counter;
-                Token.type = DEDENT;
-                }
-                for (int i = 0; i < counter; i++) {
-                    ungetc(' ',f);
-                }
-                return Token;
+            }
+            Token.attribute.INT = counter;
+            Token.type = DEDENT;
+        }
+        for (int i = 0; i < counter; i++) {
+            ungetc(' ',f);
+        }
+        return Token;
 
     }
 
@@ -326,75 +332,8 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 break;
 
             case '\n':
-                    Token.type = EOL;
-                    /*c = getc(f);
-                    if (c == EOF){
-                        ungetc(EOF, f);
-                        return Token;
-                    }
-                    else if (c == ' '){
-                        ungetc('\n',f);
-                        return Token;
-                    }
-                    ungetc(c, f);*/
-                    return Token;
-
-
-                /*tmpNum = 0, counter = 0;
-
-                while (c = getc(f), c == ' ' || c == '\n' || c == EOF) {
-                    counter++;
-                    if (c == '\n') { //If the line is empty start again
-                        counter = 0;
-                    }
-                    if (c == EOF) {
-                        Token.type = EOFTOKEN;
-                        return Token;
-                    }
-
-                }
-
-
-                ungetc(c, f); //Vrati znak buduceho tokenu
-
-                if (stackEmpty(stack)) { //Creates Indent token on empty stack
-                    stackPush(stack,0);
-                    stackPush(stack, counter);
-                    Token.attribute.INT = counter;
-                    Token.type = INDENT;
-
-                    return Token;
-                }
-
-                stackTop(stack, &tmpNum);
-                if (counter > tmpNum) { //Creates new Indent if counter is higher
-                    stackPush(stack, counter);
-                    Token.attribute.INT = counter;
-                    Token.type = INDENT;
-                    return Token;
-                } else if (counter == tmpNum){  //Indents are same, returns broken token because has to return smth
-                    Token.type = BROKEN;
-                    return Token;
-                }
-                else {
-                    while (counter < tmpNum) {
-                        if (stackEmpty(stack)) {
-                            *error = LEXICAL_ERR;
-                            return Token;
-                        }
-                        stackPop(stack);
-                        stackTop(stack, &tmpNum);
-                        if (tmpNum < counter){
-                            *error = LEXICAL_ERR;
-                            return Token;
-                        }
-                    }
-                    Token.attribute.INT = counter;  ////Consult this
-                    Token.type = DEDENT;
-                    stackPush(stack, counter); ////vrat c
-                    return Token;
-                }*/
-
+                Token.type = EOL;
+                return Token;
 
             default:
                 if (isalpha(c) || c == '_') { //Robíme basic string
