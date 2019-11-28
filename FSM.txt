@@ -36,3 +36,4 @@ F19 = less
 F20 = less or equal
 F21 = completed documentation string
 F22 = completed string literal
+F23 = coma
