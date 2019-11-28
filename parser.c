@@ -249,6 +249,10 @@ int statement(char *funName){
         return OK;
     }
     else if(tokenAct.attribute.keyword == RETURN){ // RETURN -------------------------------------
+        if(strcmp(funName, "globalTable") == 0){
+          fprintf(stderr, "nelze se returnovat v hlavnim tele programu\n");
+          return PARSING_ERR;
+        }
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
@@ -314,7 +318,7 @@ int statement(char *funName){
       return OK;
     }
     else{
-      fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
+      fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token \n");
       return PARSING_ERR;
     }
   }
@@ -371,6 +375,37 @@ int statement(char *funName){
       }
 
 
+      if(tokenAct.type == STR){
+        tmpToken = tokenAct;
+        symtableItem *tmpItem1 = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
+        if(tmpItem1 != NULL && tmpItem->type == FUNCTION){
+          tokenAct = nextToken(&error, stack, doIndent);
+          if(error != OK) return error; // zkoumani lexikalniho erroru
+
+          if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
+
+          result = callParams(tmpToken.attribute.string->string);
+          if (result != OK) return result;
+          tokenAct = nextToken(&error, stack, doIndent);
+          if(error != OK) return error; // zkoumani lexikalniho erroru
+          if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+          if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
+
+          doIndent = 1;
+          tokenAct = nextToken(&error, stack, doIndent);
+          if(error != OK) return error; // zkoumani lexikalniho erroru
+          //nesmi tady byt indent
+          if(tokenAct.type == INDENT) return PARSING_ERR;
+          doIndent = 0;
+          //pokud je dedent, posleme ten token dal;
+          if(tokenAct.type == DEDENT) return OK;
+          //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+          tokenAct = nextToken(&error, stack, doIndent);
+          if(error != OK) return error; // zkoumani lexikalniho erroru
+          return OK;
+        }
+      }
+
       result = expression();
       if(result != OK) return result;
 
@@ -396,6 +431,11 @@ int statement(char *funName){
       return OK;
     }
     else if(tokenAct.type == LEFTBRACKET){
+      symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
+      if(tmpItem == NULL || tmpItem->type != FUNCTION){
+        fprintf(stderr, "snazite se volat nejakou funkci, ktera funkce vubec neni\n");
+        return SEM_DEF_ERR;
+      }
       result = callParams(tmpToken.attribute.string->string);
       if (result != OK) return result;
       tokenAct = nextToken(&error, stack, doIndent);
@@ -507,13 +547,22 @@ int function(){
         }
     }
 */
-    result = defParams(s->string);
+    /*result = defParams(s->string);
     if(result != OK) return result;
+    */
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    while(tokenAct.type != RIGHTBRACKET){
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+    }
+
 
     generateInstruction(I_CLEARS, NULL, NULL, NULL);
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
+    token tmpToken = tokenAct;
     if(tokenAct.type != COLON){
       fprintf(stderr, "Za DEF ID ( pripadne argumenty ) musi nasledovat : \n");
       return PARSING_ERR;
@@ -638,6 +687,10 @@ int defParamsN(char* funName, int argc){
     item->arguments = realloc(item->arguments, argc*sizeof(symtableItem));
     item->arguments[argc-1].type = VARIABLE;
     (item->arguments[argc-1]).key = tokenAct.attribute.string->string;
+    (item->arguments[argc-1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+    (item->arguments[argc-1]).elementType.variable->type = VARIABLE;
+
+    item->arguments[argc-1].elementType.variable->value.INT = 5;
 
     for (int i = 0; i < (argc-1); i++) {
       if(!strcmp((item->arguments[i]).key, (item->arguments[argc-1]).key)) return SEM_DEF_ERR;
@@ -666,6 +719,11 @@ int callParams(char* funName){
       fprintf(stderr, "volate funkci, ktera ocekava nejake parametry, ale vy do ni zadne nedavate\n");
       return SEM_PAR_ERR;
     }
+  }
+
+  if(tmpItem0->elementType.function->argCount <= 0 && tmpItem0->elementType.function->argCount != -1){
+    fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
+    return SEM_MISC_ERR;
   }
   else{
     if(tokenAct.type == STR){
@@ -735,7 +793,7 @@ int callParamsN(char* funName, int argc){
     return PARSING_ERR;
   }
 
-  if(tmpItem0->elementType.function->argCount != argc || tmpItem0->elementType.function->argCount != -1){
+  if(tmpItem0->elementType.function->argCount <= argc && tmpItem0->elementType.function->argCount != -1){
     fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
     return SEM_MISC_ERR;
   }
@@ -783,7 +841,7 @@ int callParamsN(char* funName, int argc){
 
 /*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
 int initFunctions(){
-
+    int result = OK;
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error;
 
@@ -808,6 +866,19 @@ int initFunctions(){
               return SEM_DEF_ERR;
             }
             insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+
+            token tmpToken = tokenAct;
+
+            tokenAct = nextToken(&error, stack, doIndent);
+            if(error != OK) return error; // zkoumani lexikalniho erroru
+
+            if(tokenAct.type != LEFTBRACKET){
+              fprintf(stderr, "za DEF ID ma nasledovat  (\n");
+              return PARSING_ERR;
+            }
+
+            result = defParams(tmpToken.attribute.string->string);
+            if(result != OK) return result;
         }
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -835,6 +906,10 @@ void addBuildInFunc(){
   tmpToken.type = KEYWORD;
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
+  symtableItem *tmpIT = searchSymbolTable(tableG, tmpToken);
+
+  tmpIT->elementType.function->argCount = 0;
+
   //-------------------------INPUTI
   smartString *tmpString0 = malloc(sizeof(smartString));
   stringInit(tmpString0);
@@ -848,6 +923,10 @@ void addBuildInFunc(){
   tmpToken.attribute.string = tmpString0;
   tmpToken.type = KEYWORD;
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  symtableItem *tmpIT0 = searchSymbolTable(tableG, tmpToken);
+
+  tmpIT0->elementType.function->argCount = 0;
 
   //----------------------INPUTF
   smartString *tmpString1 = malloc(sizeof(smartString));
@@ -863,6 +942,10 @@ void addBuildInFunc(){
   tmpToken.type = KEYWORD;
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
+  symtableItem *tmpIT1 = searchSymbolTable(tableG, tmpToken);
+
+  tmpIT1->elementType.function->argCount = 0;
+
   //-------------------PRINT
   smartString *tmpString2 = malloc(sizeof(smartString));
   stringInit(tmpString2);
@@ -876,10 +959,8 @@ void addBuildInFunc(){
   tmpToken.type = KEYWORD;
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
-  functionData *item0;
-  item0 = (functionData *) malloc(sizeof(functionData));
-  item0->argCount = -1;
-  tableG->symtabList[hash("print")]->elementType.function = item0;
+  symtableItem *tmpIT2 = searchSymbolTable(tableG, tmpToken);
+  tmpIT2->elementType.function->argCount = -1;
 
 
   //-------------------LEN
@@ -893,15 +974,15 @@ void addBuildInFunc(){
   tmpToken.type = KEYWORD;
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
-  functionData *item1;
-  item1 = (functionData *) malloc(sizeof(functionData));
+  symtableItem *tmpIT3 = searchSymbolTable(tableG, tmpToken);
+  tmpIT3->elementType.function->argCount = 1;
   /*item1->arguments = (symtableItem *) malloc(sizeof(symtableItem));
   item1->arguments[0].type = VARIABLE;
   (item1->arguments[0]).elementType.variable = (variableData *) malloc(sizeof(variableData));
   (item1->arguments[0]).elementType.variable->type = VARIABLE;
   (item1->arguments[0]).key = "s";*/  //????????????????????????????????????????????????????????? maybe? kdyztak dodelat i u substr
-  item1->argCount = 1;
-  tableG->symtabList[hash("len")]->elementType.function = item1;
+  //item1->argCount = 1;
+  //tableG->symtabList[hash("len")]->elementType.function = item1;
 
   //-------------------SUBSTR
   smartString *tmpString4 = malloc(sizeof(smartString));
@@ -917,10 +998,37 @@ void addBuildInFunc(){
   tmpToken.type = KEYWORD;
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
-  functionData *item2;
-  item2 = (functionData *) malloc(sizeof(functionData));
-  item2->argCount = -1;
-  tableG->symtabList[hash("substr")]->elementType.function = item2;
+  symtableItem *tmpIT4 = searchSymbolTable(tableG, tmpToken);
+  tmpIT4->elementType.function->argCount = 3;
+  //tableG->symtabList[hash("substr")]->elementType.function = item2;
+
+  //-------------------ORD
+  smartString *tmpString5 = malloc(sizeof(smartString));
+  stringInit(tmpString5);
+  stringAddChar(tmpString5,'o');
+  stringAddChar(tmpString5,'r');
+  stringAddChar(tmpString5,'d');
+
+  tmpToken.attribute.string = tmpString5;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  symtableItem *tmpIT5 = searchSymbolTable(tableG, tmpToken);
+  tmpIT5->elementType.function->argCount = 2;
+
+  //-------------------CHR
+  smartString *tmpString6 = malloc(sizeof(smartString));
+  stringInit(tmpString6);
+  stringAddChar(tmpString6,'c');
+  stringAddChar(tmpString6,'h');
+  stringAddChar(tmpString6,'r');
+
+  tmpToken.attribute.string = tmpString6;
+  tmpToken.type = KEYWORD;
+  insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
+
+  symtableItem *tmpIT6 = searchSymbolTable(tableG, tmpToken);
+  tmpIT6->elementType.function->argCount = 1;
 }
 
 // hlavni funkce ktera udela parse :]]]
@@ -977,10 +1085,4 @@ int main(){
 // expression ... predpoklada se, ze do expression prijde rovnou novy token ktery se ma rozparsovat
 //                a ze z expression jeden token vyjde
 
-
-// DODELAT 269, 281, 285
-// 269 = keywordy, ktere jsou vestavene funkce
-// 345 =   //porovnat tmpToken s argumentama
-//return muze byt jen v def .... ceknout ty veci s funName
-//error s definicemi globalnich promennych/funkci
-//v assign je spatne loop ktery prochazi argumenty a checkuje je I QUESS
+//malloc argumentu vestavenych funkci ? 
