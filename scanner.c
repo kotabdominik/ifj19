@@ -310,6 +310,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
             case '#':
                 c = getc(f);
+                free(s);
                 while ((c != '\n') && (c != EOF)){
                     c = getc(f);
                 }
@@ -332,6 +333,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 break;
 
             case '\n':
+                free(s);
                 Token.type = EOL;
                 return Token;
 
@@ -393,12 +395,14 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     Token.type = INT;
                                     state = STATE_START;
                                     ungetc(c, f);
+                                    free(s);
                                     return Token;
                                 } else {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
                                     state = STATE_START;
                                     ungetc(c, f);
+                                    free(s);
                                     return Token;
                                 }
 
@@ -410,6 +414,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_F3;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 break;
@@ -428,9 +433,11 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     Token.attribute.FLOAT = strtod(s->string, &ptr);
                                     Token.type = FLOAT;
                                     state = STATE_START;
+                                    free(s);
                                     return Token; //Koniec float čísla
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
 
@@ -445,6 +452,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_P3;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 break;
@@ -456,6 +464,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_F4;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 break;
@@ -470,10 +479,12 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                         Token.attribute.FLOAT = strtod(s->string, &ptr);
                                         Token.type = FLOAT;
                                         isINTorFLT = 0;
+                                        free(s);
                                         return Token; //Koniec float
                                     } else {
                                         Token.attribute.INT = strtod(s->string, &ptr);
                                         Token.type = INT;
+                                        free(s);
                                         return Token; //Koniec integer
                                     }
                                     state = STATE_START;
@@ -492,6 +503,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     while (1) {
                         if (c == EOF) {
                             *error = LEXICAL_ERR;
+                            free(s);
                             return Token;
                         }
                         switch (state) {
@@ -510,6 +522,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_P11;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 continue;
@@ -525,11 +538,11 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     c = getc(f);
                                     state = STATE_P10;
                                 } else if (c == 'n') { // Spraví EOL
-                                    stringAddChar(s, '\n'); /////////////////hmmm check?
+                                    stringAddChar(s, '\n');
                                     c = getc(f);
                                     state = STATE_P10;
                                 } else if (c == 't') { // Spraví TAB
-                                    stringAddChar(s, '\t'); /////////////////hmmm check?
+                                    stringAddChar(s, '\t');
                                     c = getc(f);
                                     state = STATE_P10;
                                 } else if (c == 'x') { //Bude robiť HEX
@@ -537,25 +550,27 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_P12;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 continue;
 
                             case (STATE_P12): //Riešime prvú hex val
                                 if ((c >= 48 && c <= 57) || (c >= 65 && c <= 70) ||
-                                    (c >= 97 && c >= 102)) { // 0..9 || A..F || a..f
+                                    (c >= 97 && c <= 102)) { // 0..9 || A..F || a..f
                                     hexvalue[0] = c;
                                     c = getc(f);
                                     state = STATE_P13;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 continue;
 
                             case (STATE_P13): //Riešime druhú hex val
                                 if ((c >= 48 && c <= 57) || (c >= 65 && c <= 70) ||
-                                    (c >= 97 && c >= 102)) { // 0..9 || A..F || a..f
+                                    (c >= 97 && c <= 102)) { // 0..9 || A..F || a..f
                                     hexvalue[1] = c;
                                     int decvalue = (int) strtol(hexvalue, NULL, 16); //convertne hexvalue na int v decimáloch
                                     char tmp[2];
@@ -566,6 +581,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     state = STATE_P10;
                                 } else {
                                     *error = LEXICAL_ERR;
+                                    free(s);
                                     return Token;
                                 }
                                 continue;
@@ -585,5 +601,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
         }
     }
     Token.type = EOFTOKEN;
+    free(s);
     return Token;
 }
