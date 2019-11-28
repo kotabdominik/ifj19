@@ -390,21 +390,21 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     c = getc(f);
                                     state = STATE_F2;
                                     break;
-                                } else if (isspace(c) || c == '\n' || c == EOF || c == ':') {
+                                } else {//if (isspace(c) || c == '\n' || c == EOF || c == ':') {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
                                     state = STATE_START;
                                     ungetc(c, f);
                                     free(s);
                                     return Token;
-                                } else {
+                                } /*else {
                                     Token.attribute.INT = strtod(s->string, &ptr);
                                     Token.type = INT;
                                     state = STATE_START;
                                     ungetc(c, f);
                                     free(s);
                                     return Token;
-                                }
+                                }*/
 
 
                             case (STATE_P1): //Je float
@@ -429,17 +429,17 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     stringAddChar(s, c);
                                     c = getc(f);
                                     state = STATE_F3; //Vráti sa tu
-                                } else if (isspace(c) || c == '\n' || c == EOF || c == ':') {
+                                } else { //if (isspace(c) || c == '\n' || c == EOF || c == ':') {
                                     Token.attribute.FLOAT = strtod(s->string, &ptr);
                                     Token.type = FLOAT;
                                     state = STATE_START;
                                     free(s);
                                     return Token; //Koniec float čísla
-                                } else {
+                                } /*else {
                                     *error = LEXICAL_ERR;
                                     free(s);
                                     return Token;
-                                }
+                                }*/
 
                             case (STATE_P2):
                                 if (isalnum(c)) {
