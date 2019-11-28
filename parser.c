@@ -325,7 +325,7 @@ int statement(char *funName){
     if(tokenAct.type == ASSIGN){
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
-        
+
       symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken);
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
@@ -347,7 +347,7 @@ int statement(char *funName){
         //checkujeme jestli nedefinujeme neco z argumentu funkce
         for(int i = 0; i < tmp->elementType.function->argCount; i++){
           //porovnat tmpToken s argumentama
-          if(strcmp(tmp->elementType.function->arguments[i].key, funName) == 0){
+          if(strcmp(tmp->elementType.function->arguments[i].key, tmpToken.attribute.string->string) == 0){
             tmpItem = &(tmp->elementType.function->arguments[i]);
             succMePls = 1;
             if(tmpItem->defined != true){
@@ -356,7 +356,7 @@ int statement(char *funName){
             break;
           }
         }
-        if(succMePls == 1){
+        if(succMePls == 0){
           tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
           if(tmpItem == NULL){
             insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
@@ -400,9 +400,11 @@ int statement(char *funName){
       return OK;
     }
     else if(tokenAct.type == LEFTBRACKET){
-      //call params i quess
+      result = callParams(tmpToken.attribute.string->string);
+      if (result != OK) return result;
     }
     else{
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!do expression se musi poslat
       result = expression();
       if(result != OK) return result;
 
@@ -638,7 +640,41 @@ int defParamsN(char* funName, int argc){
 
 //---------------------------------------------CALLPARAMS----------------------------------
 int callParams(char* funName){
-  return 0;
+  int result = OK;
+  symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
+
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+  if(tokenAct.type == RIGHTBRACKET){
+    if (tmpItem0->elementType.function->argCount == 0) {
+      return OK;
+    }
+    else{
+      fprintf(stderr, "volate funkci, ktera ocekava nejake parametry, ale vy do ni zadne nedavate\n");
+      return SEM_PAR_ERR;
+    }
+  }
+  else if(tokenAct.type == STR){
+    symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
+    if(tmpItem != NULL && tmpItem->type == FUNCTION){
+      fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
+      return SEM_MISC_ERR;
+    }
+    else if(tmpItem != NULL && tmpItem->type == VARIABLE){
+      (tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
+      (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
+    }
+    else{
+      fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
+      return SEM_DEF_ERR;
+    }
+  }
+  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
+
+  }
+  else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
+
+  }
 }
 
 //---------------------------------------------CALLPARAMSN----------------------------------
@@ -848,3 +884,7 @@ int main(){
 // 281 = kdyz je string a pak assign
 // 285 = kdyz je string a pak leva zavorka (volani funkce)
 // 345 =   //porovnat tmpToken s argumentama
+//return muze byt jen v def .... ceknout ty veci s funName
+//645 callparams neco pocheckovat ... ted to, kolik je tam argumentu
+//error s definicemi globalnich promennych/funkci
+//v assign je spatne loop ktery prochazi argumenty a checkuje je I QUESS
