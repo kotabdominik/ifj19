@@ -87,6 +87,22 @@ int getPrecedenceOperatorValue(token stackToken, token vstupniToken) {
   return *precedenceTable[index1, index2];
 }
 
+int findRule(tokenStack *s) {
+  while (0) {
+    SData * data = tokenStackTop(s);
+    if(data->Type == type_nonterm) {
+      printf("je to nonterm\n");
+    }
+    if(data->Type == type_token) {
+      printf("je to token\n");
+    }
+    if(data->Type == type_handler) {
+      printf("je to handler\n");
+    return 0;
+    }
+  }
+}
+
 precendentExpression* doPrecedenceOperation(token tokenAct) {
   precendentExpression* exp = malloc(sizeof(precendentExpression));
   if (!exp) {
@@ -117,15 +133,13 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
   //https://cdn.discordapp.com/attachments/591341433353666582/632206569551167488/unknown.png
   while(readNextToken || getTerminalData(s) != NULL){
     SData* termData = getTerminalData(s);
-    if (termData->Type == type_handler) { //je token vždy
-      printf("yeet handler popuju dál\n");
-    }
     token token;
-    if(termData != NULL)
+    if(termData != NULL) {
       token = *(termData->Atr.Token);
+    }
     if(&current != NULL){
       if(current.type == EOL || current.type == EOFTOKEN || current.type == COLON) {
-        readNextToken = false;
+        readNextToken = 0;
         return NULL; //tmp, odstranit potom
       }
     }
@@ -135,9 +149,10 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
     int operation = getPrecedenceOperatorValue(token, current); //token = ze stacku, current = ze scanneru
 
     if (operation == A) { //0  if <y je na vrcholu zásobníku and r: A→y∈P then zaměň <y za A & vypiš r na výstup else chyba
-      //findRule(s); //THE REST OF THE FUCKING OWL
+      findRule(s); //THE REST OF THE FUCKING OWL
       printf("aa\n");
-      //continue; //nenačítat token
+      //return NULL;
+      continue; //nenačítat token
     } else if (operation == B) { //1 () //push(b) & přečti další symbol b ze vstupu
       SData *data = malloc(sizeof(SData));
       if(data == NULL){
@@ -161,9 +176,8 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
       return NULL;
     }
 
-    if (readNextToken) {
-      tmptkn = nextToken(&error, stack, doIndent);
-      current = tmptkn;
+    if (readNextToken > 0) {
+      current = nextToken(&error, stack, doIndent);
     }
   }
 }
