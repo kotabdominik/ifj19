@@ -34,7 +34,9 @@ typedef enum {
     INPUTF,
     PRINT,
     LEN,
-    SUBSTR
+    SUBSTR,
+    ORD,
+    CHR
 } keyword;
 
 typedef enum {
