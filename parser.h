@@ -34,7 +34,7 @@ int initFunctions();
 int defParams(char* funName);
 int defParamsN(char* funName, int argc);
 int callParams(char* funName);
-int callParamsN(char* funName);
+int callParamsN(char* funName, int argc);
 void addBuildInFunc();
 
 #endif

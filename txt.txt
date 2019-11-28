@@ -1,9 +1,8 @@
-if 5:
-  while 5:
-    pass
+def foo(a):
   pass
-  #pepejoy
-    #pepehappy
-else:
-    #pepeBlessed
-  pass
+
+c = 5
+
+foo(4.5)
+
+pass

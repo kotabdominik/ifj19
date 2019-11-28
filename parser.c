@@ -402,6 +402,23 @@ int statement(char *funName){
     else if(tokenAct.type == LEFTBRACKET){
       result = callParams(tmpToken.attribute.string->string);
       if (result != OK) return result;
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
+      if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
+
+      doIndent = 1;
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      //nesmi tady byt indent
+      if(tokenAct.type == INDENT) return PARSING_ERR;
+      doIndent = 0;
+      //pokud je dedent, posleme ten token dal;
+      if(tokenAct.type == DEDENT) return OK;
+      //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
+      return OK;
     }
     else{
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!do expression se musi poslat
@@ -640,13 +657,12 @@ int defParamsN(char* funName, int argc){
 
 //---------------------------------------------CALLPARAMS----------------------------------
 int callParams(char* funName){
-  int result = OK;
   symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
 
   tokenAct = nextToken(&error, stack, doIndent);
   if(error != OK) return error; // zkoumani lexikalniho erroru
   if(tokenAct.type == RIGHTBRACKET){
-    if (tmpItem0->elementType.function->argCount == 0) {
+    if (tmpItem0->elementType.function->argCount == 0 || tmpItem0->elementType.function->argCount == -1) {
       return OK;
     }
     else{
@@ -654,32 +670,118 @@ int callParams(char* funName){
       return SEM_PAR_ERR;
     }
   }
-  else if(tokenAct.type == STR){
-    symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
-    if(tmpItem != NULL && tmpItem->type == FUNCTION){
-      fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
-      return SEM_MISC_ERR;
+  else{
+    if(tokenAct.type == STR){
+      symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
+      if(tmpItem != NULL && tmpItem->type == FUNCTION){
+        fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
+        return SEM_MISC_ERR;
+      }
+      else if(tmpItem != NULL && tmpItem->type == VARIABLE){
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
+      }
+      else{
+        fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
+        return SEM_DEF_ERR;
+      }
     }
-    else if(tmpItem != NULL && tmpItem->type == VARIABLE){
-      (tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
-      (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
+    else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
+      if(tokenAct.type == INT){
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.INT = tokenAct.attribute.INT;
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_INT;
+      }
+      else if(tokenAct.type == FLOAT){
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_FLOAT;
+      }
+      else if(tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.string = tokenAct.attribute.string->string;
+        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_STRING;
+      }
+    }
+    else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
+      (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_UNDEFINED;
     }
     else{
-      fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
-      return SEM_DEF_ERR;
+      fprintf(stderr, "Nespravny typ argumentu pri volani funkce\n");
+      return PARSING_ERR;
     }
-  }
-  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
 
-  }
-  else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
-
+    return callParamsN(funName, 1);
   }
 }
 
 //---------------------------------------------CALLPARAMSN----------------------------------
-int callParamsN(char* funName){
-  return 0;
+int callParamsN(char* funName, int argc){
+  symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
+
+  tokenAct = nextToken(&error, stack, doIndent);
+  if(error != OK) return error; // zkoumani lexikalniho erroru
+
+
+  if(tokenAct.type == RIGHTBRACKET){
+    if (tmpItem0->elementType.function->argCount == argc || tmpItem0->elementType.function->argCount == -1) {
+      return OK;
+    }
+    else{
+      fprintf(stderr, "volate funkci, ale davate do ni malo parametru\n");
+      return SEM_PAR_ERR;
+    }
+  }
+  else if(tokenAct.type == COMMA){
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+  }
+  else{
+    fprintf(stderr, "za argumentem ve volani funkce musi nasledovat  ,  nebo  )  \n");
+    return PARSING_ERR;
+  }
+
+  if(tmpItem0->elementType.function->argCount != argc || tmpItem0->elementType.function->argCount != -1){
+    fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
+    return SEM_MISC_ERR;
+  }
+  else{
+     if(tokenAct.type == STR){
+      symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
+      if(tmpItem != NULL && tmpItem->type == FUNCTION){
+        fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
+        return SEM_MISC_ERR;
+      }
+      else if(tmpItem != NULL && tmpItem->type == VARIABLE){
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value = tmpItem->elementType.variable->value;
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = tmpItem->elementType.variable->type;
+      }
+      else{
+        fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
+        return SEM_DEF_ERR;
+      }
+    }
+    else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
+      if(tokenAct.type == INT){
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.INT = tokenAct.attribute.INT;
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_INT;
+      }
+      else if(tokenAct.type == FLOAT){
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_FLOAT;
+      }
+      else if(tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.string = tokenAct.attribute.string->string;
+        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_STRING;
+      }
+    }
+    else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
+      (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_UNDEFINED;
+    }
+    else{
+      fprintf(stderr, "Nespravny typ argumentu pri volani funkce\n");
+      return PARSING_ERR;
+    }
+    argc++;
+    return callParamsN(funName, argc);
+  }
 }
 
 /*projede cely soubor a najde tam definice funkci a tyto funkce vlozi do tabulky funkci*/
