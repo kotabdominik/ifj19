@@ -45,11 +45,13 @@ void setFile(char* sourceFile){
 void resetToken(){
     rewind(f);
     stackReset = TRUE;
+    TotalTokenCount = 0;
 }
 
 token ungetToken(int *error, tStack *stack, int doIndent){
 
-    resetToken();
+    rewind(f);
+    stackReset = TRUE;
     token Token;
     int tmp = TotalTokenCount - 1;
     TotalTokenCount = 0;

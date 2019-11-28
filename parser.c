@@ -326,7 +326,7 @@ int statement(char *funName){
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
 
-      symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken);
+      symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
         return SEM_DEF_ERR;
@@ -374,12 +374,8 @@ int statement(char *funName){
       result = expression();
       if(result != OK) return result;
 
-
-      if(tmpItem->defined == true){
-        //porovnat type s typem co vrati expression
-      }
       tmpItem->defined = true;
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TADY BY SE DO PROMENNE MELA ZAPSAT VALUE
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TADY BY SE DO PROMENNE MELA ZAPSAT VALUE A TYP
       /*tmpItem->elementType.variable->value = ;
       tmpItem->elementType.variable->type = ;
       */
@@ -421,7 +417,8 @@ int statement(char *funName){
       return OK;
     }
     else{
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!do expression se musi poslat
+      tokenAct = ungetToken(&error, stack, doIndent);
+      tmpToken = tokenAct;
       result = expression();
       if(result != OK) return result;
 
@@ -981,12 +978,9 @@ int main(){
 //                a ze z expression jeden token vyjde
 
 
-// DODELAT 269, 281, 285, callParams
+// DODELAT 269, 281, 285
 // 269 = keywordy, ktere jsou vestavene funkce
-// 281 = kdyz je string a pak assign
-// 285 = kdyz je string a pak leva zavorka (volani funkce)
 // 345 =   //porovnat tmpToken s argumentama
 //return muze byt jen v def .... ceknout ty veci s funName
-//645 callparams neco pocheckovat ... ted to, kolik je tam argumentu
 //error s definicemi globalnich promennych/funkci
 //v assign je spatne loop ktery prochazi argumenty a checkuje je I QUESS
