@@ -27,7 +27,7 @@ int doIndent = 0;
 
 int precedenceTable[TABLESIZE][TABLESIZE] =
 {
-  //   +-  *///    (     )     i     r     $
+  //   +-  *///    (     )     i     r     $ <- vstup, dolu stack
     {  C  ,  A  ,  A  ,  C  ,  A  ,  C  ,  C  }, // +-
     {  C  ,  C  ,  A  ,  C  ,  A  ,  C  ,  C  }, // *///
     {  A  ,  A  ,  A  ,  B  ,  A  ,  A  ,  E  }, // (
@@ -77,13 +77,13 @@ int getPrecedenceIndex(token* tokenAct) { //vrací index z precedence tablu
 
 int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
   int index1, index2 = 0;
-  index1 = getPrecedenceIndex(vstupniToken);
-  index2 = getPrecedenceIndex(stackToken);
+  index1 = getPrecedenceIndex(stackToken);
+  index2 = getPrecedenceIndex(vstupniToken);
   if (index1 == -1 || index2 == -1) {
     printf("error\n");
   }
   printf("%d a %d pricemz tokeny meli\n", stackToken->type, vstupniToken->type);
-  return *precedenceTable[index1, index2];
+  return precedenceTable[index1][index2];
 }
 
 int findRule(tokenStack *s) {
@@ -216,7 +216,6 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
       data->Atr.Token = current;
       tokenStackPush(s,data);
     } else if (operation == A) { //2 +- atd //zaměň a za a< na zásobníku & push(b) & přečti další symbol b ze vstupu
-      addHandler(s,termData); //dastali jsme z getTerminalData(s), vraci ze zasobniku data prvnihu terminalu
       printf("dávám zarážku na %d\n", current->attribute.INT);
       SData *data = malloc(sizeof(SData));
       if(data == NULL){
@@ -224,6 +223,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
       }
       data->Type = type_token;
       data->Atr.Token = current;
+      addHandler(s,termData); //dastali jsme z getTerminalData(s), vraci ze zasobniku data prvnihu terminalu
       tokenStackPush(s,data);
     } else if (operation == E) { //error
       printf("error, neplatná operace mezi dvěmi věcmi idk\n");
