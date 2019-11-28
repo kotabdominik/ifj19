@@ -432,6 +432,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 } else { //if (isspace(c) || c == '\n' || c == EOF || c == ':') {
                                     Token.attribute.FLOAT = strtod(s->string, &ptr);
                                     Token.type = FLOAT;
+                                    ungetc(c, f);
                                     state = STATE_START;
                                     free(s);
                                     return Token; //Koniec float čísla
@@ -478,12 +479,14 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     if (isINTorFLT == 1) {
                                         Token.attribute.FLOAT = strtod(s->string, &ptr);
                                         Token.type = FLOAT;
+                                        ungetc(c, f);
                                         isINTorFLT = 0;
                                         free(s);
                                         return Token; //Koniec float
                                     } else {
                                         Token.attribute.INT = strtod(s->string, &ptr);
                                         Token.type = INT;
+                                        ungetc(c, f);
                                         free(s);
                                         return Token; //Koniec integer
                                     }
