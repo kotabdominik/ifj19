@@ -12,6 +12,7 @@
   */
 
 #include "stack.h"
+#include "error.h"
 
 int err_flag;
 
@@ -19,8 +20,8 @@ void stackError(int error_code) {
   	static const char* SERR_STRINGS[MAX_SERR+1] = {"Unknown error","Stack error: INIT","Stack error: PUSH","Stack error: TOP"};
   	if ( error_code <= 0 || error_code > MAX_SERR )
   		error_code = 0;
-  	printf ( "%s\n", SERR_STRINGS[error_code] );
-  	err_flag = 1;
+  	fprintf (stderr,"%s error in stack.\n", SERR_STRINGS[error_code] );
+  	exit (INTERN_ERR);
   }
 
 
