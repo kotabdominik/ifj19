@@ -1079,6 +1079,9 @@ int expression(){
 
 
 // DEBUGGING
+//||
+//|| Terminal now= [ ./parser <txt.txt ]
+//||
 int main(){
     stack = malloc(sizeof(tStack));
     stackInit(stack);
