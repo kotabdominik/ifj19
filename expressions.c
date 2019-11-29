@@ -95,13 +95,14 @@ int findRule(tokenStack *s) {
   ATData aData;
   while (rule == 0) {
     SData * data = tokenStackTop(s);
+    dataType type1, type2;
     switch (state) {
       case 0:
         if (data->Type == type_nonterm) {
           state = 1;
+          type1 = data->DataType;
         } else if (data->Type == type_token) {
-          printf("je to token\n");
-          printf("ve findrule čtu typ: %d\n", data->Atr.Token->type);
+          printf("ve findrule čtu tokentype: %d\n", data->Atr.Token->type);
           if (data->Atr.Token->type == RIGHTBRACKET) {
             state = 2;
             estimate_precedence = 1;
@@ -110,12 +111,16 @@ int findRule(tokenStack *s) {
             token = data->Atr.Token;
             estimate_precedence = 13; //????????????
             state = 3;
-        //  } else if (data->Atr.Token->type == FLOAT) {
+            type1 = DATA_INT;
+          } else if (data->Atr.Token->type == FLOAT) {
             //pracuju se floaty
-        //  } else if (data->Atr.Token->type == LITERAL) {
+            type1 = DATA_FLOAT;
+          } else if (data->Atr.Token->type == LITERAL) {
             //pracuju se stringy
-        //  } else if (data->Atr.Token->type == STR) {
-            //prohledávám symtable
+            type1 = DATA_STRING;
+          } else if (data->Atr.Token->type == STR) {
+            //prohledávám symtable xd
+            //type1 =
           } else {
             return -1;
           }
@@ -141,7 +146,6 @@ int findRule(tokenStack *s) {
           if (estimate_precedence == 1) { //tady řeším závorky
             state = 4;
           } else {
-            printf("yiss\n");
             state = 3;
           }
         }
@@ -175,6 +179,7 @@ int findRule(tokenStack *s) {
             if(data != NULL) {
               tokenStackPop(s);
             }
+            newData->DataType = type1;
             tokenStackPush(s,newData);
             printf("pushuju nonterm\n");
             rule = estimate_precedence;
