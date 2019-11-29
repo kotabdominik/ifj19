@@ -91,30 +91,64 @@ int findRule(tokenStack *s) {
   int state = 0;
   int estimate_precedence = 0;
   int rule = 0;
+  int operacevtokenu = -1;
   ATData aData;
   while (rule == 0) {
-    printf("jsem tady zas\n");
     SData * data = tokenStackTop(s);
     switch (state) {
       case 0:
-        if(data->Type == type_token) {
+        if (data->Type == type_nonterm) {
+          state = 1;
+        } else if (data->Type == type_token) {
           printf("je to token\n");
           printf("ve findrule čtu typ: %d\n", data->Atr.Token->type);
-          if(data->Atr.Token->type == RIGHTBRACKET){
+          if (data->Atr.Token->type == RIGHTBRACKET) {
             state = 2;
+            estimate_precedence = 1;
           } else if (data->Atr.Token->type == INT) {
             aData.type = at_token;
             token = data->Atr.Token;
-            estimate_precedence = 13; //?
+            estimate_precedence = 13; //????????????
             state = 3;
-            printf("integer stuff\n");
+        //  } else if (data->Atr.Token->type == FLOAT) {
+            //pracuju se floaty
+        //  } else if (data->Atr.Token->type == LITERAL) {
+            //pracuju se stringy
+        //  } else if (data->Atr.Token->type == STR) {
+            //prohledávám symtable
+          } else {
+            return -1;
+          }
+        } else {
+          return -1;
+        }
+        break;
+      case 1:
+        if (data->Atr.Token->type == PLUS || data->Atr.Token->type == MINUS || data->Atr.Token->type == TIMES || data->Atr.Token->type == DIVFLT || data->Atr.Token->type == DIVINT) {
+          state = 2;
+        } else if (data->Atr.Token->type == LESS || data->Atr.Token->type == GREATER || data->Atr.Token->type == LESSEQ || data->Atr.Token->type == GREATEREQ || data->Atr.Token->type == EQ || data->Atr.Token->type == NOTEQ) {
+          state = 2;
+          //potom neco dodelat na logicky
+        } else {
+          printf("syntaxerr\n");
+          return -1;
+        }
+        estimate_precedence = 3;
+        operacevtokenu = data->Atr.Token->type;
+        break;
+      case 2:
+        if (data->Type == type_nonterm) {
+          if (estimate_precedence == 1) { //tady řeším závorky
+            state = 4;
+          } else {
+            printf("yiss\n");
+            state = 3;
           }
         }
         break;
       case 3:
         if (state == 3) {
           if(data->Type == type_handler) {
-            printf("tady taky nice\n");
             SData * newData = malloc(sizeof(SData));
             if (newData == NULL) {
               //yeet
@@ -126,17 +160,35 @@ int findRule(tokenStack *s) {
               }
               //newData->Atr.Leaf = make_leaf(aData);
               //newData->DataType = dataType;
+            } else if (estimate_precedence == 1) {
+              printf("???????\n");
+            } else {
+              if (operacevtokenu == PLUS || operacevtokenu == MINUS || operacevtokenu == TIMES || operacevtokenu == DIVFLT || operacevtokenu == DIVINT) {
+                if (operacevtokenu == PLUS) {
+                  printf("plusuju\n");
+                } else {
+                //  printf("násobím\n");
+                }
+              }
             }
 
             if(data != NULL) {
               tokenStackPop(s);
             }
             tokenStackPush(s,newData);
-            printf("pushuju\n");
+            printf("pushuju nonterm\n");
             rule = estimate_precedence;
             continue;
           }
         }
+        break;
+      case 4:
+        if (data->Atr.Token->type == LEFTBRACKET) {
+          state = 3;
+        } else {
+          return -1;
+        }
+        break;
       }
     if (data->Atr.Token->type != COLON) {
       tokenStackPop(s);
@@ -171,42 +223,40 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
   dataPred->Atr.Token = &dolar;
   tokenStackPush(s,dataPred);
 
-  //current = malloc(sizeof(token));
   token* current = &tokenAct;
   token tmptkn;
-  //https://cdn.discordapp.com/attachments/591341433353666582/632206569551167488/unknown.png
+
   while(readNextToken || getTerminalData(s) != NULL){
     SData* termData = getTerminalData(s);
-    token* token;// = malloc(sizeof(token));
+    token* token;
     token = termData->Atr.Token;
 
     if (current != NULL) {
       if (current->type == EOL || current->type == EOFTOKEN || current->type == COLON) {
         readNextToken = 0;
-        return NULL; //tmp, odstranit potom
       }
     }
 
-    //token = nextToken(&error, stack, doIndent);
+    if (getPrecedenceIndex(current) == 6 && getPrecedenceIndex(token) == 6) { //stack je $$
+      printf("ukonci uspesne\n");
+      break;
+    }
 
     int operation = getPrecedenceOperatorValue(token, current); //token = ze stacku, current = ze scanneru
 
     if (operation == C) { //0  if <y je na vrcholu zásobníku and r: A→y∈P then zaměň <y za A & vypiš r na výstup else chyba
       int a = findRule(s); //THE REST OF THE FUCKING OWL
-      if (a > 0) {
-        SData *data = malloc(sizeof(SData));
-        if(data == NULL){
-          //yeet
-        }
-        data->Type = type_token;
-        data->Atr.Token = current;
-        tokenStackPush(s,data);
-      } else {
-        printf("dostal jsem -1\n");
+      if (a == -1) {
+        printf("syntax error\n");
+        return NULL;
       }
-      //printf("aa\n");
-      //return NULL;
-      //continue; //nenačítat token
+      SData *data = malloc(sizeof(SData));
+      if(data == NULL){
+          //yeet
+      }
+      data->Type = type_token;
+      data->Atr.Token = current;
+      continue; //nenačítat další token ze vstupu
     } else if (operation == B) { //1 () //push(b) & přečti další symbol b ze vstupu
       SData *data = malloc(sizeof(SData));
       if(data == NULL){
@@ -216,14 +266,14 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
       data->Atr.Token = current;
       tokenStackPush(s,data);
     } else if (operation == A) { //2 +- atd //zaměň a za a< na zásobníku & push(b) & přečti další symbol b ze vstupu
-      printf("dávám zarážku na %d\n", current->attribute.INT);
+      printf("dávám zarážku na vrchol stacku\n");
       SData *data = malloc(sizeof(SData));
       if(data == NULL){
         //yeet
       }
       data->Type = type_token;
       data->Atr.Token = current;
-      addHandler(s,termData); //dastali jsme z getTerminalData(s), vraci ze zasobniku data prvnihu terminalu
+      addHandler(s,termData); //dá zarážku na vrchol zásobníku
       tokenStackPush(s,data);
     } else if (operation == E) { //error
       printf("error, neplatná operace mezi dvěmi věcmi idk\n");
@@ -235,8 +285,6 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
       tmptkn = nextToken(&error, stack, doIndent);
       current->attribute = tmptkn.attribute;
       current->type = tmptkn.type;
-    } else {
-      return NULL;
     }
   }
 }
@@ -244,9 +292,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
 void main() {
   setFile("txt.txt");
   token token1, token2;
-
   token1 = nextToken(&error, stack, doIndent);
-  //token2 = nextToken(&error, stack, doIndent);
 
   doPrecedenceOperation(token1);
 }
