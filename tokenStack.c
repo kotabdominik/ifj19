@@ -88,6 +88,7 @@ void addHandler(tokenStack *s, SData * sData) {
         }
         newItem->Data->Type = type_handler;
         newItem->Next = NULL;
+        newItem->Data->Atr.Token = sData->Atr.Token;
         if (tokenStackEmpty(s)) {
           s->Top = newItem;
         } else {
@@ -114,6 +115,7 @@ void addHandler(tokenStack *s, SData * sData) {
               //malloc ree
             }
             newItem->Data->Type = type_handler;
+            newItem->Data->Atr.Token = sData->Atr.Token;
             return;
           }
           prev = current;

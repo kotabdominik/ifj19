@@ -82,15 +82,16 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
   if (index1 == -1 || index2 == -1) {
     printf("error\n");
   }
-  printf("%d a %d pricemz tokeny meli\n", stackToken->type, vstupniToken->type);
+  //printf("%d a %d pricemz tokeny meli\n", stackToken->type, vstupniToken->type);
   return precedenceTable[index1][index2];
 }
 
 int findRule(tokenStack *s) {
-  token* token;
+  token* token, tokenPrvni, tokenDruhy;
   int state = 0;
   int estimate_precedence = 0;
   int rule = 0;
+  int cisilko = 0;
   int operacevtokenu = -1;
   ATData aData;
   while (rule == 0) {
@@ -101,14 +102,17 @@ int findRule(tokenStack *s) {
         if (data->Type == type_nonterm) {
           state = 1;
           type1 = data->DataType;
+          cisilko = data->Atr.Token->attribute.INT;
+          tokenPrvni = *(data->Atr.Token);
+          printf("%d je cicislko\n", cisilko);
         } else if (data->Type == type_token) {
-          printf("ve findrule čtu tokentype: %d\n", data->Atr.Token->type);
           if (data->Atr.Token->type == RIGHTBRACKET) {
             state = 2;
             estimate_precedence = 1;
           } else if (data->Atr.Token->type == INT) {
             aData.type = at_token;
             token = data->Atr.Token;
+            printf("%d\n", data->Atr.Token->attribute.INT);
             estimate_precedence = 13; //????????????
             state = 3;
             type1 = DATA_INT;
@@ -147,6 +151,7 @@ int findRule(tokenStack *s) {
             state = 4;
           } else {
             state = 3;
+            tokenDruhy = *(data->Atr.Token);
           }
         }
         break;
@@ -168,8 +173,8 @@ int findRule(tokenStack *s) {
               printf("???????\n");
             } else {
               if (operacevtokenu == PLUS || operacevtokenu == MINUS || operacevtokenu == TIMES || operacevtokenu == DIVFLT || operacevtokenu == DIVINT) {
+                printf("%d operace %d\n", tokenPrvni.attribute.INT, tokenDruhy.attribute.INT);
                 if (operacevtokenu == PLUS) {
-                  printf("plusuju\n");
                 } else {
                 //  printf("násobím\n");
                 }
@@ -180,8 +185,9 @@ int findRule(tokenStack *s) {
               tokenStackPop(s);
             }
             newData->DataType = type1;
+            newData->Atr.Token->attribute.INT = (token->attribute.INT);
             tokenStackPush(s,newData);
-            printf("pushuju nonterm\n");
+            printf("pushuju nonterm s hodnotou %d\n", token->attribute.INT);
             rule = estimate_precedence;
             continue;
           }
@@ -271,7 +277,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
       data->Atr.Token = current;
       tokenStackPush(s,data);
     } else if (operation == A) { //2 +- atd //zaměň a za a< na zásobníku & push(b) & přečti další symbol b ze vstupu
-      printf("dávám zarážku na vrchol stacku\n");
+      //printf("dávám zarážku na vrchol stacku\n");
       SData *data = malloc(sizeof(SData));
       if(data == NULL){
         //yeet
