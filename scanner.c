@@ -509,6 +509,14 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     c = getc(f);
                     state = STATE_P10;
 
+                    if (c == '\''){
+                        stringAddChar(s, '\0');
+                        Token.attribute.string = s;
+                        Token.type = LITERAL;
+                        state = STATE_START;
+                        return Token;
+                    }
+
                     while (1) {
                         if (c == EOF) {
                             *error = LEXICAL_ERR;
