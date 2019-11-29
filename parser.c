@@ -378,7 +378,7 @@ int statement(char *funName){
       if(tokenAct.type == STR){
         tmpToken = tokenAct;
         symtableItem *tmpItem1 = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
-        if(tmpItem1 != NULL && tmpItem->type == FUNCTION){
+        if(tmpItem1 != NULL && tmpItem1->type == FUNCTION){
           tokenAct = nextToken(&error, stack, doIndent);
           if(error != OK) return error; // zkoumani lexikalniho erroru
 
@@ -642,8 +642,9 @@ int defParams(char* funName){
         (item->arguments[argc]).elementType.variable->type = VARIABLE;
         (item->arguments[argc]).key = tokenAct.attribute.string->string;
         item->argCount = argc+1;
-
         symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+        item->sT = tmpIT->elementType.function->sT;
+
         tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
         tmpIT->elementType.function = item;
         tableG->symtabList[hash(funName)] = tmpIT;
@@ -690,7 +691,7 @@ int defParamsN(char* funName, int argc){
     (item->arguments[argc-1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
     (item->arguments[argc-1]).elementType.variable->type = VARIABLE;
 
-    item->arguments[argc-1].elementType.variable->value.INT = 5;
+    //item->arguments[argc-1].elementType.variable->value.INT = 5;
 
     for (int i = 0; i < (argc-1); i++) {
       if(!strcmp((item->arguments[i]).key, (item->arguments[argc-1]).key)) return SEM_DEF_ERR;
@@ -728,6 +729,19 @@ int callParams(char* funName){
   else{
     if(tokenAct.type == STR){
       symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
+    /*  symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
+      for(int i = 0; i < tmpItem->elementType.function->argCount; i++){
+        //porovnat tmpToken s argumentama
+        if(strcmp(tmp->elementType.function->arguments[i].key, tokenAct.attribute.string->string) == 0){
+          tmpItem = &(tmp->elementType.function->arguments[i]);
+          //succMePls = 1;
+          if(tmpItem->defined != true){
+            tmpItem->defined = false;
+          }
+          break;
+        }
+      }*/
+
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
         return SEM_MISC_ERR;
@@ -1085,4 +1099,4 @@ int main(){
 // expression ... predpoklada se, ze do expression prijde rovnou novy token ktery se ma rozparsovat
 //                a ze z expression jeden token vyjde
 
-//malloc argumentu vestavenych funkci ? 
+//malloc argumentu vestavenych funkci ?
