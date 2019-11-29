@@ -21,6 +21,6 @@
 #include "scanner.h"
 #include "expressions.h"
 
-gen_beggining();
+degenerate(tDLList *list);
 
 gen_main();
