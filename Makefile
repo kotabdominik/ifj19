@@ -8,16 +8,12 @@
 # Moravčík Tomáš (xmorav41@stud.fit.vutbr.cz)
 
 
-OBJS	= list.o strings.o
-SOURCE	= list.c strings.c
-HEADER	= error.h list.h scanner.h stack.h strings.h
-OUT	= final.out
+SOURCE	= list.c strings.c scanner.c tokenStack.c symtable.c parser.c
+HEADER	= error.h list.h scanner.h stack.h strings.h symtable.h parser.h tokenStack.h
 CC	 = gcc
-FLAGS	 = -g3 -c -Wall
-LFLAGS	 =
 
-#all: $(OBJS)
-#	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+all: $(OBJS)
+	$(CC) -g parser.c -o parser
 
 #final.out: $(OBJS)
 #	$(CC) -g $(OBJS) -o $(OUT)
@@ -29,7 +25,7 @@ strings.o: strings.c
 
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -f $(OBJS) $(OUT) parser
 
 run: $(OUT)
 	./$(OUT)

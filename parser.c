@@ -1091,10 +1091,11 @@ int main(){
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
 
-    setFile("txt.txt");
+    //setFile("txt.txt");
+
     int result = parse(tableGG, instrList);
 
-    printf("%d\n", result);
+    //printf("%d\n", result);
     return result;
 }
 

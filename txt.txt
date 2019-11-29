@@ -1,8 +1,5 @@
 def foo(a):
   pass
-
 c = 5
-
-foo(4.5)
-
+foo(5)
 pass

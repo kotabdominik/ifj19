@@ -19,16 +19,10 @@
   #include "scanner.h"
   #include "expressions.h"
 
-
-
-  char* generateID(){
-    ///urobi identifikator premennej
-  }
-
   void degenerate(tDLList *list){
 
     while(list->nextToken != NULL){
-      fprintf(stdout, "KOKOTICA\n");
+      fprintf(stdout, ".IFJcode19\n");
     }
   };
 
@@ -36,7 +30,7 @@
   //||=============== Věstavené funkce start ===============||//
 
   void generateInputs(){
-    printf("JUMP _OMEGAJUMP%d\n", ++func_cnt);
+    printf("JUMP _OMEGAJUMP%d\n", 5); //tmp
     printf("LABEL _OMEGALABEL%p\n", list->First->Instruction->addr1);
     printf("PUSHFRAME\n");
 
@@ -45,55 +39,22 @@
     printf("MOVE LF@_RTVL%p nil@nil\n",list->First->Instruction->addr1);
     printf("PUSHS LF@_RTVL%p\n",list->First->Instruction->addr1);
 
-    printf("READ LF@_RTVL%p string\n", (void*)list->First->Instruction->addr1); //inputs - funguje
+    printf("READ LF@_RTVL%p string\n", (void*)list->First->Instruction->addr1);
     printf("PUSHS LF@_RTVL%p\n", (void*)list->First->Instruction->addr1);
 
     printf("POPS LF@_RTVL%p\n",list->First->Instruction->addr1);
   	printf("POPFRAME\n");
 
   	printf("RETURN\n");
-  	printf("LABEL _OMEGAJUMP%d\n", func_cnt);
+  	printf("LABEL _OMEGAJUMP%d\n", 5); //tmp
+
   }
 
   void generateInputi(){
-    printf("JUMP $FOOL%d\n", ++func_cnt);
-    printf("LABEL $FNAME%p\n", list->First->Instruction->addr1);
-    printf("PUSHFRAME\n");
-
-    //vytvor navratovou promennou
-    printf("DEFVAR LF@$RTVL%p\n",list->First->Instruction->addr1);
-    printf("MOVE LF@$RTVL%p nil@nil\n",list->First->Instruction->addr1);
-    printf("PUSHS LF@$RTVL%p\n",list->First->Instruction->addr1);
-
-    printf("READ LF@$RTVL%p int\n", (void*)list->First->Instruction->addr1); //inputs - funguje
-    printf("PUSHS LF@$RTVL%p\n", (void*)list->First->Instruction->addr1);
-
-    printf("POPS LF@$RTVL%p\n",list->First->Instruction->addr1);
-    printf("POPFRAME\n");
-
-    printf("RETURN\n");
-    printf("LABEL $FOOL%d\n", func_cnt);
 
   }
 
   void generateInputf(){
-    printf("JUMP $FOOL%d\n", ++func_cnt);
-    printf("LABEL $FNAME%p\n", list->First->Instruction->addr1);
-    printf("PUSHFRAME\n");
-
-    //vytvor navratovou promennou
-    printf("DEFVAR LF@$RTVL%p\n",list->First->Instruction->addr1);
-    printf("MOVE LF@$RTVL%p nil@nil\n",list->First->Instruction->addr1);
-    printf("PUSHS LF@$RTVL%p\n",list->First->Instruction->addr1);
-
-    printf("READ LF@$RTVL%p float\n", (void*)list->First->Instruction->addr1); //inputs - funguje
-    printf("PUSHS LF@$RTVL%p\n", (void*)list->First->Instruction->addr1);
-
-    printf("POPS LF@$RTVL%p\n",list->First->Instruction->addr1);
-    printf("POPFRAME\n");
-
-    printf("RETURN\n");
-    printf("LABEL $FOOL%d\n", func_cnt);
 
   }
 

@@ -1,5 +1,5 @@
 /**
-  * symboltable.h
+  * symtable.h
   * Project IFJ19
   *
   * Březina Jindřich (xbrezi21@stud.fit.vutbr.cz)

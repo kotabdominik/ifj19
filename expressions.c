@@ -299,7 +299,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
     }
   }
 }
-
+/*
 void main() {
   setFile("txt.txt");
   token token1, token2;
@@ -307,3 +307,4 @@ void main() {
 
   doPrecedenceOperation(token1);
 }
+*/

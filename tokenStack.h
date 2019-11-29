@@ -25,7 +25,6 @@ typedef enum { //polozka ve stacku
 
 typedef union { //ulozeni tokenu nebo ukazatele na ASS
   token* Token;
-  ATLeaf* Leaf;
 } SAtribute;
 
 typedef struct { //data položky ve stacku
