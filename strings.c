@@ -50,6 +50,14 @@ int stringAddChar(smartString *str, char c) {
   return OK;
 }
 
+int stringAddString(smartString *str, const char* c) {
+  for (int i = 0; i < strlen(c); i++) {
+    stringAddChar(str, c[i]);
+  }
+  
+  return OK;
+}
+
 int stringIsKeyword(smartString *str) {
   char *keywords[] = {"def\0", "else\0", "if\0", "None\0", "pass\0", "return\0", "while\0"};
   for (int i = 0; i < (sizeof(keywords) / sizeof(keywords[0])); i++) {
