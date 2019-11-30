@@ -50,11 +50,11 @@ int stringAddChar(smartString *str, char c) {
   return OK;
 }
 
-int stringAddString(smartString *str, const char* c) {
+int stringAddString(smartString *str, char* c) {
   for (int i = 0; i < strlen(c); i++) {
     stringAddChar(str, c[i]);
   }
-  
+
   return OK;
 }
 

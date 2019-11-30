@@ -11,7 +11,6 @@
   *
   */
 
-#include "absTree.h"
 #include "symtable.h"
 
 #ifndef STACK_H
@@ -23,7 +22,7 @@ typedef enum { //polozka ve stacku
   type_handler //zarážka
 } SType;
 
-typedef union { //ulozeni tokenu nebo ukazatele na ASS
+typedef union { //ulozeni tokenu
   token* Token;
 } SAtribute;
 

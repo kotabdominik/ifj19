@@ -24,6 +24,7 @@ void stringInit(smartString *str);
 void stringFree(smartString *str);
 void stringClear(smartString *str);
 int stringAddChar(smartString *str, char c);
+int stringAddString(smartString *str, char* c);
 int stringIsKeyword(smartString *str);
 
 #endif

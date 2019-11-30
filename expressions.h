@@ -15,11 +15,8 @@
 #define _EXPRESSION_H_
 
 #include "parser.h"
-//#include "list.h"
-//#include "list.c"
 #include "tokenStack.h"
 #include "tokenStack.c"
-#include "absTree.h"
 #include "scanner.h"
 
 #define TABLESIZE 7 //velikost precedenční tabulky
@@ -37,9 +34,8 @@ typedef enum {
 
 typedef struct{
     int StatusCode;
-    dataType Type;
+    int* Type;
     token* ReturnToken;
-    ATLeaf* Tree;
 } precendentExpression;
 
 typedef enum {
