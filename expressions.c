@@ -81,6 +81,7 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
   index2 = getPrecedenceIndex(vstupniToken);
   if (index1 == -1 || index2 == -1) {
     printf("error\n");
+    return -1;
   }
   //printf("%d a %d pricemz tokeny meli\n", stackToken->type, vstupniToken->type);
   return precedenceTable[index1][index2];
@@ -105,30 +106,24 @@ int findRule(tokenStack *s, int *type) {
           if (data->token->type == RIGHTBRACKET) {
             state = 2;
             zpracuj = 1;
-          } else if (data->token->type == INT) {
+          } else { //int, float, literal, str
             token = data->token;
-            zpracuj = 2; //????????????
-            state = 3;
-            type1 = INT;
-          } else if (data->token->type == FLOAT) {
-            token = data->token;
-            state = 3;
             zpracuj = 2;
-            type1 = FLOAT;
-          } else if (data->token->type == LITERAL) {
-            token = data->token;
             state = 3;
-            zpracuj = 2;
-            type1 = LITERAL;
-            printf("%s\n", data->token->attribute.string->string);
-          } else if (data->token->type == STR) {
+            if (data->token->type == INT) {
+              type1 = INT;
+              printf("pretypovavam type1\n");
+            } else if (data->token->type == FLOAT) {
+              type1 = FLOAT;
+            } else if (data->token->type == LITERAL) {
+              type1 = LITERAL;
+            } else if (data->token->type == STR) {
             //prohledávám symtable xd
             //type1 = idk
-          } else {
-            return -1;
+            } else {
+              return -1;
+            }
           }
-        } else {
-          return -1;
         }
         break;
       case 1:
@@ -152,12 +147,23 @@ int findRule(tokenStack *s, int *type) {
           } else {
             state = 3;
             tokenDruhy = *(data->token);
+            if (data->token->type == INT) {
+              type2 = INT;
+              printf("pretypovavam type2\n");
+            } else if (data->token->type == FLOAT) {
+              type2 = FLOAT;
+            } else if (data->token->type == LITERAL) {
+              type2 = LITERAL;
+            } else if (data->token->type == STR) {
+              //prohledávám symtable xd
+              //type1 = idk
+            }
           }
         }
         break;
       case 3:
         if (state == 3) {
-          if(data->type == typeHandler) {
+          if (data->type == typeHandler) {
             sData* newData = malloc(sizeof(sData));
             if (newData == NULL) {
               //yeet
@@ -167,20 +173,25 @@ int findRule(tokenStack *s, int *type) {
               //printf("tady jsem jen kdyyž měním na Ečka\n");
             } else if (zpracuj == 1) {
               token->attribute = tokenDruhy.attribute;
-            } else if (type1 == INT) {
+            } else if (type1 == INT && type2 == INT) {
               if (operacevtokenu == PLUS) {
-                token->attribute.INT =  tokenDruhy.attribute.INT + tokenPrvni.attribute.INT;
+                token->attribute.INT = tokenDruhy.attribute.INT + tokenPrvni.attribute.INT;
               } else if (operacevtokenu == MINUS) {
                 token->attribute.INT = tokenDruhy.attribute.INT - tokenPrvni.attribute.INT;
               } else if (operacevtokenu == TIMES) {
                 token->attribute.INT = tokenDruhy.attribute.INT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVINT) {
                 token->attribute.INT = tokenDruhy.attribute.INT / tokenPrvni.attribute.INT;
+              } else if (operacevtokenu == DIVFLT) {
+                token->attribute.FLOAT = (float)tokenDruhy.attribute.INT / (float)tokenPrvni.attribute.INT;
+                type1 = FLOAT; //idk bout this
+                type2 = FLOAT; //or dis
+                data->dataType = FLOAT; //nebo dis
               } else {
                 printf("syntaxx pepe\n");
                 return -1;
               }
-            } else if (type1 == LITERAL) {
+            } else if (type1 == LITERAL && type2 == LITERAL) {
               if (operacevtokenu == PLUS) {
                 stringAddString(tokenDruhy.attribute.string, tokenPrvni.attribute.string->string);
                 token->attribute.string = tokenDruhy.attribute.string;
@@ -188,19 +199,53 @@ int findRule(tokenStack *s, int *type) {
                 printf("jiná operace nad stringama by neměla být\n");
                 return -1;
               }
-            } else if (type1 == FLOAT) {
+            } else if (type1 == FLOAT && type2 == FLOAT) {
               if (operacevtokenu == PLUS) {
-                token->attribute.FLOAT =  tokenDruhy.attribute.FLOAT + tokenPrvni.attribute.FLOAT;
+                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT + tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == MINUS) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT - tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.FLOAT;
-              } else if (operacevtokenu == DIVINT) {
+              } else if (operacevtokenu == DIVFLT) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.FLOAT;
               } else {
                 printf("syntaxx pepe\n");
                 return -1;
               }
+            } else if (type1 == INT && type2 == FLOAT) {
+              type1 = FLOAT;
+
+              if (operacevtokenu == PLUS) {
+                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT + tokenPrvni.attribute.INT;
+              } else if (operacevtokenu == MINUS) {
+                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT - tokenPrvni.attribute.INT;
+              } else if (operacevtokenu == TIMES) {
+                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.INT;
+              } else if (operacevtokenu == DIVFLT) {
+                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
+              } else {
+                printf("syntaxx pepe\n");
+                return -1;
+              }
+            } else if (type1 == FLOAT && type2 == INT) {
+              type2 = FLOAT;
+
+              if (operacevtokenu == PLUS) {
+                token->attribute.FLOAT = tokenDruhy.attribute.INT + tokenPrvni.attribute.FLOAT;
+              } else if (operacevtokenu == MINUS) {
+                token->attribute.FLOAT = tokenDruhy.attribute.INT - tokenPrvni.attribute.FLOAT;
+              } else if (operacevtokenu == TIMES) {
+                token->attribute.FLOAT = tokenDruhy.attribute.INT * tokenPrvni.attribute.FLOAT;
+              } else if (operacevtokenu == DIVFLT) {
+                token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
+              } else {
+                printf("syntaxx pepe\n");
+                return -1;
+              }
+            } else {
+              printf("operace mezi 2 špatnými typy\n");
+              printf("%d,%d\n", type1, type2);
+              return -1;
             }
 
             if(data != NULL) {
@@ -208,8 +253,21 @@ int findRule(tokenStack *s, int *type) {
             }
 
             *type = type1;
+            if (token->type == INT) {
+              printf("pretypovavam type2\n");
+              type2 = INT;
+            } else if (token->type == FLOAT) {
+              type2 = FLOAT;
+            } else if (token->type == LITERAL) {
+              type2 = LITERAL;
+            } else if (token->type == STR) {
+              //prohledávám symtable xd
+              //type1 = idk
+            }
+            printf("%d%dtypy nakonci\n", type1, type2);
             newData->dataType = type1;
             newData->token = token;
+            //printf("pushuju %d s typem %d\n", token->attribute.INT, type1);
             tokenStackPush(s,newData);
             rule = zpracuj;
             continue;
@@ -239,14 +297,17 @@ precendentExpression* doPrecedenceOperation(token tokenAct) {
     //malloc pp
   }
 
-  token token2 = nextToken(&error, stack, doIndent);
-  if (token2.type == EOL || token2.type == EOL) {
+  token token2 = nextToken(&error, stack, doIndent); //pokud je jen jeden "express"
+  if (token2.type == EOL || token2.type == COLON) {
     int typ;
     if (tokenAct.type == INT) {
       typ = INT;
     } else if (tokenAct.type == LITERAL) {
       typ = LITERAL;
+    } else if (tokenAct.type == FLOAT) {
+      typ = FLOAT;
     }
+
     exp->returnToken = &tokenAct;
     exp->returnType = &typ;
     return exp;
@@ -332,10 +393,10 @@ void main() {
     return;
   }
   if (*exp->returnType == INT) {
-    printf("'%d'vracím\n", exp->returnToken->attribute.INT);
+    printf("'%d'vracím jako INT\n", exp->returnToken->attribute.INT);
   } else if (*exp->returnType == LITERAL) {
-    printf("'%s'vracím\n", exp->returnToken->attribute.string->string);
+    printf("'%s'vracím jako string\n", exp->returnToken->attribute.string->string);
   } else if (*exp->returnType == FLOAT) {
-    printf("'%f'vracím\n", exp->returnToken->attribute.FLOAT);
+    printf("'%f'vracím float\n", exp->returnToken->attribute.FLOAT);
   }
 }
