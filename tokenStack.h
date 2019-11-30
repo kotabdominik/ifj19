@@ -17,37 +17,33 @@
 #define STACK_H
 
 typedef enum { //polozka ve stacku
-  type_token,
-  type_nonterm, //E
-  type_handler //zarážka
-} SType;
-
-typedef union { //ulozeni tokenu
-  token* Token;
-} SAtribute;
+  typeToken,
+  typeNonterm, //E
+  typeHandler //zarážka
+} sType;
 
 typedef struct { //data položky ve stacku
-  dataType DataType;
-  SType Type;
-  SAtribute Atr;
-} SData;
+  tokenType dataType;
+  sType type;
+  token* token;
+} sData;
 
-typedef struct SItem { //jednotlivé položky ze stacku
-  SData* Data;
-  struct SItem* Next;
-} TSItem;
+typedef struct sItem { //jednotlivé položky ze stacku
+  sData* data;
+  struct sItem* next;
+} tsItem;
 
 typedef struct Stack {
-  TSItem* Top; //ukazatel na vrchol zásobníku
+  tsItem* top; //ukazatel na vrchol zásobníku
 } tokenStack;
 
 void tokenStackInit(tokenStack* s); //inicializace stacku pro tokeny
 void tokenStackDestruct(tokenStack* s); //zrušení stacku pro tokeny
 int tokenStackEmpty(const tokenStack* s); //vrátí 1, pokud je token stack prázdný
-SData* tokenStackTop(const tokenStack* s); //vrátí nám data z toho, co je na vrcholu stacku
+sData* tokenStackTop(const tokenStack* s); //vrátí nám data z toho, co je na vrcholu stacku
 void tokenStackPop(tokenStack* s); //popne stack
-void tokenStackPush(tokenStack* s, SData* data); //pushne stack
-SData* getTerminalData(tokenStack* s); //najde první terminál a dá mi jeho data
-void addHandler(tokenStack* s,SData * sData); //vloží do zásobníku zarážku
+void tokenStackPush(tokenStack* s, sData* data); //pushne stack
+sData* getTerminalData(tokenStack* s); //najde první terminál a dá mi jeho data
+void addHandler(tokenStack* s, sData * sData); //vloží do zásobníku zarážku
 
 #endif

@@ -44,13 +44,20 @@ int stringAddChar(smartString *str, char c) {
     str->allocatedSize =+ ALLOC_ADD;
   }
   str->string[str->length] = c;
-  str->length++;
+  if (c != '\0') {
+    str->length++;
+  }
+  
   str->string[str->length] = '\0';
 
   return OK;
 }
 
 int stringAddString(smartString *str, char* c) {
+  if (str->length == 0) {
+    stringInit(str);
+  }
+
   for (int i = 0; i < strlen(c); i++) {
     stringAddChar(str, c[i]);
   }

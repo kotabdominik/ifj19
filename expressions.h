@@ -33,16 +33,16 @@ typedef enum {
 } ruleType;
 
 typedef struct{
-    int StatusCode;
-    int* Type;
-    token* ReturnToken;
+    int* returnType;
+    token* returnToken;
 } precendentExpression;
 
 typedef enum {
   A, //0 <
   B, //1 =
   C, //2 >
-  E  //3 ERROR
+	D, //3 DONE
+  E  //4 ERROR
 } precedenceSign;
 
 #endif

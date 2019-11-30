@@ -16,17 +16,17 @@
 #include <stdio.h>
 
 void tokenStackInit(tokenStack* s) {
-  s->Top = NULL;
+  s->top = NULL;
 }
 
 void tokenStackDestruct(tokenStack* s) {
-  if(s != NULL){
-    TSItem* current = s->Top;
-    TSItem* rm = NULL;
+  if (s != NULL) {
+    tsItem* current = s->top;
+    tsItem* rm = NULL;
     while (current != NULL) {
       rm = current;
-      current = current->Next;
-      free(rm->Data);
+      current = current->next;
+      free(rm->data);
       free(rm);
     }
     free(s);
@@ -35,91 +35,91 @@ void tokenStackDestruct(tokenStack* s) {
 }
 
 int tokenStackEmpty(const tokenStack* s) {
-  return (s->Top == NULL);
+  return (s->top == NULL);
 }
 
-SData* tokenStackTop(const tokenStack* s) {
-  if(!tokenStackEmpty(s)) {
-    return s->Top->Data;
+sData* tokenStackTop(const tokenStack* s) {
+  if (!tokenStackEmpty(s)) {
+    return s->top->data;
   } else {
     return NULL;
   }
 }
 
 void tokenStackPop(tokenStack* s) {
-  TSItem* rm = s->Top;
-  s->Top = rm->Next;
-  free(rm->Data);
+  tsItem* rm = s->top;
+  s->top = rm->next;
+  free(rm->data);
   free(rm);
 }
 
-void tokenStackPush(tokenStack* s, SData* data) {
-  TSItem* new_elem = (TSItem*) malloc(sizeof(struct SItem));
-  if(new_elem == NULL){
+void tokenStackPush(tokenStack* s, sData* data) {
+  tsItem* new_elem = (tsItem*) malloc(sizeof(struct sItem));
+  if (new_elem == NULL) {
     //maloc ree
   }
-  new_elem->Data = data;
-  new_elem->Next = s->Top;
-  s->Top = new_elem;
+  new_elem->data = data;
+  new_elem->next = s->top;
+  s->top = new_elem;
 }
 
-SData* getTerminalData(tokenStack* s) {
-  TSItem* current = s->Top;
+sData* getTerminalData(tokenStack* s) {
+  tsItem* current = s->top;
   while (current != NULL) {
-    if(current->Data->Type == type_token) {
-      return current->Data;
+    if (current->data->type == typeToken) {
+      return current->data;
     }
-    current = current->Next;
+    current = current->next;
   }
   return NULL;
 }
 
-void addHandler(tokenStack *s, SData * sData) {
-  TSItem* current = s->Top;
-  TSItem* prev = NULL;
+void addHandler(tokenStack *s, sData* sData) {
+  tsItem* current = s->top;
+  tsItem* prev = NULL;
   if (sData == NULL) {
-    TSItem * newItem = malloc(sizeof(TSItem));
+    tsItem * newItem = malloc(sizeof(tsItem));
         if (newItem == NULL) {
           //malloc ree
         }
-        newItem->Data = malloc(sizeof(SData));
-        if(newItem->Data == NULL){
+        newItem->data = malloc(sizeof(sData));
+        if (newItem->data == NULL) {
           //malloc ree
         }
-        newItem->Data->Type = type_handler;
-        newItem->Next = NULL;
-        newItem->Data->Atr.Token = sData->Atr.Token;
+        newItem->data->type = typeHandler;
+        newItem->next = NULL;
+        newItem->data->token = sData->token;
         if (tokenStackEmpty(s)) {
-          s->Top = newItem;
+          s->top = newItem;
         } else {
-          while (current->Next != NULL) {
-            current = current->Next;
+          while (current->next != NULL) {
+            current = current->next;
           }
-          current->Next = newItem;
+          current->next = newItem;
         }
       } else {
         while (current != NULL) {
-          if (current->Data == sData) {
-            TSItem * newItem = malloc(sizeof(TSItem));
+          if (current->data == sData) {
+            tsItem * newItem = malloc(sizeof(tsItem));
             if (newItem == NULL) {
               //malloc ree
             }
             if (prev != NULL) {
-              prev->Next = newItem;
+              prev->next = newItem;
             } else {
-              s->Top = newItem;
+              s->top = newItem;
             }
-            newItem->Next = current;
-            newItem->Data = malloc(sizeof(SData));
-            if (newItem->Data == NULL) {
+            newItem->next = current;
+            newItem->data = malloc(sizeof(sData));
+            if (newItem->data == NULL) {
               //malloc ree
             }
-            newItem->Data->Type = type_handler;
-            newItem->Data->Atr.Token = sData->Atr.Token;
+            newItem->data->type = typeHandler;
+            newItem->data->token = sData->token;
             return;
           }
           prev = current;
-          current = current->Next;
+          current = current->next;
         }
       }
 }
