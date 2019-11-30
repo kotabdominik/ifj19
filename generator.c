@@ -18,7 +18,10 @@
   #include "symtable.h"
   #include "scanner.h"
   #include "expressions.h"
+  #include "list.h"
 
+
+{
   void degenerate(tDLList *list){
 
     while(list->nextToken != NULL){
@@ -80,3 +83,75 @@
 
   //||=============== Věstavené funkce konec ===============||//
   //||======================================================||//
+
+  void generateVariable(){
+    printf("DEFVAR LF@%p\n", );
+  }
+}
+
+generateInstruction(tDLList*list){
+  for (;list->First != NULL;list->First = list->rptr){
+
+    switch(list->First->Instruction->instType){
+      case(I_MOVE):
+      case(I_CREATEFRAME):
+      case(I_PUSHFRAME):
+      case(I_POPFRAME):
+      case(I_DEFVAR):
+      case(I_CALL):
+      case(I_RETURN):
+      case(I_PUSHS):
+      case(I_POPS):
+      case(I_CLEARS):
+      case(I_ADD):
+      case(I_SUB):
+      case(I_MUL):
+      case(I_DIV):
+      case(I_IDIV):
+      case(I_ADDS):
+      case(I_SUBS):
+      case(I_MULS):
+      case(I_DIVS):
+      case(I_IDIVS):
+      case(I_LT):
+      case(I_GT):
+      case(I_EQ):
+      case(I_LTS):
+      case(I_ETS):
+      case(I_EQS):
+      case(I_AND):
+      case(I_OR):
+      case(I_NOT):
+      case(I_ANDS):
+      case(I_ORS):
+      case(I_NOTS):
+      case(I_INT2FLOAT):
+      case(I_FLOAT2INT):
+      case(I_INT2CHAR):
+      case(I_STRI2INT):
+      case(I_INT2FLOATS):
+      case(I_FLOAT2INTS):
+      case(I_INT2CHARS):
+      case(I_STRI2INTS):
+      case(I_READ):
+      case(I_WRITE):
+      case(I_CONCAT):
+      case(I_STRLEN):
+      case(I_GETCHAR):
+      case(I_SETCHAR):
+      case(I_TYPE):
+      case(I_LABEL):
+      case(I_JUMP):
+      case(I_JUMPIFEQ):
+      case(I_JUMPIFNEQ):
+      case(I_JUMPIFEQS):
+      case(I_JUMPIFNEQS):
+      case(I_EXIT):
+      case(I_BREAK):
+      case(I_DPRINT):
+
+    }
+  }
+
+
+}
