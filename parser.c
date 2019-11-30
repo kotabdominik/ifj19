@@ -371,7 +371,6 @@ int statement(char *funName){
             tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
           }
         }
-        //printf("%s\n", tableG->symtabList[hash(funName)]->elementType.function->sT->symtabList[hash(tmpToken.attribute.string->string)]->key);
       }
 
 
@@ -458,7 +457,7 @@ int statement(char *funName){
     }
     else{
       tokenAct = ungetToken(&error, stack, doIndent);
-      tmpToken = tokenAct;
+
       result = expression();
       if(result != OK) return result;
 
@@ -486,6 +485,20 @@ int statement(char *funName){
     if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
     if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
 
+    doIndent = 1;
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    //nesmi tady byt indent
+    if(tokenAct.type == INDENT) return PARSING_ERR;
+    doIndent = 0;
+    //pokud je dedent, posleme ten token dal;
+    if(tokenAct.type == DEDENT) return OK;
+    //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    return OK;
+  }
+  else if(tokenAct.type == EOL){
     doIndent = 1;
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -1079,9 +1092,6 @@ int expression(){
 
 
 // DEBUGGING
-//||
-//|| Terminal now= [ ./parser <txt.txt ]
-//||
 int main(){
     stack = malloc(sizeof(tStack));
     stackInit(stack);
@@ -1092,10 +1102,9 @@ int main(){
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
 
     //setFile("txt.txt");
-
     int result = parse(tableGG, instrList);
 
-    //printf("%d\n", result);
+    printf("%d\n", result);
     return result;
 }
 
@@ -1104,3 +1113,4 @@ int main(){
 //                a ze z expression jeden token vyjde
 
 //malloc argumentu vestavenych funkci ?
+//kdyz se nekdo snazi volat funkci, co neni funkce? napr f = foo() i quess
