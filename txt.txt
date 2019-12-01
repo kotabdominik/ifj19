@@ -1,5 +1,21 @@
 def foo(a):
   pass
+
+
 c = 5
+
+
 foo(5)
-pass
+
+print()
+
+if 5:
+  pass
+
+else:
+  4
+
+
+while 7:
+  pass
+  
