@@ -440,28 +440,28 @@ int statement(char *funName){
       result = callParams(tmpToken.attribute.string->string);
 
       if(strcmp(tmpToken.attribute.string->string, "len") == 0){
-        generateInstruction(I_LEN, tmpItem->elementType.function->arguments->key, NULL, NULL);
+        generateInstruction(I_LEN, tmpItem->elementType.function->arguments->elementType.variable->value.string, NULL, NULL);
       }
       else if(strcmp(tmpToken.attribute.string->string, "substr") == 0){
         //generateInstruction(I_SUBSTR, tmpToken, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "chr"){
+      else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
         //generateInstruction(I_CHR, tmpToken, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "ord"){
+      else if(strcmp(tmpToken.attribute.string->string, "ord") == 0){
         //generateInstruction(I_ORD, tmpToken, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "print"){
+      else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
         //generateInstruction(I_PRINT, tmpToken, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "inputs"){
-        //generateInstruction(I_INPUTS, tmpToken, NULL, NULL);
+      else if(strcmp(tmpToken.attribute.string->string, "inputs") == 0){
+        generateInstruction(I_INPUTS, NULL, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "inputi"){
-        //generateInstruction(I_INPUTI, tmpToken, NULL, NULL);
+      else if(strcmp(tmpToken.attribute.string->string, "inputi") == 0){
+        generateInstruction(I_INPUTI, NULL, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "inputf"){
-        //generateInstruction(I_INPUTF, tmpToken, NULL, NULL);
+      else if(strcmp(tmpToken.attribute.string->string, "inputf") == 0){
+        generateInstruction(I_INPUTF, NULL, NULL, NULL);
       }
       else{
         generateInstruction(I_CALL, tmpItem->elementType.function->arguments->key, NULL, NULL); //???
@@ -1211,7 +1211,24 @@ int main(){
     //setFile("txt.txt");
     int result = parse(tableGG, instrList);
 
-    printf("%d\n", result);
+
+    fprintf(stdout, ".IFJcode19\n");
+        //generateBuiltInInstructions();
+        //generate(list);
+
+        fprintf(stdout, "LABEL $LEN\n");
+        fprintf(stdout, "DEFVAR LF$RETVAL\n");
+
+        fprintf(stdout, "DEFVAR LF$LENSTR\n");
+        char* tmp = (void *)instrList->First->Instruction.addr1;
+        fprintf(stdout, "MOVE LF$LENSTR string@%s\n", tmp);
+
+        ///podmienka ci je strings
+
+        fprintf(stdout, "STRLEN LF@RETVAL LF@LENSTR\n");
+        fprintf(stdout, "PUSHS LF@RETVAL\n");
+
+    //printf("%d\n", result);
 
     return result;
 }
