@@ -13,7 +13,6 @@
   */
 
 
-//01101010 01100101 01100010 01100101 01101101 00100000 01110100 01101001 00100000 01101101 01100001 01110100 01100101 01110010 00100000 01100001 01101011 00100000 01101110 01100101 01100100 01100001 01110011 00100000 00110010 00110101 00100000 01100010 01101111 01100100 01101111 01110110
 #include "parser.h"
 
 
@@ -67,7 +66,7 @@ int statement(char *funName){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -174,7 +173,7 @@ int statement(char *funName){
         generateInstruction(I_LABEL, NULL, NULL, NULL);
         jmp2->addr1 = list->Last;
 
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -257,7 +256,7 @@ int statement(char *funName){
         }
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -440,10 +439,10 @@ int statement(char *funName){
 
       result = callParams(tmpToken.attribute.string->string);
 
-      if(tmpToken.attribute.string->string == "len"){
+      if(strcmp(tmpToken.attribute.string->string, "len") == 0){
         generateInstruction(I_LEN, tmpItem->elementType.function->arguments->key, NULL, NULL);
       }
-      else if(tmpToken.attribute.string->string == "substr"){
+      else if(strcmp(tmpToken.attribute.string->string, "substr") == 0){
         //generateInstruction(I_SUBSTR, tmpToken, NULL, NULL);
       }
       else if(tmpToken.attribute.string->string == "chr"){
@@ -465,7 +464,7 @@ int statement(char *funName){
         //generateInstruction(I_INPUTF, tmpToken, NULL, NULL);
       }
       else{
-        generateInstruction(I_CALL, tmpItem, NULL, NULL); //???
+        generateInstruction(I_CALL, tmpItem->elementType.function->arguments->key, NULL, NULL); //???
       }
 
       if (result != OK) return result;
@@ -512,7 +511,7 @@ int statement(char *funName){
       return OK;
     }
   }
-  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET){{
+  else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET || tokenAct.type == DOCCOM){{
     result = expression();
     if(result != OK) return result;
 
@@ -546,7 +545,7 @@ int statement(char *funName){
     if(error != OK) return error; // zkoumani lexikalniho erroru
     return OK;
   }
-  else if(tokenAct.type == DOCCOM){
+  /*else if(tokenAct.type == DOCCOM){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
@@ -565,7 +564,7 @@ int statement(char *funName){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     return OK;
-  }
+  }*/
   else{
     fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
     return PARSING_ERR;
@@ -1208,7 +1207,7 @@ int main(){
     tDLList *instrList = malloc(sizeof(tDLList));
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
-
+    freopen("txt.txt","r",stdin);
     //setFile("txt.txt");
     int result = parse(tableGG, instrList);
 
@@ -1222,4 +1221,3 @@ int main(){
 //                a ze z expression jeden token vyjde
 
 //malloc argumentu vestavenych funkci ?
-//DOCCOM
