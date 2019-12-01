@@ -17,6 +17,7 @@
 #include "strings.h"
 #include "error.h"
 #include <ctype.h>
+#include <stdbool.h>
 #include "stack.c"
 #include "strings.c"
 
@@ -66,7 +67,8 @@ typedef enum {
     RIGHTBRACKET, // )
     COMMA, // ,
     //SEMICOLON, // ;
-            COLON, // :
+    COLON, // :
+    BOOL,
     ASSIGN // =
 } tokenType;
 
@@ -75,6 +77,7 @@ typedef union {
     smartString *string; //string value
     int INT;
     double FLOAT;
+    bool BOOL;
 } tokenAttribute;
 
 typedef struct {
