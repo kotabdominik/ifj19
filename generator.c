@@ -23,48 +23,76 @@
 
 
 void degenerate(tDLList *list){
+  fprintf(stdout, ".IFJcode19\n");
+  generateBuiltInInstructions();
+  generate(list);
 
-    while(list->nextToken != NULL){
-        fprintf(stdout, ".IFJcode19\n");
-    }
 };
 
 //||======================================================||//
 //||=============== Věstavené funkce start ===============||//
-
+{
 void generateInputs(){
-    printf("JUMP _OMEGAJUMP%d\n", 5); //tmp
+/*    printf("JUMP _ALFA%d\n", 5); //tmp
     printf("LABEL _OMEGALABEL%p\n", list->First->Instruction->addr1);
     printf("PUSHFRAME\n");
 
     printf("DEFVAR LF@_RTVL%p\n",list->First->Instruction->addr1);
     printf("MOVE LF@_RTVL%p nil@nil\n",list->First->Instruction->addr1);
     printf("PUSHS LF@_RTVL%p\n",list->First->Instruction->addr1);
+*/
+    printf("READ LF@$VAR string\n");
+    printf("PUSHS LF@$VAR\n");
 
-    printf("READ LF@_RTVL%p string\n", (void*)list->First->Instruction->addr1);
-    printf("PUSHS LF@_RTVL%p\n", (void*)list->First->Instruction->addr1);
-
-    printf("POPS LF@_RTVL%p\n",list->First->Instruction->addr1);
+/*    printf("POPS LF@_RTVL%p\n",list->First->Instruction->addr1);
     printf("POPFRAME\n");
 
     printf("RETURN\n");
     printf("LABEL _OMEGAJUMP%d\n", 5); //tmp
-
+*/
 }
 
 void generateInputi(){
+  //fprintf(stdout, "LABEL $BETA\n");
+  //fprintf(stdout, "PUSHFRAME\n");
+
+  fprintf(stdout, "READ LF@$VAR int\n");
+  fprintf(stdout, "PUSHS LF@$VAR\n");
 
 }
 
 void generateInputf(){
 
+  fprintf(stdout, "READ LF@$VAR float\n");
+  fprintf(stdout, "PUSHS LF@$VAR\n");
+
 }
 
 void generatePrint(){
 
+    fprintf(stdout, "LABEL $DELTA\n");
+    fprintf(stdout, "DEFVAR $RETVAL\n ");
+    while(stack of expressions is not empty)
+    {
+      fprintf(stdout, "WRITE LF@%s\n",expression);
+    }
+    fprintf(stdout, "MOVE $RETVAL  string@None\n");
+
 }
 
 void generateLen(){
+
+      fprintf(stdout, "LABEL $LEN\n");
+      fprintf(stdout, "DEFVAR LF$RETVAL\n");
+
+      fprintf(stdout, "DEFVAR LF$LENSTR\n");
+      //char* tmp = (void *)instrList->First->Instruction.addr1;
+      fprintf(stdout, "MOVE LF$LENSTR string@%s\n", (void *)list->First->Instruction.addr1);
+
+      ///podmienka ci je strings
+
+      fprintf(stdout, "STRLEN LF@RETVAL LF@LENSTR\n");
+      fprintf(stdout, "PUSHS LF@RETVAL\n");
 
 }
 
@@ -79,7 +107,7 @@ void generateOrd(){
 void generateChr(){
 
 }
-
+}
 //||=============== Věstavené funkce konec ===============||//
 //||======================================================||//
 
