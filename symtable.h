@@ -72,7 +72,8 @@ typedef struct symtableItm { //tady musí být
 
 typedef struct symtable { //tady musi
 	unsigned int size;
-	symtableItem *symtabList[];
+  symtableItem *currentFunc;
+  symtableItem *symtabList[];
 } symbolTable;
 
 

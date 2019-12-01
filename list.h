@@ -78,6 +78,15 @@
 #define I_BREAK 54
 #define I_DPRINT 55
 
+#define I_INPUTS 56
+#define I_INPUTI 57
+#define I_INPUTF 58
+#define I_LEN 59
+#define I_SUBSTR 60
+#define I_ORD 61
+#define I_CHR 62
+#define I_PRINT 63
+
 
 typedef struct
 {
