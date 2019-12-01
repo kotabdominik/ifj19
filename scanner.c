@@ -917,7 +917,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     return Token;
                 }
 
-                if else (isdigit(c)) { //Robíme číslo
+                if (isdigit(c)) { //Robíme číslo
                     stringAddChar(s, c);
                     int tmpNum = c - '0'; //lebo ascii hodnota
                     c = getchar();
@@ -1045,7 +1045,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
                 }
 
-                if else (c == '\'') { // Robíme literál
+                if (c == '\'') { // Robíme literál
                     //stringAddChar(s, c);
                     c = getchar();
                     state = STATE_P10;
@@ -1155,11 +1155,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
                 }
 
-                else {
                 *error = LEXICAL_ERR;
                 Token.type = BROKEN;
                 return Token;
-                }
+
 
         }
     }
