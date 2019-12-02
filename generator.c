@@ -92,6 +92,8 @@ void generateLen(){
       //fprintf(stdout, "MOVE LF$LENSTR string@%s\n", (void *)list->First->Instruction.addr1);
 
       ///podmienka ci je strings
+      //podmienky tldr robi domino teda nie?
+      //shoudda me keep checking em?
 
       fprintf(stdout, "STRLEN LF@RETVAL LF@%1\n"); ///premenne parametrov su MEME (zapis cislami)
       //fprintf(stdout, "PUSHS LF@RETVAL\n");
@@ -127,7 +129,7 @@ void generateOrd(){
   fprintf(stdout, "STR2INT LF@$RETVAL LF@$STRING LF@$POSIT\n");
   fprintf(stdout, "POPFRAME\n");
   fprintf(stdout, "LABEL $ERROR\n");
-  fprintf(stdout, "RETURN\n"); 
+  fprintf(stdout, "RETURN\n");
 
 }
 //chr(i)– Vrátí jednoznakový řetězec se znakem, jehož ASCII kód je zadán para-metrem𝑖. Případ, kdy je𝑖mimo interval[0; 255], vede na běhovou chybu při prácis řetězcem.
