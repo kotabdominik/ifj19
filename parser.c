@@ -788,6 +788,22 @@ int callParams(char* funName){
     }
   }
 
+  if(strcmp(funName, "print") == 0){
+    functionData *item;
+    item = (functionData *) malloc(sizeof(functionData));
+    item->arguments = (symtableItem *) malloc(sizeof(symtableItem));
+    item->arguments[0].type = VARIABLE;
+    (item->arguments[0]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+    (item->arguments[0]).elementType.variable->type = VARIABLE;
+    item->argCount = 1;
+
+    symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+    item->sT = tmpIT->elementType.function->sT;
+    tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
+    tmpIT->elementType.function = item;
+    tableG->symtabList[hash(funName)] = tmpIT;
+  }
+
   if(tmpItem0->elementType.function->argCount <= 0 && tmpItem0->elementType.function->argCount != -1){
     fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
     return SEM_MISC_ERR;
@@ -872,6 +888,22 @@ int callParamsN(char* funName, int argc){
   else{
     fprintf(stderr, "za argumentem ve volani funkce musi nasledovat  ,  nebo  )  \n");
     return PARSING_ERR;
+  }
+
+  if(strcmp(funName, "print") == 0){
+    symtableItem *tmpAAAAAA = searchSymbolTableWithString(tableG, funName); //hledáme nejen na indexu, ale i jestli někam neukazuje yk
+    functionData *item = tmpAAAAAA->elementType.function;
+    item->arguments = (symtableItem *) realloc(item->arguments, (argc + 1) * sizeof(symtableItem));
+    item->arguments[argc].type = VARIABLE;
+    (item->arguments[argc]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+    (item->arguments[argc]).elementType.variable->type = VARIABLE;
+    item->argCount = argc + 1;
+
+    symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+    item->sT = tmpIT->elementType.function->sT;
+    tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
+    tmpIT->elementType.function = item;
+    tableG->symtabList[hash(funName)] = tmpIT;
   }
 
   if(tmpItem0->elementType.function->argCount <= argc && tmpItem0->elementType.function->argCount != -1){
@@ -1212,7 +1244,7 @@ int main(){
     int result = parse(tableGG, instrList);
 
 
-    fprintf(stdout, ".IFJcode19\n");
+  /*  fprintf(stdout, ".IFJcode19\n");
         //generateBuiltInInstructions();
         //generate(list);
 
@@ -1227,8 +1259,8 @@ int main(){
 
         fprintf(stdout, "STRLEN LF@RETVAL LF@LENSTR\n");
         fprintf(stdout, "PUSHS LF@RETVAL\n");
-
-    //printf("%d\n", result);
+*/
+    printf("%d\n", result);
 
     return result;
 }
