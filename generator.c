@@ -100,9 +100,55 @@ void generateLen(){
       fprintf(stdout, "POPFRAME\n");
       fprintf(stdout, "RETURN\n");
 }
-
+//substr(s,i,n)– Vrátí podřetězec s zadaného řetězce. Druhým parametrem i je dán začátek požadovaného podřetězce (počítáno od nuly)
+//a třetí parametr n určuje délku podřetězce. Je-li index i mimo meze 0 až len(s)nebo n < 0, vrací funkce None.
+//Je-li n > len(s)−𝑖, jsou jako řetězec vráceny od i-tého znaku všechny zbývající znaky řetězce.
 void generateSubstr(){
+  //INIT
+  fprintf(stdout, "LABEL $SUBSTR\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+  fprintf(stdout, "MOVE LF@$RETVAL string@nil\n");/////check if this is possible, else get first char of string
+  //ULOŽENIE PARAMETROV
+  fprintf(stdout, "DEFVAR LF@$STRING_S\n");
+  fprintf(stdout, "MOVE LF@$STRING LF@%1\n");/////check if string possibly
+  fprintf(stdout, "DEFVAR LF@$POSIT_I\n");
+  fprintf(stdout, "MOVE LF@$POSIT LF@%2\n");
+  fprintf(stdout, "DEFVAR LF@$LENGTH_N\n");
+  fprintf(stdout, "MOVE LF@$LENGTH_N LF@%3\n");
 
+  fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
+  fprintf(stdout, "STRLEN LF@$TMPLEN LF@%1\n");
+  //KONTROLA POZICIE
+  fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
+  fprintf(stdout, "GT LF@$BOOLCHECK LF@%2 LF@$TMPLEN\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@$BOOLCHECK bool@true\n");
+  fprintf(stdout, "LT LF@$BOOLCHECK LF@%2 int@-1\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@$BOOLCHECK bool@true\n");
+  fprintf(stdout, "LT LF@$BOOLCHECK LF@%3 int@-1\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@$BOOLCHECK bool@true\n");
+  //FUNKCIA
+  //fprintf(stdout, "GETCHAR LF@$RETVAL LF@$STRING_S LF@$POSIT_I\n");
+  //fprintf(stdout, "ADD LF@$POSIT_I LF@$POSIT_I int@1\n");//inkrementácia
+  fprintf(stdout, "DEFVAR LF@$TMPSTR\n");
+  fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");//podmienka na while loop
+  //SMYČKA
+  fprintf(stdout, "LABEL $WHILE_LOOP_B\n");
+  fprintf(stdout, "JUMPIFEQ $WHILE_LOOP_E LF@$POSIT_I LF@$LENGTH_N\n");//skoč ak si dokončil
+  fprintf(stdout, "JUMPIFEQ $WHILE_LOOP_E LF@$POSIT_I LF@$TMPLEN\n");//skoč ak je koniec stringu
+  fprintf(stdout, "GETCHAR LF@$TMPSTR LF@$STRING_S LF@$POSIT_I\n");//getchar
+  fprintf(stdout, "CONCAT LF@$RETVAL LF@$RETVAL LF@$TMPSTR\n");//concat stringy
+  fprintf(stdout, "ADD LF@$POSIT_I LF@$POSIT_I int@1\n");//inkrementácia
+  fprintf(stdout, "JUMP $WHILE_LOOP_B\n");
+  //KONIEC SMYČKY
+  fprintf(stdout, "LABEL $WHILE_LOOP_E\n");
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
+  //ERROR
+  fprintf(stdout, "LABEL $ERROR\n");
+  fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");  
 }
 //ord(s,i)– Vrátí ordinální hodnotu (ASCII) znaku s na pozici i v řetězci. Je-lipozice mimo meze řetězce (0 ažlen(s)- 1), vrací None.
 void generateOrd(){
@@ -110,7 +156,6 @@ void generateOrd(){
   fprintf(stdout, "LABEL $ORD\n");
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-  fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
   //ULOŽENIE PARAMETROV
   fprintf(stdout, "DEFVAR LF@$STRING\n");
   fprintf(stdout, "MOVE LF@$STRING LF@%1\n");/////check if string possibly
@@ -128,7 +173,11 @@ void generateOrd(){
   //VÝPOČET A NÁVRAT
   fprintf(stdout, "STR2INT LF@$RETVAL LF@$STRING LF@$POSIT\n");
   fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
+  //ERROR
   fprintf(stdout, "LABEL $ERROR\n");
+  fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+  fprintf(stdout, "POPFRAME\n");
   fprintf(stdout, "RETURN\n");
 
 }
