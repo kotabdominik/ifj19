@@ -895,14 +895,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 return Token;
 
             case '\r': //lebo pepega robi projekty na windowse
-                c = getchar();
-                if (c == '\n')
-                  continue;
-                else{
-                  fprintf(stderr, "SORE WA NANI??? TASUKETE\n");
-                  exit(69);
-                } 
-
+                continue;
 
             default:
                 if (isalpha(c) || c == '_') { //Robíme basic string
