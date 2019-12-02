@@ -894,6 +894,9 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 Token.type = EOL;
                 return Token;
 
+            case '\r\n': //lebo pepega robi projekty na windowse
+                continue;
+
             default:
                 if (isalpha(c) || c == '_') { //Robíme basic string
                     Token.type = STR;
@@ -1166,8 +1169,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 Token.type = BROKEN;
                 return Token;
                 */
-
-
         }
     }
     Token.type = EOFTOKEN;
