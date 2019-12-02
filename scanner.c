@@ -894,8 +894,15 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 Token.type = EOL;
                 return Token;
 
-            case '\r\n': //lebo pepega robi projekty na windowse
-                continue;
+            case '\r': //lebo pepega robi projekty na windowse
+                c = getchar();
+                if (c == '\n')
+                  continue;
+                else{
+                  fprintf(stderr, "SORE WA NANI??? TASUKETE\n");
+                  exit(69);
+                } 
+
 
             default:
                 if (isalpha(c) || c == '_') { //Robíme basic string
