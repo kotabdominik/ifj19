@@ -1155,9 +1155,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
                 }
 
+                /*
                 *error = LEXICAL_ERR;
                 Token.type = BROKEN;
-                return Token;
+                return Token;*/
 
 
         }
