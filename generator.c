@@ -33,38 +33,42 @@ void degenerate(tDLList *list){
 //||=============== Věstavené funkce start ===============||//
 {
 void generateInputs(){
-/*    printf("JUMP _ALFA%d\n", 5); //tmp
-    printf("LABEL _OMEGALABEL%p\n", list->First->Instruction->addr1);
-    printf("PUSHFRAME\n");
 
-    printf("DEFVAR LF@_RTVL%p\n",list->First->Instruction->addr1);
-    printf("MOVE LF@_RTVL%p nil@nil\n",list->First->Instruction->addr1);
-    printf("PUSHS LF@_RTVL%p\n",list->First->Instruction->addr1);
-*/
-    printf("READ LF@$VAR string\n");
-    printf("PUSHS LF@$VAR\n");
+  fprintf(stdout, "LABEL $ALFA\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF$RETVAL\n");
 
-/*    printf("POPS LF@_RTVL%p\n",list->First->Instruction->addr1);
-    printf("POPFRAME\n");
+  fprintf(stdout, "READ LF@$RETVAL string\n");
+  fprintf(stdout, "PUSHS LF@$RETVAL\n");
 
-    printf("RETURN\n");
-    printf("LABEL _OMEGAJUMP%d\n", 5); //tmp
-*/
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
 }
 
 void generateInputi(){
-  //fprintf(stdout, "LABEL $BETA\n");
-  //fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "LABEL $BETA\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF$RETVAL\n");
 
-  fprintf(stdout, "READ LF@$VAR int\n");
-  fprintf(stdout, "PUSHS LF@$VAR\n");
+  fprintf(stdout, "READ LF@$RETVAL int\n");
+  fprintf(stdout, "PUSHS LF@$RETVAL\n");
+
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
 
 }
 
 void generateInputf(){
 
-  fprintf(stdout, "READ LF@$VAR float\n");
-  fprintf(stdout, "PUSHS LF@$VAR\n");
+  fprintf(stdout, "LABEL $GAMA\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF$RETVAL\n");
+
+  fprintf(stdout, "READ LF@$RETVAL float\n");
+  fprintf(stdout, "PUSHS LF@$RETVAL\n");
+
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
 
 }
 
@@ -148,7 +152,7 @@ void generateSubstr(){
   fprintf(stdout, "LABEL $ERROR\n");
   fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
   fprintf(stdout, "POPFRAME\n");
-  fprintf(stdout, "RETURN\n");  
+  fprintf(stdout, "RETURN\n");
 }
 //ord(s,i)– Vrátí ordinální hodnotu (ASCII) znaku s na pozici i v řetězci. Je-lipozice mimo meze řetězce (0 ažlen(s)- 1), vrací None.
 void generateOrd(){
