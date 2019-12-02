@@ -82,30 +82,87 @@ void generatePrint(){
 
 void generateLen(){
 
-      fprintf(stdout, "LABEL $LEN\n");
+      fprintf(stdout, "LABEL $LENGTH\n");
+      fprintf(stdout, "PUSHFRAME\n");
       fprintf(stdout, "DEFVAR LF$RETVAL\n");
-
-      fprintf(stdout, "DEFVAR LF$LENSTR\n");
+      //fprintf(stdout, "MOVE LF$RETVAL int@0\n");  ///Check či je to potrebne
+      //fprintf(stdout, "DEFVAR LF$LENSTR\n");
       //char* tmp = (void *)instrList->First->Instruction.addr1;
-      fprintf(stdout, "MOVE LF$LENSTR string@%s\n", (void *)list->First->Instruction.addr1);
+      ///no idea ale zjavne bude stačiť random LF premenna..?
+      //fprintf(stdout, "MOVE LF$LENSTR string@%s\n", (void *)list->First->Instruction.addr1);
 
       ///podmienka ci je strings
 
-      fprintf(stdout, "STRLEN LF@RETVAL LF@LENSTR\n");
-      fprintf(stdout, "PUSHS LF@RETVAL\n");
-
+      fprintf(stdout, "STRLEN LF@RETVAL LF@%1\n"); ///premenne parametrov su MEME (zapis cislami)
+      //fprintf(stdout, "PUSHS LF@RETVAL\n");
+      fprintf(stdout, "POPFRAME\n");
+      fprintf(stdout, "RETURN\n");
 }
 
 void generateSubstr(){
 
 }
-
+//ord(s,i)– Vrátí ordinální hodnotu (ASCII) znaku s na pozici i v řetězci. Je-lipozice mimo meze řetězce (0 ažlen(s)- 1), vrací None.
 void generateOrd(){
+  //INIT
+  fprintf(stdout, "LABEL $ORD\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+  fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+  //ULOŽENIE PARAMETROV
+  fprintf(stdout, "DEFVAR LF@$STRING\n");
+  fprintf(stdout, "MOVE LF@$STRING LF@%1\n");/////check if string possibly
+  fprintf(stdout, "DEFVAR LF@$POSIT\n");
+  fprintf(stdout, "MOVE LF@$POSIT LF@%2\n");
+  fprintf(stdout, "DEFVAR LF@$CHR2INT\n");
+  fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
+  fprintf(stdout, "STRLEN LF@$TMPLEN LF@%1\n");
+  //KONTROLA POZICIE
+  fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
+  fprintf(stdout, "GT LF@$BOOLCHECK LF@%2 LF@$TMPLEN\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@$BOOLCHECK bool@true\n");
+  fprintf(stdout, "LT LF@$BOOLCHECK LF@%2 int@0\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@$BOOLCHECK bool@true\n");
+  //VÝPOČET A NÁVRAT
+  fprintf(stdout, "STR2INT LF@$RETVAL LF@$STRING LF@$POSIT\n");
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "LABEL $ERROR\n");
+  fprintf(stdout, "RETURN\n"); 
 
 }
-
+//chr(i)– Vrátí jednoznakový řetězec se znakem, jehož ASCII kód je zadán para-metrem𝑖. Případ, kdy je𝑖mimo interval[0; 255], vede na běhovou chybu při prácis řetězcem.
 void generateChr(){
-
+  //INIT
+  fprintf(stdout, "LABEL $CHAR\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF$RETVAL\n");
+  //ULOŽENIE PARAMETRA
+  fprintf(stdout, "DEFVAR LF@$ASC\n");
+  fprintf(stdout, "MOVE LF@ASC LF@%1\n");
+  //KONTROLA PARAMETRA #1
+  fprintf(stdout, "DEFVAR LF@INTCHECK\n");
+  fprintf(stdout, "TYPE LF@INTCHECK LF@%1\n");
+  fprintf(stdout, "DEFVAR LF@INTCHECK\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR LF@INTCHECK string@nil\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR LF@INTCHECK string@string\n");
+  fprintf(stdout, "JUMPIFEQ $CHARFUN LF@INTCHECK string@int\n");
+  fprintf(stdout, "JUMPIFNEQ $CHARFUN LF@INTCHECK string@float\n");
+  //KONVERT AK FLOAT
+  fprintf(stdout, "FLOAT2INT LF@$1 LF@$1\n");
+  //KONTROLA PARAMETRA #2
+  fprintf(stdout, "LABEL $CHARFUN\n");
+  fprintf(stdout, "DEFVAR LF@BOOLCHECK\n");
+  fprintf(stdout, "LT LF@BOOLCHECK LF@%1 int@256\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@BOOLCHECK bool@false\n");
+  fprintf(stdout, "GT LF@BOOLCHECK LF@%1 int@-1\n");
+  fprintf(stdout, "JUMPIFEQ $ERROR $LF@BOOLCHECK bool@false\n");
+  //VYKONANIE FUNKCIE A NÁVRAT
+  fprintf(stdout, "INT2CHAR LF@RETVAL LF@%1\n");
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
+  //CHYBA
+  fprintf(stdout, "LABEL $ERROR\n");
+  fprintf(stdout, "EXIT int@4\n");
 }
 }
 //||=============== Věstavené funkce konec ===============||//
