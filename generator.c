@@ -112,7 +112,7 @@ void generateSubstr(){
   fprintf(stdout, "LABEL $SUBSTR\n");
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-  fprintf(stdout, "MOVE LF@$RETVAL string@nil\n");/////check if this is possible, else get first char of string
+  fprintf(stdout, "MOVE LF@$RETVAL string@\n");/////this shoudda be var into string init, by example_while.src
   //ULOŽENIE PARAMETROV
   fprintf(stdout, "DEFVAR LF@$STRING_S\n");
   fprintf(stdout, "MOVE LF@$STRING LF@%1\n");/////check if string possibly
@@ -224,8 +224,8 @@ void generateChr(){
 //||======================================================||//
 
 void generateVariable(){
-    printf("DEFVAR LF@%p\n", );
-}
+  printf("DEFVAR LF@VAR%p\n",list->First->Instruction.addr1);
+  }
 
 
 void generateInstruction(tDLList*list){
