@@ -147,23 +147,6 @@ int statement(char *funName){
         jmp2->addr1 = list->Last;
 
         return OK;
-
-        /*
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != EOL){
-            return PARSING_ERR;
-        }
-        doIndent = 1;
-        tokenAct = nextToken(&error, stack, doIndent);
-        doIndent = 0;
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != DEDENT){
-            return PARSING_ERR;
-        }
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;*/
     }
     else if(tokenAct.attribute.keyword == WHILE){ // WHILE ---------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
@@ -464,7 +447,7 @@ int statement(char *funName){
         generateInstruction(I_INPUTF, NULL, NULL, NULL);
       }
       else{
-        generateInstruction(I_CALL, tmpItem->elementType.function->arguments->key, NULL, NULL); //???
+        generateInstruction(I_CALL, tmpItem->elementType.function, NULL, NULL); //???
       }
 
       if (result != OK) return result;
@@ -779,7 +762,7 @@ int callParams(char* funName){
   tokenAct = nextToken(&error, stack, doIndent);
   if(error != OK) return error; // zkoumani lexikalniho erroru
   if(tokenAct.type == RIGHTBRACKET){
-    if (tmpItem0->elementType.function->argCount == 0 || tmpItem0->elementType.function->argCount == -1) {
+    if (tmpItem0->elementType.function->argCount == 0 || strcmp(funName, "print") == 0) {
       return OK;
     }
     else{
@@ -798,31 +781,20 @@ int callParams(char* funName){
     item->argCount = 1;
 
     symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+    free(tmpIT->elementType.function->arguments);
     item->sT = tmpIT->elementType.function->sT;
     tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
     tmpIT->elementType.function = item;
     tableG->symtabList[hash(funName)] = tmpIT;
   }
 
-  if(tmpItem0->elementType.function->argCount <= 0 && tmpItem0->elementType.function->argCount != -1){
+  if(tmpItem0->elementType.function->argCount <= 0 && strcmp(funName, "print") != 0){
     fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
     return SEM_MISC_ERR;
   }
   else{
     if(tokenAct.type == STR){
       symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
-    /*  symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
-      for(int i = 0; i < tmpItem->elementType.function->argCount; i++){
-        //porovnat tmpToken s argumentama
-        if(strcmp(tmp->elementType.function->arguments[i].key, tokenAct.attribute.string->string) == 0){
-          tmpItem = &(tmp->elementType.function->arguments[i]);
-          //succMePls = 1;
-          if(tmpItem->defined != true){
-            tmpItem->defined = false;
-          }
-          break;
-        }
-      }*/
 
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
@@ -1268,5 +1240,3 @@ int main(){
 
 // expression ... predpoklada se, ze do expression prijde rovnou novy token ktery se ma rozparsovat
 //                a ze z expression jeden token vyjde
-
-//malloc argumentu vestavenych funkci ?
