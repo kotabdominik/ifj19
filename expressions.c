@@ -17,6 +17,7 @@
 int error = OK;
 tStack *stack;
 int doIndent = 0;
+symbolTable *table;
 
 // KDYZ PRIJDE PRVNE TO CO JE NAPRAVO A PAK AZ TO CO PRIJDE NAHORE, PAK
 // priklad prvni radek, druha cell ... +* ... prvne se provede *
@@ -65,6 +66,7 @@ int getPrecedenceIndex(token* tokenAct) { //vrací index z precedence tablu
   case NOTEQ: // !=
   case LESS: // <
   case GREATER: // >
+  case ASSIGN: // =
     return 5;
   case COLON: //$
   case EOL:
@@ -79,9 +81,10 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
   int index1, index2 = 0;
   index1 = getPrecedenceIndex(stackToken);
   index2 = getPrecedenceIndex(vstupniToken);
+  printf("%d je vstupniToken type\n", vstupniToken->type);
   if (index1 == -1 || index2 == -1) {
     printf("error\n");
-  return -1;
+    return -1;
   }
   //printf("%d a %d pricemz tokeny meli\n", stackToken->type, vstupniToken->type);
   return precedenceTable[index1][index2];
@@ -94,6 +97,7 @@ int findRule(tokenStack *s, int *type) {
   int rule = 0;
   int operacevtokenu = -1;
   while (rule == 0) {
+    printf("yay\n");
     int type1, type2;
     sData* data = tokenStackTop(s);
     switch (state) {
@@ -106,7 +110,7 @@ int findRule(tokenStack *s, int *type) {
           if (data->token->type == RIGHTBRACKET) {
             state = 2;
             zpracuj = 1;
-          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL) { //int, float, literal, str
+          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR) { //int, float, literal, str
             token = data->token;
             zpracuj = 2;
             state = 3;
@@ -117,12 +121,31 @@ int findRule(tokenStack *s, int *type) {
             } else if (data->token->type == LITERAL) {
               type1 = LITERAL;
             } else if (data->token->type == STR) {
+              symtableItem* item = searchSymbolTableWithString(table, data->token->attribute.string->string);
+              if (item && item->elementType.variable->type == DATA_INT) {
+                data->token->type = type1 = INT;
+                data->token->attribute.INT = item->elementType.variable->value.INT;
+              } else if (item && item->elementType.variable->type == DATA_STRING) {
+                data->token->type = type1 = LITERAL;
+                stringClear(data->token->attribute.string);
+                stringAddString(data->token->attribute.string, item->elementType.variable->value.string);
+              } else if (item && item->elementType.variable->type == DATA_FLOAT) {
+                data->token->type = type1 = FLOAT;
+                data->token->attribute.FLOAT = item->elementType.variable->value.FLOAT;
+              } else {
               //prohledávám symtable xd
               //type1 = idk
+                printf("%d je type\n", type1);
+                return -1;
+              }
             } else {
               return -1;
             }
+          } else {
+            return -1;
           }
+        } else {
+          return -1;
         }
         break;
       case 1:
@@ -193,6 +216,8 @@ int findRule(tokenStack *s, int *type) {
               } else if (operacevtokenu == EQ) {
 
               } else if (operacevtokenu == NOTEQ) {
+
+              } else if (operacevtokenu == ASSIGN) {
 
               } else {
                 printf("syntaxx pepe\n");
@@ -362,6 +387,22 @@ void main() {
   stackInit(stack);
   stackPush(stack, 0);
 
+  table = initSymbolTable(MAX_SYMTABLE_SIZE);
+  token TokenUwu, TokenOwo, TokenQQ;
+  smartString *s = malloc(sizeof(smartString));
+  if (s == NULL){
+      return;
+  }
+  stringInit(s);
+  stringAddString(s, "uwu");
+  TokenUwu.attribute.string = s;
+  TokenUwu.type = STR;
+  insertSymbolTable(table, TokenUwu, VARIABLE);
+  symtableItem* item = searchSymbolTableWithString(table, "uwu");
+  item->elementType.variable->value.string = malloc(sizeof(char)*5);
+  strcpy(item->elementType.variable->value.string, "uwu\0");
+  item->elementType.variable->type = DATA_STRING;
+
   token token1;
   token1 = nextToken(&error, stack, doIndent);
   precendentExpression* exp = doPrecedenceOperation(token1);
@@ -369,7 +410,7 @@ void main() {
     return;
   }
   if (*exp->returnType == INT) {
-    printf("'%d'vracím jako INT\n", exp->returnToken->attribute.INT);
+    printf("'%d'vracím jako int\n", exp->returnToken->attribute.INT);
   } else if (*exp->returnType == LITERAL) {
     printf("'%s'vracím jako string\n", exp->returnToken->attribute.string->string);
   } else if (*exp->returnType == FLOAT) {
