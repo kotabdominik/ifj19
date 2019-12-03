@@ -34,6 +34,6 @@ void generateSubstr();
 void generateBuiltIn();
 void generateAssign(tDLList*list);
 void generateGFVariable();
-void generateInstruction(tDLList*list);
+void generateInstructionREE(tDLList*list);
 
 #endif
