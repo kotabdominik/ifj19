@@ -296,31 +296,58 @@ void generateInstruction(tDLList*list){
           case(I_PRINT):
             parCounter = list->First->Instruction->addr2;////////////////////////dohodni sa s jindrom
             for (int i = 0; i < parCounter; i++){
-              fprintf(stdout, "PUSHS string@%s\n", DAJAKY PRECHOD ARGUMENTOV);
+              fprintf(stdout, "PUSHS string@%s\n", DAJAKY PRECHOD ARGUMENTOV S [i]);
             }
             generatePrint(parCounter);
+            break;
+          case(I_CHR):
 
-
-            continue;
+            break;
         }
     }
 }
 
+///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
+///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
+///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
 void generateIf(){
-    printf("DEFVAR");
-    printf("MOVE");
-    printf("LABEL X");
-    printf("JUMPIFNEQ");
-    printf("JUMP");
-    printf("LABEL");
+
+  fprintf(stdout, "JMPIFNEQ ELSE%p PODMIENKA\n",Nejaka adresa pointera);
+
+  fprintf(stdout, "JUMP END%p\n",Ta ista adresa pointera);
+  fprintf(stdout, "LABEL ELSE%p \n",Ta ista adresa pointera);
+
+
 }
 
 void generateWhile(){
-    printf("DEFVAR");
-    printf("MOVE");
-    printf("LABEL X");
-    printf("JUMPIFEQ Y");
-    GENERATE UWU OWO TO WORK ON
-    printf("JUMP X");
-    printf("LABEL Y");
+
+  fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", nejake origi uniq meme);
+  fprintf(stdout, "CREATEFRAME\n"); ////pre nove var memecka
+
+  for (int i = 0; i < count; i++) { ///daky loop na vars
+    printf("DEFVAR TF@$VAR%p\n",dake id meme);
+    printf("MOVE TF@$VAR%p LF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
+  }
+  fprintf(stdout, "PUSHFRAME\n");
+
+  //tu dako zistit condition do loopu
+  //XXXX
+  
+  fprintf(stdout, "JUMPIFEQ WHILE$END$%p bool@true ?!?!?!\n", nejake origi uniq meme);
+
+  //rekurzivne volanie
+
+  fprintf(stdout, "POPFRAME\n");
+  //Pred jumpom vratit vars ako premenne
+  for (int i = 0; i < count; i++) { ///daky loop na vars
+    printf("MOVE LF@$VAR%p TF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
+  }
+  //
+  fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", nejake origi uniq meme);
+  fprintf(stdout, "LABEL WHILE$END$%p\n", nejake origi uniq meme (moze byt rovnake v instancii) );
+
+  fprintf(stdout, "POPFRAME\n");
+
+
 }
