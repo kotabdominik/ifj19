@@ -91,21 +91,21 @@ void generateInputf(){
 void generatePrint(int parCounter){
 
     fprintf(stdout, "LABEL $DELTA\n");
-    fprintf(stdout, "DEFVAR LF$RETVAL\n");
-    fprintf(stdout, "DEFVAR LF$TMPVAL\n");
+    fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+    fprintf(stdout, "DEFVAR LF@$TMPVAL\n");
     for (int i = 0; i < parCounter; i++)
     {
         fprintf(stdout, "POPS LF@$TMPVAL\n");
         fprintf(stdout, "WRITE LF@$TMPVAL\n");
     }
-    fprintf(stdout, "MOVE $RETVAL  string@None\n");
+    fprintf(stdout, "MOVE LF@$RETVAL  string@None\n");
 }
 
 void generateLen(){
 
     fprintf(stdout, "LABEL $LENGTH\n");
     fprintf(stdout, "PUSHFRAME\n");
-    fprintf(stdout, "DEFVAR LF$RETVAL\n");
+    fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     //fprintf(stdout, "MOVE LF$RETVAL int@0\n");  ///Check či je to potrebne
     //fprintf(stdout, "DEFVAR LF$LENSTR\n");
     //char* tmp = (void *)instrList->First->Instruction.addr1;
