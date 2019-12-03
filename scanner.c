@@ -1124,8 +1124,13 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     c = getchar();
                                     state = STATE_P10;
                                 }
-                                else if (c == 39 || c == 34) {// _'_"_
-                                    stringAddChar(s, c);
+                                else if (c == 39 ) {// _'_
+                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '9');
+                                    c = getchar();
+                                    state = STATE_P10;
+                                  }
+                                else if (c == 34) {// _"_
+                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '4');
                                     c = getchar();
                                     state = STATE_P10;
                                 } else if (c == 'n') { // Spraví EOL
