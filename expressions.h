@@ -24,6 +24,7 @@
 typedef struct{
     int* returnType;
     token* returnToken;
+    int error;
 } precendentExpression;
 
 typedef enum {
@@ -33,5 +34,10 @@ typedef enum {
 	D, //3 DONE
   E  //4 ERROR
 } precedenceSign;
+
+int getPrecedenceIndex(token* tokenAct);
+int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken);
+int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG);
+precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG, symbolTable* tableGG);
 
 #endif
