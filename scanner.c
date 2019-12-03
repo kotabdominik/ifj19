@@ -1069,7 +1069,12 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                         }
                         switch (state) {
                             case (STATE_P10):
-                                if (c > 31 && c != 92 && c != 39) { // '\'' && '\\' && '\,' //normalny znak
+                                if (c == 32) { //space
+                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '2');
+                                    c = getchar();
+                                    state = STATE_P10;
+                                }
+                                else if (c > 32 && c != 92 && c != 39) { // '\'' && '\\' && '\,' //normalny znak
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_P10;
@@ -1088,22 +1093,29 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 }
                                 continue;
 
-                            case (STATE_P11): //Riešime či escape alebo nah
-                                if (c > 31 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't' && c != 'x') {//nebola
-                                    stringAddChar(s, '\\');
+                            case (STATE_P11): //Riešime či escape alebo nah   ////////uhhh idk ako s '//' ale asi fajn
+                                if (c > 32 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't' && c != 'x') {//nebola
+                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '9');stringAddChar(s, '2');
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_P10;
-                                } else if (c == 92 || c == 39 || c == 34) {//  _/_'_"_
+                                }
+                                else if (c == 32) { //space
+                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '2');
+                                    c = getchar();
+                                    state = STATE_P10;
+                                }
+                                else if (c == 92 || c == 39 || c == 34) {//  _/_'_"_
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_P10;
                                 } else if (c == 'n') { // Spraví EOL
-                                    stringAddChar(s, '\n');
+                                    //stringAddChar(s, '\n');
+                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '1');stringAddChar(s, '0');
                                     c = getchar();
                                     state = STATE_P10;
                                 } else if (c == 't') { // Spraví TAB
-                                    stringAddChar(s, '\t');
+                                  stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '1');stringAddChar(s, '1');
                                     c = getchar();
                                     state = STATE_P10;
                                 } else if (c == 'x') { //Bude robiť HEX
