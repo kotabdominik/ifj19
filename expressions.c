@@ -387,7 +387,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
     current->type = tmptkn.type;
   }
 }
-
+/*
 void main() {
   stack = malloc(sizeof(tStack));
   stackInit(stack);
@@ -428,4 +428,4 @@ void main() {
   } else if (*exp->returnType == BOOL) {
     printf("'%d'vracím pravdivostní hodnotu\n", exp->returnToken->attribute.BOOL);
   }
-}
+}*/
