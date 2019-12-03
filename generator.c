@@ -11,6 +11,18 @@
   *
   */
 
+
+///////Personal notes
+//pushframe spravi z TF LF
+//popframe prehlasi LF za TF
+//za funckiou (return) MOVE GF@VYSLEDOK TF@RETVAL
+//nemozno predefinovavat stejnu premennu
+//whitespaces v stringoch su nahradene escape seqs, ' ' = \032 '\n' = \010
+///////
+
+//TODO
+//urobit print -> cez pointre od tsundri nacitat globals do stacku pred zavolanim funkcie, ktory budem v print loope popovat
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
@@ -24,6 +36,7 @@
 
 void degenerate(tDLList *list){
   fprintf(stdout, ".IFJcode19\n");
+  fprintf(stdout, "JUMP $$MAIN\n");
   generateBuiltInInstructions();
   generate(list);
 
