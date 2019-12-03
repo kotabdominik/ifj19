@@ -37,17 +37,18 @@ void stringClear(smartString *str) {
 }
 
 int stringAddChar(smartString *str, char c) {
-  if (str->length + 1 >= str->allocatedSize) {
+  if (++str->length >= str->allocatedSize) {
     if ((str->string = (char *) realloc(str->string, str->allocatedSize + ALLOC_ADD)) == NULL) {
       return INTERN_ERR;
     }
     str->allocatedSize =+ ALLOC_ADD;
+    str->string = (char *) realloc(str->string, str->allocatedSize + ALLOC_ADD);
   }
   str->string[str->length] = c;
   if (c != '\0') {
     str->length++;
   }
-  
+
   str->string[str->length] = '\0';
 
   return OK;
