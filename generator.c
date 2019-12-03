@@ -38,8 +38,7 @@ void degenerate(tDLList *list){
   fprintf(stdout, ".IFJcode19\n");
   fprintf(stdout, "JUMP $$MAIN\n");
   generateBuiltInInstructions();
-  generate(list);
-
+  generateInstruction(list);
 };
 
 //||======================================================||//
@@ -237,6 +236,15 @@ void generateChr(){
 //||=============== Věstavené funkce konec ===============||//
 //||======================================================||//
 
+void generateBuiltIn(){
+  void generateInputs();
+  void generateInputi();
+  void generateInputf();
+  void generateLen();
+  void generateSubstr();
+  void generateOrd();
+  void generateChr();
+}
 
 ///potrebujem info k typom
 //nedeklarujem, len priradujem
@@ -292,7 +300,7 @@ void generateInstruction(tDLList*list){
             fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
             break;
           case(I_PRINT):
-            parCounter = list->First->Instruction->addr2;////////////////////////dohodni sa s jindrom
+            parCounter = list->First->Instruction->addr2;  ////////////////////////dohodni sa s jindrom
             for (int i = 0; i < parCounter; i++){
               fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction->addr3[i]->elementType.variable->value.string);
             }
@@ -308,11 +316,9 @@ void generateInstruction(tDLList*list){
     }
 }
 
-
+/*
 void generateAdd(){
   printf("MOVE GF@$VAR%p\n",list->First->Instruction.addr1);
-
-
 }
 
 
@@ -360,4 +366,4 @@ void generateWhile(){
   fprintf(stdout, "LABEL WHILE$END$%p\n", nejake origi uniq meme (moze byt rovnake v instancii) );
 
   fprintf(stdout, "POPFRAME\n");
-}
+}*/
