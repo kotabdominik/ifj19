@@ -19,27 +19,10 @@
 symbolTable *tableG;// globalni promenna uchovavajici tabulku symbolu
 tDLList *list; // globalni promenna uchovavajici seznam instrukci
 token tokenAct;          // globalni promenna, ve ktere bude ulozen aktualni token
-//smartString attr;        // globalni promenna, ve ktere bude ulozen atribut tokenu
 int error = OK;
-
 int counterVar = 1;
 tStack *stack;
 int doIndent = 0;
-
-// generuje jedinecne nazvy identifikatoru
-// nazev se sklada ze znaku $ nasledovanym cislem
-// postupne se tu generuji prirozena cisla a do nazvu promenne se ukladaji
-// v reverzovanem poradi - na funkcnost to nema vliv, ale je jednodussi implementace
-void generateVariable(smartString *var) {
-    stringClear(var);
-    stringAddChar(var, '$');
-    int i = counterVar; //counterVar je globalní proměnná, kdyžtak změnit na argument i guess
-    while (i != 0) {
-        stringAddChar(var, (char)(i % 10 + '0'));
-        i = i / 10;
-    }
-    counterVar ++;
-}
 
 // vlozi novou instrukci do seznamu instrukci
 tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3) {
@@ -267,20 +250,6 @@ int statement(char *funName){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
     }
-    else if(tokenAct.attribute.keyword == INPUTS ||
-            tokenAct.attribute.keyword == INPUTF ||
-            tokenAct.attribute.keyword == INPUTI ||
-            tokenAct.attribute.keyword == PRINT  ||
-            tokenAct.attribute.keyword == LEN    ||
-            tokenAct.attribute.keyword == SUBSTR ){
-              tokenAct = nextToken(&error, stack, doIndent);
-              if(error != OK) return error; // zkoumani lexikalniho erroru
-              if(tokenAct.type == LEFTBRACKET){
-                fprintf(stderr, "za nazvem vestavene funkce musi nasledovat ( \n");
-                return PARSING_ERR;
-              }
-              //nenastane
-    }
     else if(tokenAct.attribute.keyword == NONE){
       result = expression();
       if(result != OK) return result;
@@ -329,7 +298,8 @@ int statement(char *funName){
         else{
           tmpItem = searchSymbolTable(tableG, tmpToken);
         }
-      } else {
+      }
+      else {
         int succMePls = 0;
         symtableItem *tmp = searchSymbolTableWithString(tableG, funName);
         //checkujeme jestli nedefinujeme neco z argumentu funkce
@@ -528,26 +498,6 @@ int statement(char *funName){
     if(error != OK) return error; // zkoumani lexikalniho erroru
     return OK;
   }
-  /*else if(tokenAct.type == DOCCOM){
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-
-    if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
-    if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
-
-    doIndent = 1;
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-    //nesmi tady byt indent
-    if(tokenAct.type == INDENT) return PARSING_ERR;
-    doIndent = 0;
-    //pokud je dedent, posleme ten token dal;
-    if(tokenAct.type == DEDENT) return OK;
-    //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-    return OK;
-  }*/
   else{
     fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
     return PARSING_ERR;
@@ -570,35 +520,6 @@ int function(){
       return PARSING_ERR;
     }
 
-    /*
-    //musi nasledovat identifikator
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-
-    if(tokenAct.type != STR && tokenAct.type != RIGHTBRACKET) return PARSING_ERR;
-
-    if (tokenAct.type == STR) {
-        tokenAct = nextToken(&error, stack, doIndent);
-        if (error != OK) return error; // zkoumani lexikalniho erroru
-        while (tokenAct.type != RIGHTBRACKET) {
-
-            //dalsi token musi byt ','
-            if (tokenAct.type != COMMA) return PARSING_ERR;
-
-            //dalsi token musi byt identifikator
-            tokenAct = nextToken(&error, stack, doIndent);
-            if (error != OK) return error; // zkoumani lexikalniho erroru
-
-            if (tokenAct.type != STR) return PARSING_ERR;
-
-            tokenAct = nextToken(&error, stack, doIndent);
-            if (error != OK) return error; // zkoumani lexikalniho erroru
-        }
-    }
-*/
-    /*result = defParams(s->string);
-    if(result != OK) return result;
-    */
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     while(tokenAct.type != RIGHTBRACKET){
@@ -1211,8 +1132,8 @@ int main(){
     tDLList *instrList = malloc(sizeof(tDLList));
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
-    freopen("txt.txt","r",stdin);
     //setFile("txt.txt");
+    freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     degenerate(instrList);
     //printf("%d\n", result);

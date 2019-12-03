@@ -308,13 +308,13 @@ void generateInstructionREE(tDLList*list){
             case(I_PRINT):
                 parCounter = list->First->Instruction.addr2;  ////////////////////////dohodni sa s jindrom
                 symtableItem *tmpItem = list->First->Instruction.addr3;
-                /*for (int i = 0; i < *parCounter; i++){
+                for (int i = 0; i < *parCounter - 1; i++){
                   tmpItem++;
-                }*/
+                }
                 for (int i = 0; i < *parCounter; i++){
                     fprintf(stdout, "PUSHS string@%s\n", tmpItem->elementType.variable->value.string);
-                    //tmpItem--;
-                    tmpItem++;
+                    tmpItem--;
+                    //tmpItem++;
                 }
                 generatePrint(*parCounter);
                 break;
