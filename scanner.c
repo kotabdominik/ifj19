@@ -1073,16 +1073,19 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '2');
                                     c = getchar();
                                     state = STATE_P10;
+                                    continue;
                                 }
                                 else if (c == 35) { //#
                                     stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '5');
                                     c = getchar();
                                     state = STATE_P10;
+                                    continue;
                                 }
                                 else if (c > 32 && c != 92 && c != 35 && c != 39) { // '\'' && '\\' && '\,' //normalny znak
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_P10;
+                                    continue;
                                 } else if (c == 39) { //Apostrof teda koniec stringu
                                     //stringAddChar(s, c);
                                     //c = getchar();
@@ -1091,6 +1094,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 } else if (c == 92) { // Backslash teda escape seq
                                     c = getchar();
                                     state = STATE_P11;
+                                    continue;
                                 } else {
                                     *error = LEXICAL_ERR;
                                     free(s);
