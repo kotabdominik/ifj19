@@ -860,6 +860,16 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                             stringAddChar(s, '"');
                         }
                     }
+                    if (c == 32) { //space
+                      stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '2');
+                      //c = getchar();
+                      continue;
+                    }
+                    else if (c == '\n') { // Spraví EOL
+                      stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '1');stringAddChar(s, '0');
+                      //c = getchar();
+                      continue;
+                  }
                     stringAddChar(s, c);
                 }
                 Token.attribute.string = s;
