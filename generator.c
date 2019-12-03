@@ -300,7 +300,10 @@ void generateInstruction(tDLList*list){
             }
             generatePrint(parCounter);
             break;
-          case(I_CHR):
+          case(I_IF):
+
+            break;
+          case(I_WHILE):
 
             break;
         }
@@ -312,11 +315,14 @@ void generateInstruction(tDLList*list){
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
 void generateIf(){
 
-  fprintf(stdout, "JMPIFNEQ ELSE%p PODMIENKA\n",Nejaka adresa pointera);
+  //zistit condition
 
+  fprintf(stdout, "JMPIFNEQ ELSE%p PODMIENKA\n",Nejaka adresa pointera);
+  generateInstruction(); //dokym nenajdem rovnaky indent
   fprintf(stdout, "JUMP END%p\n",Ta ista adresa pointera);
   fprintf(stdout, "LABEL ELSE%p \n",Ta ista adresa pointera);
-
+  generateInstruction(); //dokym nenajdem rovnaky indent
+  fprintf(stdout, "LABEL END%p \n",Ta ista adresa pointera);
 
 }
 
@@ -333,10 +339,10 @@ void generateWhile(){
 
   //tu dako zistit condition do loopu
   //XXXX
-  
+
   fprintf(stdout, "JUMPIFEQ WHILE$END$%p bool@true ?!?!?!\n", nejake origi uniq meme);
 
-  //rekurzivne volanie
+  generateInstruction(); //dokym nenajdem dedent
 
   fprintf(stdout, "POPFRAME\n");
   //Pred jumpom vratit vars ako premenne
