@@ -85,13 +85,15 @@ void generateInputf(){
 
 }
 
-void generatePrint(){
+void generatePrint(int parCounter){
 
     fprintf(stdout, "LABEL $DELTA\n");
-    fprintf(stdout, "DEFVAR $RETVAL\n ");
-    while(stack of expressions is not empty)
+    fprintf(stdout, "DEFVAR LF$RETVAL\n ");
+    fprintf(stdout, "DEFVAR LF$TMPVAL\n ");
+    for (int i = 0; i < parCounter; i++){
     {
-      fprintf(stdout, "WRITE LF@%s\n",expression);
+      fprintf(stdout, "POPS LF$TMPVAL\n ");
+      fprintf(stdout, "WRITE LF@%TMPVAL\n");
     }
     fprintf(stdout, "MOVE $RETVAL  string@None\n");
 
@@ -236,71 +238,70 @@ void generateChr(){
 //||=============== Věstavené funkce konec ===============||//
 //||======================================================||//
 
-void generateVariable(){
-  printf("DEFVAR LF@VAR%p\n",list->First->Instruction.addr1);
+
+///potrebujem info k typom
+//nedeklarujem, len priradujem
+void generateAssign(tDLList*list){
+
+  if(list->First->Instruction->addr2 == INT){
+    fprintf(stdout, "PUSHS int@%d\n", list->First->Instruction->addr1 );
+  }
+  else if (list->First->Instruction->addr2 == FLOAT){
+    fprintf(stdout, "PUSHS float@%a\n", list->First->Instruction->addr1 );
+  }
+  else if (list->First->Instruction->addr2 == STR){
+    fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction->addr1 );
+  }
+}
+
+
+
+void generateGFVariable(){
+  printf("DEFVAR LF@$VAR%p\n",list->First->Instruction.addr1);
   }
 
 
 void generateInstruction(tDLList*list){
+    int parCounter;
     for (;list->First != NULL;list->First = list->rptr){
         switch(list->First->Instruction->instType){
-            case(I_MOVE):
-            case(I_CREATEFRAME):
-            case(I_PUSHFRAME):
-            case(I_POPFRAME):
-            case(I_DEFVAR):
-            case(I_CALL):
-            case(I_RETURN):
-            case(I_PUSHS):
-            case(I_POPS):
-            case(I_CLEARS):
-            case(I_ADD):
-            case(I_SUB):
-            case(I_MUL):
-            case(I_DIV):
-            case(I_IDIV):
-            case(I_ADDS):
-            case(I_SUBS):
-            case(I_MULS):
-            case(I_DIVS):
-            case(I_IDIVS):
-            case(I_LT):
-            case(I_GT):
-            case(I_EQ):
-            case(I_LTS):
-            case(I_ETS):
-            case(I_EQS):
-            case(I_AND):
-            case(I_OR):
-            case(I_NOT):
-            case(I_ANDS):
-            case(I_ORS):
-            case(I_NOTS):
-            case(I_INT2FLOAT):
-            case(I_FLOAT2INT):
-            case(I_INT2CHAR):
-            case(I_STRI2INT):
-            case(I_INT2FLOATS):
-            case(I_FLOAT2INTS):
-            case(I_INT2CHARS):
-            case(I_STRI2INTS):
-            case(I_READ):
-            case(I_WRITE):
-            case(I_CONCAT):
-            case(I_STRLEN):
-            case(I_GETCHAR):
-            case(I_SETCHAR):
-            case(I_TYPE):
-            case(I_LABEL):
-            case(I_JUMP):
-            case(I_JUMPIFEQ):
-            case(I_JUMPIFNEQ):
-            case(I_JUMPIFEQS):
-            case(I_JUMPIFNEQS):
-            case(I_EXIT):
-            case(I_BREAK):
-            case(I_DPRINT):
+          case(I_INPUTS):
+            generateInputs();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_INPUTI):
+            generateInputi();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_INPUTF):
+            generateInputf();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_LEN):
+            generateLen();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_SUBSTR):
+            generateSubstr();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_ORD):
+            generateOrd();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_CHR):
+            generateChr();
+            fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction->addr1);
+            break;
+          case(I_PRINT):
+            parCounter = list->First->Instruction->addr2;////////////////////////dohodni sa s jindrom
+            for (int i = 0; i < parCounter; i++){
+              fprintf(stdout, "PUSHS string@%s\n", DAJAKY PRECHOD ARGUMENTOV);
+            }
+            generatePrint(parCounter);
 
+
+            continue;
         }
     }
 }
