@@ -41,7 +41,7 @@ int stringAddChar(smartString *str, char c) {
     if ((str->string = (char *) realloc(str->string, str->allocatedSize + ALLOC_ADD)) == NULL) {
       return INTERN_ERR;
     }
-    str->allocatedSize =+ ALLOC_ADD;
+    str->allocatedSize += ALLOC_ADD;
   }
   str->string[str->length] = c;
   if (c != '\0') {
