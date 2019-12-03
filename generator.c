@@ -31,6 +31,7 @@
 #include "scanner.h"
 #include "expressions.h"
 #include "list.h"
+#include "generator.h"
 
 
 
@@ -43,7 +44,7 @@ void degenerate(tDLList *list){
 
 //||======================================================||//
 //||=============== Věstavené funkce start ===============||//
-{
+
 void generateInputs(){
 
   fprintf(stdout, "LABEL $ALFA\n");
@@ -232,7 +233,7 @@ void generateChr(){
   fprintf(stdout, "LABEL $ERROR\n");
   fprintf(stdout, "EXIT int@4\n");
 }
-}
+
 //||=============== Věstavené funkce konec ===============||//
 //||======================================================||//
 
@@ -248,21 +249,23 @@ void generateBuiltIn(){
 
 ///potrebujem info k typom
 //nedeklarujem, len priradujem
+
+/*
 void generateAssign(tDLList*list){
-  if(list->First->Instruction->addr2 == INT){
-    fprintf(stdout, "PUSHS int@%d\n", list->First->Instruction->addr1 );
+  if(list->First->Instruction.addr2 == INT){
+    fprintf(stdout, "PUSHS int@%d\n", list->First->Instruction.addr1 );
   }
-  else if (list->First->Instruction->addr2 == FLOAT){
-    fprintf(stdout, "PUSHS float@%a\n", list->First->Instruction->addr1 );
+  else if (list->First->Instruction.addr2 == FLOAT){
+    fprintf(stdout, "PUSHS float@%a\n", list->First->Instruction.addr1 );
   }
-  else if (list->First->Instruction->addr2 == LITERAL){
-    fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction->addr1 );
+  else if (list->First->Instruction.addr2 == LITERAL){
+    fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction.addr1 );
   }
 }
 
+*/
 
-
-void generateGFVariable(){
+void generateGFVariable(tDLList*list){
   printf("DEFVAR LF@$VAR%p\n",list->First->Instruction.addr1);
   }
 

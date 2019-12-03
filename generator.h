@@ -23,4 +23,15 @@
 
 degenerate(tDLList *list);
 
-gen_main();
+void generateInputs();
+void generateInputi();
+void generateInputf();
+void generateLen();
+void generateOrd();
+void generateChr();
+void generateSubstr();
+
+void generateBuiltIn();
+void generateAssign(tDLList*list);
+void generateGFVariable();
+void generateInstruction(tDLList*list);
