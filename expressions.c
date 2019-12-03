@@ -360,7 +360,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
     } else if (operation == C) { //2  if <y je na vrcholu zásobníku and r: A→y∈P then zaměň <y za A & vypiš r na výstup else chyba
       int a = findRule(s, &navr, tableG, tableGG); //THE REST OF THE LOVELY OWL
       if (a == -1) {
-        exp->error = LEXICAL_ERR;
+        exp->error = PARSING_ERR;
         return exp;
       } else if (a == -2) {
         exp->error = INTERN_ERR;
@@ -387,7 +387,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
     current->type = tmptkn.type;
   }
 }
-/*
+
 void main() {
   stack = malloc(sizeof(tStack));
   stackInit(stack);
@@ -428,4 +428,4 @@ void main() {
   } else if (*exp->returnType == BOOL) {
     printf("'%d'vracím pravdivostní hodnotu\n", exp->returnToken->attribute.BOOL);
   }
-}*/
+}
