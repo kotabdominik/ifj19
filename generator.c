@@ -88,11 +88,11 @@ void generateInputf(){
 void generatePrint(int parCounter){
 
     fprintf(stdout, "LABEL $DELTA\n");
-    fprintf(stdout, "DEFVAR LF$RETVAL\n ");
-    fprintf(stdout, "DEFVAR LF$TMPVAL\n ");
+    fprintf(stdout, "DEFVAR LF$RETVAL\n");
+    fprintf(stdout, "DEFVAR LF$TMPVAL\n");
     for (int i = 0; i < parCounter; i++)
     {
-      fprintf(stdout, "POPS LF@$TMPVAL\n ");
+      fprintf(stdout, "POPS LF@$TMPVAL\n");
       fprintf(stdout, "WRITE LF@$TMPVAL\n");
     }
     fprintf(stdout, "MOVE $RETVAL  string@None\n");
@@ -304,8 +304,14 @@ void generateInstructionREE(tDLList*list){
             break;
           case(I_PRINT):
             parCounter = list->First->Instruction.addr2;  ////////////////////////dohodni sa s jindrom
+            symtableItem *tmpItem = list->First->Instruction.addr3;
+            /*for (int i = 0; i < *parCounter; i++){
+              tmpItem++;
+            }*/
             for (int i = 0; i < *parCounter; i++){
-              fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction.addr3[i]->elementType.variable->value.string);
+              fprintf(stdout, "PUSHS string@%s\n", tmpItem->elementType.variable->value.string);
+              //tmpItem--;
+              tmpItem++;
             }
             generatePrint(*parCounter);
             break;

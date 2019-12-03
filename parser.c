@@ -1214,8 +1214,8 @@ int main(){
     freopen("txt.txt","r",stdin);
     //setFile("txt.txt");
     int result = parse(tableGG, instrList);
-
-    printf("%d\n", result);
+    degenerate(instrList);
+    //printf("%d\n", result);
 
     return result;
 }
