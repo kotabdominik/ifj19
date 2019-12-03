@@ -435,7 +435,7 @@ int statement(char *funName){
         //generateInstruction(I_ORD, tmpToken, NULL, NULL);
       }
       else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
-        //generateInstruction(I_PRINT, tmpToken, NULL, NULL);
+        generateInstruction(I_PRINT, NULL, &(tmpItem->elementType.function->argCount), tmpItem->elementType.function->arguments);
       }
       else if(strcmp(tmpToken.attribute.string->string, "inputs") == 0){
         generateInstruction(I_INPUTS, NULL, NULL, NULL);
@@ -1215,23 +1215,6 @@ int main(){
     //setFile("txt.txt");
     int result = parse(tableGG, instrList);
 
-
-  /*  fprintf(stdout, ".IFJcode19\n");
-        //generateBuiltInInstructions();
-        //generate(list);
-
-        fprintf(stdout, "LABEL $LEN\n");
-        fprintf(stdout, "DEFVAR LF$RETVAL\n");
-
-        fprintf(stdout, "DEFVAR LF$LENSTR\n");
-        char* tmp = (void *)instrList->First->Instruction.addr1;
-        fprintf(stdout, "MOVE LF$LENSTR string@%s\n", tmp);
-
-        ///podmienka ci je strings
-
-        fprintf(stdout, "STRLEN LF@RETVAL LF@LENSTR\n");
-        fprintf(stdout, "PUSHS LF@RETVAL\n");
-*/
     printf("%d\n", result);
 
     return result;
