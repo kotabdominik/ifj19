@@ -22,7 +22,7 @@
 #define TABLESIZE 7 //velikost precedenční tabulky
 
 typedef struct{
-    int* returnType;
+    int returnType;
     token* returnToken;
     int error;
 } precendentExpression;

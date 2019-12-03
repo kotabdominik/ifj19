@@ -20,7 +20,6 @@ symbolTable *tableG;// globalni promenna uchovavajici tabulku symbolu
 tDLList *list; // globalni promenna uchovavajici seznam instrukci
 token tokenAct;          // globalni promenna, ve ktere bude ulozen aktualni token
 int error = OK;
-int counterVar = 1;
 tStack *stack;
 int doIndent = 0;
 
@@ -44,7 +43,6 @@ int statement(char *funName){
   int result;
   tInstr *jmp1, *jmp2;
 
-
   if(tokenAct.type == KEYWORD){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
@@ -53,8 +51,19 @@ int statement(char *funName){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
-        result = expression();
-        if(result != OK) return result;
+        symtableItem *tmpItem = NULL;
+        symbolTable *table2;
+        if(strcmp(funName, "globalTable") != 0) {
+          tmpItem = searchSymbolTableWithString(tableG, funName);
+          table2 = tmpItem->elementType.function->sT;
+        }
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+        if(exp->error != OK) return exp->error;
+
+        tokenAct = ungetToken(&error, stack, doIndent);
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
+
         jmp1 = generateInstruction(I_JUMPIFNEQ, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         /*tokenAct = nextToken(&error, stack, doIndent);
@@ -143,8 +152,18 @@ int statement(char *funName){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
-        result = expression();
-        if(result != OK) return result;
+        symtableItem *tmpItem = NULL;
+        symbolTable *table2;
+        if(strcmp(funName, "globalTable") != 0) {
+          tmpItem = searchSymbolTableWithString(tableG, funName);
+          table2 = tmpItem->elementType.function->sT;
+        }
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+        if(exp->error != OK) return exp->error;
+
+        tokenAct = ungetToken(&error, stack, doIndent);
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
         jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         /*tokenAct = nextToken(&error, stack, doIndent);
@@ -226,8 +245,18 @@ int statement(char *funName){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
-        result = expression();
-        if(result != OK) return result;
+        symtableItem *tmpItem = NULL;
+        symbolTable *table2;
+        if(strcmp(funName, "globalTable") != 0) {
+          tmpItem = searchSymbolTableWithString(tableG, funName);
+          table2 = tmpItem->elementType.function->sT;
+        }
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+        if(exp->error != OK) return exp->error;
+
+        tokenAct = ungetToken(&error, stack, doIndent);
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
 
         generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
         generateInstruction(I_RETURN, NULL, NULL, NULL);
@@ -251,8 +280,18 @@ int statement(char *funName){
         return OK;
     }
     else if(tokenAct.attribute.keyword == NONE){
-      result = expression();
-      if(result != OK) return result;
+      symtableItem *tmpItem = NULL;
+      symbolTable *table2;
+      if(strcmp(funName, "globalTable") != 0) {
+        tmpItem = searchSymbolTableWithString(tableG, funName);
+        table2 = tmpItem->elementType.function->sT;
+      }
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+      if(exp->error != OK) return exp->error;
+
+      tokenAct = ungetToken(&error, stack, doIndent);
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -359,14 +398,22 @@ int statement(char *funName){
         }
       }
 
-      result = expression();
-      if(result != OK) return result;
+      symtableItem *tmpItemREE = NULL;
+      symbolTable *table2;
+      if(strcmp(funName, "globalTable") != 0) {
+        tmpItemREE = searchSymbolTableWithString(tableG, funName);
+        table2 = tmpItem->elementType.function->sT;
+      }
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+      if(exp->error != OK) return exp->error;
+
+      tokenAct = ungetToken(&error, stack, doIndent);
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       tmpItem->defined = true;
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TADY BY SE DO PROMENNE MELA ZAPSAT VALUE A TYP
-      /*tmpItem->elementType.variable->value = ;
-      tmpItem->elementType.variable->type = ;
-      */
+      tmpItem->elementType.variable->type = exp->returnType;
+
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
 
@@ -444,8 +491,18 @@ int statement(char *funName){
     else{
       tokenAct = ungetToken(&error, stack, doIndent);
 
-      result = expression();
-      if(result != OK) return result;
+      symtableItem *tmpItem = NULL;
+      symbolTable *table2;
+      if(strcmp(funName, "globalTable") != 0) {
+        tmpItem = searchSymbolTableWithString(tableG, funName);
+        table2 = tmpItem->elementType.function->sT;
+      }
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+      if(exp->error != OK) return exp->error;
+
+      tokenAct = ungetToken(&error, stack, doIndent);
+      tokenAct = nextToken(&error, stack, doIndent);
+      if(error != OK) return error; // zkoumani lexikalniho erroru
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -465,8 +522,18 @@ int statement(char *funName){
     }
   }
   else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET || tokenAct.type == DOCCOM){{
-    result = expression();
-    if(result != OK) return result;
+    symtableItem *tmpItem = NULL;
+    symbolTable *table2;
+    if(strcmp(funName, "globalTable") != 0) {
+      tmpItem = searchSymbolTableWithString(tableG, funName);
+      table2 = tmpItem->elementType.function->sT;
+    }
+    precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+    if(exp->error != OK) return exp->error;
+
+    tokenAct = ungetToken(&error, stack, doIndent);
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
 
     if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
     if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -502,8 +569,6 @@ int statement(char *funName){
     fprintf(stderr, "Ocekaval se prikaz, ale bohuzel prisel jiny token\n");
     return PARSING_ERR;
   }
-
-  return OK;
 }
 
 //---------------------------------------FUNCTION-------------------------------------------
@@ -1107,22 +1172,6 @@ int parse(symbolTable *ST,  tDLList *instrList){
 }
 
 
-
-
-
-
-
-
-
-
-
-//for the MEMES
-int expression(){
-  tokenAct = nextToken(&error, stack, doIndent);
-  if(error != OK) return error; // zkoumani lexikalniho erroru
-  return OK;
-}
-
 // DEBUGGING
 int main(){
     stack = malloc(sizeof(tStack));
@@ -1135,12 +1184,13 @@ int main(){
     //setFile("txt.txt");
     freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
-    degenerate(instrList);
-    //printf("%d\n", result);
+    //degenerate(instrList);
+    printf("%d\n", result);
 
     return result;
 }
 
 
-// expression ... predpoklada se, ze do expression prijde rovnou novy token ktery se ma rozparsovat
-//                a ze z expression jeden token vyjde
+
+// indent na prvnim radku
+// indent a za nim dokumentacni komentar

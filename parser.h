@@ -24,6 +24,8 @@
 #include "error.h"
 #include "generator.c"
 #include "generator.h"
+#include "expressions.c"
+#include "expressions.h"
 
 int parse(symbolTable *ST, tDLList *instrList);
 int program();

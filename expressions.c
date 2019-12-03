@@ -369,7 +369,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
       continue; //nenačítat další token ze vstupu
     } else if (operation == D) { //D jako done xddddddd
         exp->returnToken = s->top->data->token;
-        exp->returnType = &navr;
+        exp->returnType = navr;
         exp->error = OK;
         return exp;
     } else if (operation == E) { //errorE
