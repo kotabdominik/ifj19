@@ -90,13 +90,12 @@ void generatePrint(int parCounter){
     fprintf(stdout, "LABEL $DELTA\n");
     fprintf(stdout, "DEFVAR LF$RETVAL\n ");
     fprintf(stdout, "DEFVAR LF$TMPVAL\n ");
-    for (int i = 0; i < parCounter; i++){
+    for (int i = 0; i < parCounter; i++)
     {
       fprintf(stdout, "POPS LF$TMPVAL\n ");
       fprintf(stdout, "WRITE LF@%TMPVAL\n");
     }
     fprintf(stdout, "MOVE $RETVAL  string@None\n");
-
 }
 
 void generateLen(){
@@ -242,14 +241,13 @@ void generateChr(){
 ///potrebujem info k typom
 //nedeklarujem, len priradujem
 void generateAssign(tDLList*list){
-
   if(list->First->Instruction->addr2 == INT){
     fprintf(stdout, "PUSHS int@%d\n", list->First->Instruction->addr1 );
   }
   else if (list->First->Instruction->addr2 == FLOAT){
     fprintf(stdout, "PUSHS float@%a\n", list->First->Instruction->addr1 );
   }
-  else if (list->First->Instruction->addr2 == STR){
+  else if (list->First->Instruction->addr2 == LITERAL){
     fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction->addr1 );
   }
 }
@@ -296,7 +294,7 @@ void generateInstruction(tDLList*list){
           case(I_PRINT):
             parCounter = list->First->Instruction->addr2;////////////////////////dohodni sa s jindrom
             for (int i = 0; i < parCounter; i++){
-              fprintf(stdout, "PUSHS string@%s\n", DAJAKY PRECHOD ARGUMENTOV S [i]);
+              fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction->addr3[i]->elementType.variable->value.string);
             }
             generatePrint(parCounter);
             break;
@@ -309,6 +307,14 @@ void generateInstruction(tDLList*list){
         }
     }
 }
+
+
+void generateAdd(){
+  printf("MOVE GF@$VAR%p\n",list->First->Instruction.addr1);
+
+
+}
+
 
 ///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
@@ -354,6 +360,4 @@ void generateWhile(){
   fprintf(stdout, "LABEL WHILE$END$%p\n", nejake origi uniq meme (moze byt rovnake v instancii) );
 
   fprintf(stdout, "POPFRAME\n");
-
-
 }
