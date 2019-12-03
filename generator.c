@@ -38,7 +38,7 @@
 void degenerate(tDLList *list){
   fprintf(stdout, ".IFJcode19\n");
   fprintf(stdout, "JUMP $$MAIN\n");
-  generateBuiltInInstructions();
+  generateBuiltIn();
   generateInstruction(list);
 };
 
@@ -92,8 +92,8 @@ void generatePrint(int parCounter){
     fprintf(stdout, "DEFVAR LF$TMPVAL\n ");
     for (int i = 0; i < parCounter; i++)
     {
-      fprintf(stdout, "POPS LF$TMPVAL\n ");
-      fprintf(stdout, "WRITE LF@%TMPVAL\n");
+      fprintf(stdout, "POPS LF$\%TMPVAL\n ");
+      fprintf(stdout, "WRITE LF@\%TMPVAL\n");
     }
     fprintf(stdout, "MOVE $RETVAL  string@None\n");
 }
@@ -265,9 +265,9 @@ void generateAssign(tDLList*list){
 
 */
 
-void generateGFVariable(tDLList*list){
+/*void generateGFVariable(tDLList*list){
   printf("DEFVAR LF@$VAR%p\n",list->First->Instruction.addr1);
-  }
+}*/
 
 
 void generateInstruction(tDLList*list){

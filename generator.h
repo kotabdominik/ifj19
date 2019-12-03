@@ -21,7 +21,7 @@
 #include "scanner.h"
 #include "expressions.h"
 
-degenerate(tDLList *list);
+void degenerate(tDLList *list);
 
 void generateInputs();
 void generateInputi();
@@ -35,3 +35,5 @@ void generateBuiltIn();
 void generateAssign(tDLList*list);
 void generateGFVariable();
 void generateInstruction(tDLList*list);
+
+#endif
