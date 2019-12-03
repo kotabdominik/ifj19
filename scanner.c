@@ -1114,7 +1114,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
 
                             case (STATE_P11): //Riešime či escape alebo nah   ////////uhhh idk ako s '//' ale asi fajn
                                 if (c > 32 && c != 35 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't' && c != 'x') {//nebola
-                                    stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '9');stringAddChar(s, '2');
+                                    //stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '9');stringAddChar(s, '2');
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_P10;
