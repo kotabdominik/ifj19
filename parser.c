@@ -52,7 +52,7 @@ int statement(char *funName){
           return PARSING_ERR;
         }
         symtableItem *tmpItem = NULL;
-        symbolTable *table2;
+        symbolTable *table2 = NULL;
         if(strcmp(funName, "globalTable") != 0) {
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
@@ -153,7 +153,7 @@ int statement(char *funName){
           return PARSING_ERR;
         }
         symtableItem *tmpItem = NULL;
-        symbolTable *table2;
+        symbolTable *table2 = NULL;
         if(strcmp(funName, "globalTable") != 0) {
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
@@ -246,7 +246,7 @@ int statement(char *funName){
           return PARSING_ERR;
         }
         symtableItem *tmpItem = NULL;
-        symbolTable *table2;
+        symbolTable *table2 = NULL;
         if(strcmp(funName, "globalTable") != 0) {
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
@@ -281,7 +281,7 @@ int statement(char *funName){
     }
     else if(tokenAct.attribute.keyword == NONE){
       symtableItem *tmpItem = NULL;
-      symbolTable *table2;
+      symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
@@ -399,7 +399,7 @@ int statement(char *funName){
       }
 
       symtableItem *tmpItemREE = NULL;
-      symbolTable *table2;
+      symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
         tmpItemREE = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
@@ -413,6 +413,9 @@ int statement(char *funName){
 
       tmpItem->defined = true;
       tmpItem->elementType.variable->type = exp->returnType;
+      if(tmpItem->elementType.variable->type == DATA_INT) tmpItem->elementType.variable->value.INT = exp->returnToken->attribute.INT;
+      else if(tmpItem->elementType.variable->type == DATA_FLOAT) tmpItem->elementType.variable->value.FLOAT = exp->returnToken->attribute.FLOAT;
+      else if(tmpItem->elementType.variable->type == DATA_STRING)  tmpItem->elementType.variable->value.string = exp->returnToken->attribute.string->string;
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -492,7 +495,7 @@ int statement(char *funName){
       tokenAct = ungetToken(&error, stack, doIndent);
 
       symtableItem *tmpItem = NULL;
-      symbolTable *table2;
+      symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
@@ -523,7 +526,7 @@ int statement(char *funName){
   }
   else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == LEFTBRACKET || tokenAct.type == DOCCOM){{
     symtableItem *tmpItem = NULL;
-    symbolTable *table2;
+    symbolTable *table2 = NULL;
     if(strcmp(funName, "globalTable") != 0) {
       tmpItem = searchSymbolTableWithString(tableG, funName);
       table2 = tmpItem->elementType.function->sT;
@@ -637,6 +640,12 @@ int function(){
 //---------------------------------------------PROGRAM-------------------------------------
 int program(){
     int result = OK; ////Inicializacia v prípade že máš hned EOF (Ne/10:28)
+    doIndent = 1;
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+    //nesmi tady byt indent
+    if(tokenAct.type == INDENT) return PARSING_ERR;
+    doIndent = 0;
     //prvni token
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -1184,7 +1193,7 @@ int main(){
     //setFile("txt.txt");
     freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
-    //degenerate(instrList);
+    degenerate(instrList);
     printf("%d\n", result);
 
     return result;
