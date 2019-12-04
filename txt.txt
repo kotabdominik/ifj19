@@ -1,21 +1,4 @@
-def foo(a):
-  pass
-
-
-c = 5
-
-
-foo(5)
-
-print()
-
-if 5:
-  pass
-
-else:
-  4
-
-
-while 7:
-  pass
-  
+""" Funkce vypise zadany retezec s oseknuty jen na prvnich n znaku,
+    negativni hodnota vypise prazdny retezec a prilis velka hodnota je
+    zastropovana delkou vstupniho retezce. """
+pass
