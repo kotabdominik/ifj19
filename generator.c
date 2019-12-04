@@ -332,17 +332,25 @@ void generateEquality(){
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$RETVAL\n",list->First->Instruction.addr1);
   fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
-  fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2); 
-  fprintf(stdout, "MOVE LF@$EQ1%p \n",list->First->Instruction.addr1);
-  fprintf(stdout, "MOVE LF@$EQ2%p \n",list->First->Instruction.addr2);
+  fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
+  fprintf(stdout, "DEFVAR LF@$EQ3%p\n",list->First->Instruction.addr3);
+  fprintf(stdout, "MOVE LF@$EQ1%p ???\n",list->First->Instruction.addr1);
+  fprintf(stdout, "MOVE LF@$EQ2%p ???\n",list->First->Instruction.addr2);
+  fprintf(stdout, "MOVE LF@$EQ3%p string@%s\n",list->First->Instruction.addr3);
 
+  fprintf(stdout, "JUMPIFEQ $EQ_LESSER LF@$EQ3%p string@<\n",list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_GREATER LF@$EQ3%p string@>\n",list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_LSREQ LF@$EQ3%p string@<=\n",list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_GTREQ LF@$EQ3%p string@>=\n",list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_EQ LF@$EQ3%p string@==\n",list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_NOTEQ LF@$EQ3%p string@!=\n",list->First->Instruction.addr3);
 
-  fprintf(stdout, "LABEL $EQ_LESSER\n",list->First->Instruction.addr1);
-  fprintf(stdout, "LABEL $EQ_GREATER\n",list->First->Instruction.addr1);
-  fprintf(stdout, "LABEL $EQ_LSREQ\n",list->First->Instruction.addr1);
-  fprintf(stdout, "LABEL $EQ_GTREQ\n",list->First->Instruction.addr1);
-  fprintf(stdout, "LABEL $EQ_EQ\n",list->First->Instruction.addr1);
-  fprintf(stdout, "LABEL $EQ_NOTEQ\n",list->First->Instruction.addr1);
+  fprintf(stdout, "LABEL $EQ_LESSER\n");
+  fprintf(stdout, "LABEL $EQ_GREATER\n");
+  fprintf(stdout, "LABEL $EQ_LSREQ\n");
+  fprintf(stdout, "LABEL $EQ_GTREQ\n");
+  fprintf(stdout, "LABEL $EQ_EQ\n");
+  fprintf(stdout, "LABEL $EQ_NOTEQ\n");
 
   fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
   fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
