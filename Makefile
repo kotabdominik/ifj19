@@ -22,5 +22,6 @@ run:
 	./parser
 
 int:
+	$(CC) -g parser.c -o parser
 	./parser <txt.txt >str.out
 	./ic19int str.out
