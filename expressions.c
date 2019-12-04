@@ -182,6 +182,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             newData->type = typeNonterm;
             if (zpracuj == 2) { //zpracování i -> E
               //printf("tady jsem jen kdyyž měním na Ečka\n");
+              if (type1 == INT) {
+                generateInstruction(I_PUSHS, &(token->attribute.INT), NULL, NULL);
+              }
             } else if (zpracuj == 1) { //tady zavorky
               token->attribute = tokenDruhy.attribute;
               newData->dataType = type1;
