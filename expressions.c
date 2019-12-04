@@ -368,13 +368,15 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
       }
       continue; //nenačítat další token ze vstupu
     } else if (operation == D) { //D jako done xddddddd
-        exp->returnToken = s->top->data->token;
         if (navr == INT) {
           exp->returnType = DATA_INT;
+          exp->returnValue.INT = s->top->data->token->attribute.INT;
         } else if (navr == LITERAL) {
           exp->returnType = DATA_STRING;
+          exp->returnValue.string = s->top->data->token->attribute.string->string;
         } else if (navr == FLOAT) {
           exp->returnType = DATA_FLOAT;
+          exp->returnValue.FLOAT = s->top->data->token->attribute.FLOAT;
         }
         exp->error = OK;
         return exp;

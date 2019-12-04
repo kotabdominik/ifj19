@@ -23,7 +23,7 @@
 
 typedef struct{
     int returnType;
-    token* returnToken;
+    value returnValue;
     int error;
 } precendentExpression;
 
