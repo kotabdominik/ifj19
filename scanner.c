@@ -628,7 +628,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
     int counter = 0;
     char hexvalue[3] = {0,};
     static int CurrentIndentCount;
-    TotalTokenCount++;
 
     if (stackReset == TRUE){
         stackInit(stack);
@@ -700,6 +699,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
     //=========================================================================//
 
 
+    TotalTokenCount++;
 
     smartString *s = malloc(sizeof(smartString));
     if (s == NULL) {
