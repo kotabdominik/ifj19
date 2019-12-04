@@ -268,7 +268,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             } else if (type1 == INT && type2 == KEYWORD) {
               //printf("%d budu zapisovat do %s\n", token->attribute.INT, tokenDruhy.attribute.string->string);
             } else {
-              return -1; //neplatná operace
+              return -3; //neplatná operace mezi dvěmy typy, semantická chyba
             }
 
             if (data != NULL) {
@@ -364,6 +364,9 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
         return exp;
       } else if (a == -2) {
         exp->error = INTERN_ERR;
+        return exp;
+      } else if (a == -3) {
+        exp->error = SEM_DEF_ERR;
         return exp;
       }
       continue; //nenačítat další token ze vstupu
