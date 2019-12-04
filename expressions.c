@@ -120,7 +120,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               type1 = LITERAL;
             } else if (data->token->type == STR) {
               symtableItem* item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
-              if (!item && tableGG) {
+              if (!item && tableGG) { //to jestli je item funkce se ošetřuje jinde prej, dává to PARSING_ERR (2)
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               }
               if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
@@ -193,8 +193,14 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.INT = tokenDruhy.attribute.INT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVINT) {
+                if (tokenPrvni.attribute.INT == 0) {
+                  return -4; //dělení nulou lmao
+                }
                 token->attribute.INT = tokenDruhy.attribute.INT / tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVFLT) {
+                if (tokenPrvni.attribute.INT == 0) {
+                  return -4; //dělení nulou lmao
+                }
                 token->attribute.FLOAT = (float)tokenDruhy.attribute.INT / (float)tokenPrvni.attribute.INT;
                 type1 = FLOAT;
               } else if (operacevtokenu == LESS) {
@@ -235,6 +241,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == DIVFLT) {
+                if (tokenPrvni.attribute.FLOAT == 0) {
+                  return -4; //dělení nulou lmao
+                }
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.FLOAT;
               } else {
                 return -1; //neplatná operace
@@ -248,6 +257,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVFLT) {
+                if (tokenPrvni.attribute.INT == 0) {
+                  return -4; //dělení nulou lmao
+                }
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
               } else {
                 return -1; //neplatná operace
@@ -261,6 +273,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.INT * tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == DIVFLT) {
+                if (tokenPrvni.attribute.FLOAT == 0) {
+                  return -4; //dělení nulou lmao
+                }
                 token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
               } else {
                 return -1; //neplatná operace
@@ -367,6 +382,9 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
         return exp;
       } else if (a == -3) {
         exp->error = SEM_DEF_ERR;
+        return exp;
+      } else if (a == -4) {
+        exp->error = DIVISION_BY_ZERO;
         return exp;
       }
       continue; //nenačítat další token ze vstupu
