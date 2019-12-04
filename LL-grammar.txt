@@ -1,0 +1,40 @@
+(1)    S → DEFFUNC S
+(2)    S → STATEMENT S
+(3)    S → eoftoken
+(4)    DEFFUNC → def str leftbracket DEFPARAMS colon eol indent ENDOFDEFFUNC
+(5)    ENDOFDEFFUNC → STATEMENT END
+(6)    ENDOFDEFFUNC → return expression THIRDEND
+(7)    END → dedent
+(8)    END → eoftoken
+(9)    SECONDEND → eol
+(10)    SECONDEND → eoftoken
+(11)    THIRDEND → eol dedent
+(12)    THIRDEND → eoftoken
+(13)    DEFPARAMS → rightbracket
+(14)    DEFPARAMS → str DEFPARAMSN
+(15)    DEFPARAMSN → rightbracket
+(16)    DEFPARAMSN → comma str DEFPARAMSN
+(17)    STATEMENT → while expression colon eol indent STATEMENT STATEMENTS END
+(18)    STATEMENT → if expression colon eol indent STATEMENT STATEMENTS dedent else colon eol indent STATEMENT STATEMENTS END
+(19)    STATEMENT → pass SECONDEND
+(20)    STATEMENT → str STRINGTHINGIES
+(21)    STATEMENT → expression
+(22)    STRINGTHINGIES → leftbracket CALLPARAMS
+(23)    STRINGTHINGIES → assign expression SECONDEND
+(24)    CALLPARAMS → rightbracket
+(25)    CALLPARAMS → str CALLPARAMSN
+(26)    CALLPARAMS → float CALLPARAMSN
+(27)    CALLPARAMS → int CALLPARAMSN
+(28)    CALLPARAMS → doccom CALLPARAMSN
+(29)    CALLPARAMS → literal CALLPARAMSN
+(30)    CALLPARAMSN → rightbracket
+(31)    CALLPARAMSN → comma AFTERCOMMA CALLPARAMSN
+(32)    AFTERCOMMA → str
+(33)    AFTERCOMMA → float
+(34)    AFTERCOMMA → int
+(35)    AFTERCOMMA → literal
+(36)    AFTERCOMMA → doccom
+(37) 	STATEMENTS -> eps
+(39)	STATEMENTS -> STATEMENT STATEMENTS
+(40)	STATEMENT -> eol
+(41)	S → eps
