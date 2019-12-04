@@ -119,9 +119,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             } else if (data->token->type == LITERAL || data->token->type == DOCCOM) {
               type1 = LITERAL;
             } else if (data->token->type == STR) {
-              symtableItem* item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
-              if (!item && tableG) {
-                item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
+              symtableItem* item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
+              if (!item && tableGG) {
+                item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               }
               if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
                 data->token->type = type1 = INT;
