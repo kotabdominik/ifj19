@@ -50,10 +50,9 @@ void degenerate(tDLList *list){
 //||=============== Věstavené funkce start ===============||//
 
 void generateInputs(){
-
     fprintf(stdout, "LABEL $ALFA\n");
     fprintf(stdout, "PUSHFRAME\n");
-    fprintf(stdout, "DEFVAR LF$RETVAL\n");
+    fprintf(stdout, "DEFVAR LF@$RETVAL\n");
 
     fprintf(stdout, "READ LF@$RETVAL string\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
@@ -242,13 +241,13 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-    void generateInputs();
-    void generateInputi();
-    void generateInputf();
-    void generateLen();
-    void generateSubstr();
-    void generateOrd();
-    void generateChr();
+    /*generateInputs();
+    generateInputi();
+    generateInputf();
+    generateLen();
+    generateSubstr();
+    generateOrd();
+    generateChr();*/
 }
 
 ///potrebujem info k typom
@@ -277,7 +276,17 @@ void generateAssign(tDLList*list){
 void generateBeginingOfFunction(tDLList*list){
   fprintf(stdout, "JUMP $FUNCTION%d\n", ++functionCounter);
   fprintf(stdout, "LABEL $FUNCTIONNAME%p\n", list->First->Instruction.addr1);
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
+  fprintf(stdout, "MOVE LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
+  fprintf(stdout, "PUSHS LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
+}
 
+void generateEndOfFunction(tDLList*list){
+  fprintf(stdout, "POPS LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
+  fprintf(stdout, "LABEL $FUNCTION%d\n", functionCounter);
 }
 
 void generateInstructionREE(tDLList*list){
