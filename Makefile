@@ -15,29 +15,12 @@ CC	 = gcc
 all: $(OBJS)
 	$(CC) -g parser.c -o parser
 
-#final.out: $(OBJS)
-#	$(CC) -g $(OBJS) -o $(OUT)
-list.o: list.c
-	$(CC) $(FLAGS) list.c
-
-strings.o: strings.c
-	$(CC) $(FLAGS) strings.c
-
-
 clean:
 	rm -f $(OBJS) $(OUT) parser
 
-run: $(OUT)
-	./$(OUT)
+run:
+	./parser
 
-debug: $(OUT)
-	valgrind $(OUT)
-
-valgrind: $(OUT)
-	valgrind $(OUT)
-
-valgrind_leakcheck: $(OUT)
-	valgrind --leak-check=full $(OUT)
-
-valgrind_extreme: $(OUT)
-	valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=high --track-origins=yes --vgdb=yes $(OUT)
+int:
+	./parser <txt.txt >str.out
+	./ic19int str.out
