@@ -413,9 +413,7 @@ int statement(char *funName){
 
       tmpItem->defined = true;
       tmpItem->elementType.variable->type = exp->returnType;
-      if(tmpItem->elementType.variable->type == DATA_INT) tmpItem->elementType.variable->value.INT = exp->returnToken->attribute.INT;
-      else if(tmpItem->elementType.variable->type == DATA_FLOAT) tmpItem->elementType.variable->value.FLOAT = exp->returnToken->attribute.FLOAT;
-      else if(tmpItem->elementType.variable->type == DATA_STRING)  tmpItem->elementType.variable->value.string = exp->returnToken->attribute.string->string;
+      tmpItem->elementType.variable->value = exp->returnValue;
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -1200,6 +1198,4 @@ int main(){
 }
 
 
-
-// indent na prvnim radku
 // indent a za nim dokumentacni komentar
