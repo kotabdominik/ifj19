@@ -1192,7 +1192,7 @@ int main(){
     freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     degenerate(instrList);
-    printf("%d\n", result);
+    //printf("%d\n", result);
 
     return result;
 }

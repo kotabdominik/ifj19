@@ -33,6 +33,7 @@
 #include "list.h"
 #include "generator.h"
 
+int functionCounter = 0;
 
 
 void degenerate(tDLList *list){
@@ -273,6 +274,12 @@ void generateAssign(tDLList*list){
 }*/
 
 
+void generateBeginingOfFunction(tDLList*list){
+  fprintf(stdout, "JUMP $FUNCTION%d\n", ++functionCounter);
+  fprintf(stdout, "LABEL $FUNCTIONNAME%p\n", list->First->Instruction.addr1);
+
+}
+
 void generateInstructionREE(tDLList*list){
     int *parCounter;
     for (;list->First != NULL;list->First = list->First->rptr){
@@ -312,7 +319,15 @@ void generateInstructionREE(tDLList*list){
                   tmpItem++;
                 }
                 for (int i = 0; i < *parCounter; i++){
-                    fprintf(stdout, "PUSHS string@%s\n", tmpItem->elementType.variable->value.string);
+                    if (tmpItem->elementType.variable->type == DATA_INT) {
+                      fprintf(stdout, "PUSHS int@%d\n", tmpItem->elementType.variable->value.INT);
+                    }
+                    else if(tmpItem->elementType.variable->type == DATA_STRING){
+                      fprintf(stdout, "PUSHS string@%s\n", tmpItem->elementType.variable->value.string);
+                    }
+                    else if(tmpItem->elementType.variable->type == DATA_FLOAT){
+                      fprintf(stdout, "PUSHS float@%a\n", tmpItem->elementType.variable->value.FLOAT);
+                    }
                     tmpItem--;
                     //tmpItem++;
                 }
@@ -328,7 +343,7 @@ void generateInstructionREE(tDLList*list){
     }
 }
 
-void generateEquality(){
+/*void generateEquality(){
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$RETVAL\n",list->First->Instruction.addr1);
   fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
@@ -355,7 +370,7 @@ void generateEquality(){
   fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
   fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
 
-}
+}*/
 
 /*
 void generateAdd(){
