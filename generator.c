@@ -328,6 +328,27 @@ void generateInstructionREE(tDLList*list){
     }
 }
 
+void generateEquality(){
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF@$RETVAL\n",list->First->Instruction.addr1);
+  fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
+  fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2); 
+  fprintf(stdout, "MOVE LF@$EQ1%p \n",list->First->Instruction.addr1);
+  fprintf(stdout, "MOVE LF@$EQ2%p \n",list->First->Instruction.addr2);
+
+
+  fprintf(stdout, "LABEL $EQ_LESSER\n",list->First->Instruction.addr1);
+  fprintf(stdout, "LABEL $EQ_GREATER\n",list->First->Instruction.addr1);
+  fprintf(stdout, "LABEL $EQ_LSREQ\n",list->First->Instruction.addr1);
+  fprintf(stdout, "LABEL $EQ_GTREQ\n",list->First->Instruction.addr1);
+  fprintf(stdout, "LABEL $EQ_EQ\n",list->First->Instruction.addr1);
+  fprintf(stdout, "LABEL $EQ_NOTEQ\n",list->First->Instruction.addr1);
+
+  fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
+  fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
+
+}
+
 /*
 void generateAdd(){
   printf("MOVE GF@$VAR%p\n",list->First->Instruction.addr1);
