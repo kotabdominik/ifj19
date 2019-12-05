@@ -60,12 +60,10 @@ int statement(char *funName){
         jmp1 = generateInstruction(I_IF, NULL, NULL, NULL);
         jmp1->addr1 = jmp1;
 
-        precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
         if(exp->error != OK) return exp->error;
 
-        tokenAct = ungetToken(&error, stack, doIndent);
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+        tokenAct = exp->returnToken;
 
         generateInstruction(I_EOE, NULL, NULL, NULL);
 
@@ -164,12 +162,10 @@ int statement(char *funName){
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
         }
-        precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
         if(exp->error != OK) return exp->error;
 
-        tokenAct = ungetToken(&error, stack, doIndent);
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+        tokenAct = exp->returnToken;
 
         if(tokenAct.type != COLON) return PARSING_ERR;
 
@@ -252,12 +248,10 @@ int statement(char *funName){
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
         }
-        precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
         if(exp->error != OK) return exp->error;
 
-        tokenAct = ungetToken(&error, stack, doIndent);
-        tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru
+        tokenAct = exp->returnToken;
 
         generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
         generateInstruction(I_RETURN, NULL, NULL, NULL);
@@ -287,12 +281,10 @@ int statement(char *funName){
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
       if(exp->error != OK) return exp->error;
 
-      tokenAct = ungetToken(&error, stack, doIndent);
-      tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
+      tokenAct = exp->returnToken;
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -472,13 +464,10 @@ int statement(char *funName){
         tmpItemREE = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
       if(exp->error != OK) return exp->error;
 
-      tokenAct = ungetToken(&error, stack, doIndent);
-      tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
-
+      tokenAct = exp->returnToken;
       generateInstruction(I_POPS, tmpItem, NULL, NULL);
 
       tmpItem->defined = true;
@@ -562,20 +551,16 @@ int statement(char *funName){
       return OK;
     }
     else{
-      tokenAct = ungetToken(&error, stack, doIndent);
-
       symtableItem *tmpItem = NULL;
       symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, &tmpToken, tableG, table2);
       if(exp->error != OK) return exp->error;
 
-      tokenAct = ungetToken(&error, stack, doIndent);
-      tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
+      tokenAct = exp->returnToken;
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -601,12 +586,10 @@ int statement(char *funName){
       tmpItem = searchSymbolTableWithString(tableG, funName);
       table2 = tmpItem->elementType.function->sT;
     }
-    precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
+    precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
     if(exp->error != OK) return exp->error;
 
-    tokenAct = ungetToken(&error, stack, doIndent);
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
+    tokenAct = exp->returnToken;
 
     if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
     if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
