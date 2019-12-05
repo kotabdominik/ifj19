@@ -45,7 +45,7 @@
 #define I_GT 21
 #define I_EQ 22
 #define I_LTS 23
-#define I_ETS 24
+#define I_GTS 24
 #define I_EQS 25
 #define I_AND 26
 #define I_OR 27
