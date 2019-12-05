@@ -95,6 +95,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
   int zpracuj = 0;
   int rule = 0;
   int operacevtokenu = -1;
+  int zesym = 0;
   while (rule == 0) {
     int type1, type2;
     sData* data = tokenStackTop(s);
@@ -124,8 +125,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               }
               if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
-                data->token->type = type1 = INT;
-                data->token->attribute.INT = item->elementType.variable->value.INT;
+                type1 = INT;
+                zesym = 1;
+                //data->token->attribute.INT = item->elementType.variable->value.INT;
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_STRING) {
                 data->token->type = type1 = LITERAL;
                 stringClear(data->token->attribute.string);
@@ -182,13 +184,13 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             newData->type = typeNonterm;
             if (zpracuj == 2) { //zpracování i -> E
               //printf("tady jsem jen kdyyž měním na Ečka\n");
-              if (type1 == INT && data->token->type != STR) {
+              if (type1 == INT && zesym == 0) {
                 int* hodnota = (int*) malloc(sizeof(int));
                 int* typetokenu = (int*) malloc(sizeof(int));
                 *hodnota = token->attribute.INT;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == INT && data->token->type == STR) {
+              } else if (type1 == INT && zesym == 1) {
                 //printf("je to něco ze symboltablu\n");
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
