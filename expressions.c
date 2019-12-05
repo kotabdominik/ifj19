@@ -66,7 +66,6 @@ int getPrecedenceIndex(token* tokenAct) { //vrací index z precedence tablu
   case NOTEQ: // !=
   case LESS: // <
   case GREATER: // >
-  case ASSIGN: // =
     return 5;
   case COLON: //$
   case EOL:
@@ -109,7 +108,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
           if (data->token->type == RIGHTBRACKET) {
             state = 2;
             zpracuj = 1;
-          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR || data->token->type == NONE || data->token->type == DOCCOM) { //int, float, literal, str
+          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR || (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) || data->token->type == DOCCOM) { //int, float, literal, str
             token = data->token;
             zpracuj = 2;
             state = 3;
@@ -147,9 +146,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         }
         break;
       case 1:
-        if (data->token->type == PLUS || data->token->type == MINUS || data->token->type == TIMES || data->token->type == DIVFLT || data->token->type == DIVINT) {
-          state = 2;
-        } else if (data->token->type == LESS || data->token->type == GREATER || data->token->type == LESSEQ || data->token->type == GREATEREQ || data->token->type == EQ || data->token->type == NOTEQ || data->token->type == ASSIGN) {
+        if (data->token->type == PLUS || data->token->type == MINUS || data->token->type == TIMES || data->token->type == DIVFLT || data->token->type == DIVINT || data->token->type == LESS || data->token->type == GREATER || data->token->type == LESSEQ || data->token->type == GREATEREQ || data->token->type == EQ || data->token->type == NOTEQ) {
           state = 2;
         } else {
           return -1; //neplatný výraz mezi 2mi věcmi
@@ -192,7 +189,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               } else if (type1 == FLOAT && zesym == 0) {
-                float* hodnota = (float *) malloc(sizeof(char));
+                double* hodnota = (double *) malloc(sizeof(double));
                 int* typetokenu = (int *) malloc(sizeof(int));
                 *hodnota = token->attribute.FLOAT;
                 *typetokenu = token->type;
@@ -203,29 +200,24 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 generateInstruction(I_PUSHS, promena, NULL, promena);
               }
             } else if (zpracuj == 1) { //tady zavorky
-              token->attribute = tokenDruhy.attribute;
               newData->dataType = type1;
             } else if (type1 == INT && type2 == INT) {
               if (operacevtokenu == PLUS) {
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
-                //token->attribute.INT = tokenDruhy.attribute.INT + tokenPrvni.attribute.INT;
               } else if (operacevtokenu == MINUS) {
                 generateInstruction(I_SUBS, NULL, NULL, NULL);
-                //token->attribute.INT = tokenDruhy.attribute.INT - tokenPrvni.attribute.INT;
               } else if (operacevtokenu == TIMES) {
                 generateInstruction(I_MULS, NULL, NULL, NULL);
-                //token->attribute.INT = tokenDruhy.attribute.INT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVINT) {
                 if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
                 }
                 generateInstruction(I_IDIVS, NULL, NULL, NULL);
-                //token->attribute.INT = tokenDruhy.attribute.INT / tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVFLT) {
                 if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
                 }
-                token->attribute.FLOAT = (float)tokenDruhy.attribute.INT / (float)tokenPrvni.attribute.INT;
+                token->attribute.FLOAT = (double)tokenDruhy.attribute.INT / (double)tokenPrvni.attribute.INT;
                 type1 = FLOAT;
               } else if (operacevtokenu == LESS) {
                 generateInstruction(I_LTS, NULL, NULL, NULL);
@@ -245,27 +237,21 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             } else if (type1 == LITERAL && type2 == LITERAL) {
               if (operacevtokenu == PLUS) {
                 generateInstruction(I_CONCAT, NULL, NULL, NULL);
-                //stringAddString(tokenDruhy.attribute.string, tokenPrvni.attribute.string->string);
-                //token->attribute.string = tokenDruhy.attribute.string;
               } else {
                 return -1; //neplatná operace
               }
             } else if (type1 == FLOAT && type2 == FLOAT) {
               if (operacevtokenu == PLUS) {
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
-                //token->attribute.FLOAT = tokenDruhy.attribute.FLOAT + tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == MINUS) {
                 generateInstruction(I_SUBS, NULL, NULL, NULL);
-                //token->attribute.FLOAT = tokenDruhy.attribute.FLOAT - tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == TIMES) {
                 generateInstruction(I_MULS, NULL, NULL, NULL);
-                //token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == DIVFLT) {
                 if (tokenPrvni.attribute.FLOAT == 0) {
                   return -4; //dělení nulou lmao
                 }
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
-                //token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == LESS) {
                 generateInstruction(I_LTS, NULL, NULL, NULL);
               } else if (operacevtokenu == GREATER) {
@@ -279,9 +265,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) {
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                return -1; //neplatná operace mezi 2mi inty
+                return -1; //neplatná operace mezi 2mi floaty
               }
-            } else if (type1 == INT && type2 == FLOAT) {
+            } else if (type1 == INT && type2 == FLOAT) { //todo
               type1 = FLOAT;
               if (operacevtokenu == PLUS) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT + tokenPrvni.attribute.INT;
@@ -297,7 +283,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else {
                 return -1; //neplatná operace
               }
-            } else if (type1 == FLOAT && type2 == INT) {
+            } else if (type1 == FLOAT && type2 == INT) { //todo
               type2 = FLOAT;
               if (operacevtokenu == PLUS) {
                 token->attribute.FLOAT = tokenDruhy.attribute.INT + tokenPrvni.attribute.FLOAT;
