@@ -381,6 +381,12 @@ int generateInstructionREE(tDLList*list){
                 if (*tmp == INT) {
                   fprintf(stdout, "PUSHS int@%d\n", *tmp8);
                 }
+                else if(*tmp == LIRERAL){
+                  fprintf(stdout, "PUSHS string@%s\n", *tmp8);
+                }
+                else if(*tmp == FLOAT){
+                  fprintf(stdout, "PUSHS float@%a\n", *tmp8);
+                }
                 break;
             case(I_ADDS):
                 fprintf(stdout, "ADDS\n");
