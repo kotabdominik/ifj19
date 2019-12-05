@@ -182,7 +182,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             newData->type = typeNonterm;
             if (zpracuj == 2) { //zpracování i -> E
               //printf("tady jsem jen kdyyž měním na Ečka\n");
-              if (type1 == INT && data->token->type == INT) {
+              if (type1 == INT && data->token->type != STR) {
                 int* hodnota = (int*) malloc(sizeof(int));
                 int* typetokenu = (int*) malloc(sizeof(int));
                 *hodnota = token->attribute.INT;
