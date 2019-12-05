@@ -351,7 +351,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
   return rule;
 }
 
-precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG, symbolTable* tableGG) {
+precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG) {
   precendentExpression* exp = malloc(sizeof(precendentExpression));
   if (!exp) {
     return NULL;
@@ -439,7 +439,14 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
         return exp;
     }
 
-    current = malloc(sizeof(token)); //načítáme další token ze vstupu
+    current = malloc(sizeof(token)); //načítáme další token ze vstupu (nebo z parseru)
+    if (tokenAct2) { //zpracujeme token z parseru
+      current->attribute = tokenAct2->attribute;
+      current->type = tokenAct2->type;
+      tokenAct2 = NULL;
+      continue;
+    }
+
     tmptkn = nextToken(&errorE, stack, doIndentE);
     if (errorE != OK) {
       exp->error = errorE;
