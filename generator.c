@@ -226,10 +226,10 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  generateSubstr();
     /*generateInputs();
-    generateOrd();
     generateInputi();
+    generateSubstr();
+    generateOrd();
     generateLen();
     generateChr();
     generateInputf();
@@ -407,22 +407,62 @@ int generateInstructionREE(tDLList*list){
                 symtableItem *reee = list->First->Instruction.addr1;
                 fprintf(stdout, "POPS GF@$VAR%s\n", reee->key);
                 break;
-            case(I_GTS):
+            case(I_GTS): //greater or equal
                 fprintf(stdout, "GTS \n");
-                return 420;
-            case(I_LTS):
+                break;
+            case(I_LTS): //less or equal
                 fprintf(stdout, "LTS \n");
-                return 420;
+                break;
             case(I_EQS):
                 fprintf(stdout, "EQS \n");
-                return 420;
+                break;
             case(I_ELSE_E):
                 return 1488;
+            case(I_GT):
+                break;
+            case(I_LT):
+                break;
+            case(I_EOE):
+                return 69;
+            case(I_CONCAT):
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+
+                fprintf(stdout, "DEFVAR LF@$STR1\n");
+                fprintf(stdout, "POPS LF@$STR1\n");
+
+
+                fprintf(stdout, "DEFVAR LF@$STR2\n");
+                fprintf(stdout, "POPS LF@$STR2\n");
+
+                fprintf(stdout, "CONCAT LF@$RETVAL LF@$STR2 LF@$STR1\n");
+                fprintf(stdout, "PUSHS LF@$RETVAL\n");
+
+                fprintf(stdout, "POPFRAME\n");
+                break;
         }
     }
 }
 
+void greater(){
+  fprintf(stdout, "LABEL $GREATER\n");
+  fprintf(stdout, "CREATEFRAME\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+  fprintf(stdout, "DEFVAR LF@$1\n");
+  fprintf(stdout, "POPS LF@$1\n");
 
+  fprintf(stdout, "DEFVAR LF@$2\n");
+  fprintf(stdout, "POPS LF@$2\n");
+
+  //fprintf(stdout, "GT\n", );
+
+
+  fprintf(stdout, "PUSHS LF@$RETVAL\n");
+  fprintf(stdout, "POPFRAME\n");
+  fprintf(stdout, "RETURN\n");
+}
 
 /*void generateEquality(tDLList *list){
   fprintf(stdout, "PUSHFRAME\n");
