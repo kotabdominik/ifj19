@@ -466,7 +466,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$STR2\n");
                 fprintf(stdout, "POPS LF@$STR2\n");
 
-                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "CONCAT LF@$RETVAL LF@$STR2 LF@$STR1\n");
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
 
                 fprintf(stdout, "POPFRAME\n");
