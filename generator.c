@@ -376,15 +376,17 @@ int generateInstructionREE(tDLList*list){
                   fprintf(stdout, "PUSHS GF@$VAR%s\n", tmp1);
                   break;
                 }
-                int* tmp8 = list->First->Instruction.addr1;
                 int* tmp = list->First->Instruction.addr2;
                 if (*tmp == INT) {
+                  int* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS int@%d\n", *tmp8);
                 }
-                else if(*tmp == LIRERAL){
-                  fprintf(stdout, "PUSHS string@%s\n", *tmp8);
+                else if(*tmp == LITERAL){
+                  char* tmp8 = list->First->Instruction.addr1;
+                  fprintf(stdout, "PUSHS string@%s\n", tmp8);
                 }
                 else if(*tmp == FLOAT){
+                  double* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS float@%a\n", *tmp8);
                 }
                 break;
