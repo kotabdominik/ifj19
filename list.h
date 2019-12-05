@@ -90,7 +90,8 @@
 #define I_IF 64
 #define I_WHILE_B 65
 #define I_WHILE_E 66
-
+#define I_IF_E 67
+#define I_ELSE_E 68
 
 typedef struct
 {

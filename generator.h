@@ -36,5 +36,6 @@ void generateAssign(tDLList*list);
 void generateGFVariable();
 int generateInstructionREE(tDLList*list);
 void generateWhile(tDLList*list,void* origi);
+void generateIf(tDLList*list,void* origi);
 
 #endif

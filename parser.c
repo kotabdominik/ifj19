@@ -57,6 +57,9 @@ int statement(char *funName){
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
         }
+        jmp1 = generateInstruction(I_IF, NULL, NULL, NULL);
+        jmp1->addr1 = jmp1;
+
         precendentExpression* exp = doPrecedenceOperation(tokenAct, tableG, table2);
         if(exp->error != OK) return exp->error;
 
@@ -64,7 +67,7 @@ int statement(char *funName){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
-        jmp1 = generateInstruction(I_JUMPIFNEQ, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
+        //jmp1 = generateInstruction(I_JUMPIFNEQ, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
         /*tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru*/
@@ -92,6 +95,9 @@ int statement(char *funName){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
+        generateInstruction(I_IF_E, NULL, NULL, NULL);
+        //jmp1->addr1 = jmp1;
+
         if(tokenAct.type != KEYWORD) return PARSING_ERR;
         if(tokenAct.attribute.keyword != ELSE) return PARSING_ERR;
 
@@ -109,10 +115,10 @@ int statement(char *funName){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT) return PARSING_ERR;
 
-        jmp2 = generateInstruction(I_JUMP, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
-        generateInstruction(I_LABEL, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
+        //jmp2 = generateInstruction(I_JUMP, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
+        //generateInstruction(I_LABEL, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
 
-        jmp1->addr1 = list->Last;
+        //jmp1->addr1 = list->Last;
 
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -121,8 +127,9 @@ int statement(char *funName){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
-        doIndent = 1;
+        generateInstruction(I_ELSE_E, NULL, NULL, NULL);
 
+        doIndent = 1;
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         //nesmi tady byt indent
@@ -135,8 +142,8 @@ int statement(char *funName){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         return OK;
 
-        generateInstruction(I_LABEL, NULL, NULL, NULL);
-        jmp2->addr1 = list->Last;
+        //generateInstruction(I_LABEL, NULL, NULL, NULL);
+        //jmp2->addr1 = list->Last;
 
         return OK;
     }
@@ -182,9 +189,7 @@ int statement(char *funName){
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
-        generateInstruction(jmp2->instType, jmp2->addr1, jmp2->addr2, jmp2->addr3);
-        generateInstruction(I_LABEL, NULL, NULL, NULL);
-        jmp1->addr1 = list->Last;
+        generateInstruction(I_WHILE_E, NULL, NULL, NULL);
 
         doIndent = 1;
 
@@ -374,6 +379,72 @@ int statement(char *funName){
           if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
 
           result = callParams(tmpToken.attribute.string->string);
+
+          if(strcmp(tmpToken.attribute.string->string, "len") == 0){
+            if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
+              tmpItem->elementType.variable->type = DATA_INT;
+              generateInstruction(I_LEN, tmpItem1->elementType.function->arguments->elementType.variable->value.string, NULL, NULL);
+            } else {
+              fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+              return 3;
+            }
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "substr") == 0){
+            if (tmpItem1->elementType.function->arguments[0].elementType.variable->type == DATA_STRING && tmpItem1->elementType.function->arguments[1].elementType.variable->type == DATA_INT && tmpItem1->elementType.function->arguments[2].elementType.variable->type == DATA_INT) {
+              tmpItem->elementType.variable->type = DATA_STRING;
+              int* value = (int*) malloc(sizeof(int));
+              int* value1 = (int*) malloc(sizeof(int));
+              *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
+              *value1 = tmpItem1->elementType.function->arguments[2].elementType.variable->value.INT;
+              generateInstruction(I_SUBSTR, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, value1);
+            } else {
+              fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+              return 3;
+            }
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
+            if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_INT) {
+              tmpItem->elementType.variable->type = DATA_STRING;
+              generateInstruction(I_CHR, &(tmpItem1->elementType.function->arguments->elementType.variable->value.INT), NULL, NULL);
+            } else {
+              fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+              return 3;
+            }
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "ord") == 0){
+            if (tmpItem1->elementType.function->arguments[0].elementType.variable->type == DATA_STRING && tmpItem1->elementType.function->arguments[1].elementType.variable->type == DATA_INT) {
+              tmpItem->elementType.variable->type = DATA_STRING;
+              int* value = (int*) malloc(sizeof(int));
+              *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
+              generateInstruction(I_ORD, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, NULL);
+            } else {
+              fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+              return 3;
+            }
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
+            symtableItem * reeItem =(symtableItem*) malloc(tmpItem->elementType.function->argCount * sizeof(symtableItem));
+            reeItem = tmpItem->elementType.function->arguments;
+            generateInstruction(I_PRINT, NULL, &(tmpItem->elementType.function->argCount), reeItem);
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "inputs") == 0){
+            tmpItem->elementType.variable->type = DATA_STRING;
+            generateInstruction(I_INPUTS, NULL, NULL, NULL);
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "inputi") == 0){
+            tmpItem->elementType.variable->type = DATA_INT;
+            generateInstruction(I_INPUTI, NULL, NULL, NULL);
+          }
+          else if(strcmp(tmpToken.attribute.string->string, "inputf") == 0){
+            tmpItem->elementType.variable->type = DATA_FLOAT;
+            generateInstruction(I_INPUTF, NULL, NULL, NULL);
+          }
+          else{
+            generateInstruction(I_CALL, tmpItem->elementType.function, NULL, NULL); //???
+          }
+
+          generateInstruction(I_POPS, tmpItem, NULL, NULL);
+
           if (result != OK) return result;
           tokenAct = nextToken(&error, stack, doIndent);
           if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -452,7 +523,9 @@ int statement(char *funName){
         //generateInstruction(I_ORD, tmpToken, NULL, NULL);
       }
       else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
-        generateInstruction(I_PRINT, NULL, &(tmpItem->elementType.function->argCount), tmpItem->elementType.function->arguments);
+        symtableItem * reeItem =(symtableItem*) malloc(tmpItem->elementType.function->argCount * sizeof(symtableItem));
+        reeItem = tmpItem->elementType.function->arguments;
+        generateInstruction(I_PRINT, NULL, &(tmpItem->elementType.function->argCount), reeItem);
       }
       else if(strcmp(tmpToken.attribute.string->string, "inputs") == 0){
         generateInstruction(I_INPUTS, NULL, NULL, NULL);
@@ -1192,8 +1265,9 @@ int main(){
     //setFile("txt.txt");
     freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
-    degenerate(instrList);
+    if(result != OK) return result;
     //printf("%d\n", result);
+    degenerate(instrList);
 
     return result;
 }
