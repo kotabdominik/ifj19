@@ -466,13 +466,49 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$STR2\n");
                 fprintf(stdout, "POPS LF@$STR2\n");
 
-                fprintf(stdout, "CONCAT LF@$RETVAL LF@$STR2 LF@$STR1\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
 
                 fprintf(stdout, "POPFRAME\n");
                 break;
         }
     }
+}
+
+//converts int to float if needed
+void checkInt2Float(){
+
+  fprintf(stdout, "DEFVAR LF@$T1\n");
+  fprintf(stdout, "DEFVAR LF@$T2\n");
+
+  fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
+  fprintf(stdout, "TYPE LF@$T2 LF@$2\n");
+
+  fprintf(stdout, "JUMPIFEQ $LAB1 LF@$T1 string@float\n");
+  fprintf(stdout, "INT2FLOAT LF@$1 LF@$1\n");
+  fprintf(stdout, "LABEL $LAB1\n");
+  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$T2 string@float\n");
+  fprintf(stdout, "INT2FLOAT LF@$2 LF@$2\n");
+  fprintf(stdout, "LABEL $LAB2\n");
+
+}
+
+//converts float to int if needed
+void checkFloat2FInt(){
+
+  fprintf(stdout, "DEFVAR LF@$T1\n");
+  fprintf(stdout, "DEFVAR LF@$T2\n");
+
+  fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
+  fprintf(stdout, "TYPE LF@$T2 LF@$2\n");
+
+  fprintf(stdout, "JUMPIFEQ $LAB1 LF@$T1 string@int\n");
+  fprintf(stdout, "FLOAT2INT LF@$1 LF@$1\n");
+  fprintf(stdout, "LABEL $LAB1\n");
+  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$T2 string@int\n");
+  fprintf(stdout, "FLOAT2INT LF@$2 LF@$2\n");
+  fprintf(stdout, "LABEL $LAB2\n");
+
 }
 
 
