@@ -427,10 +427,30 @@ int generateInstructionREE(tDLList*list){
             case(I_ELSE_E):
                 return 1488;
             case(I_GT)://greater or equal
-                fprintf(stdout, "CALL GREATEREQUAL\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "POPS LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "POPS LF@$2\n");
+                fprintf(stdout, "LT LF@$RETVAL LF@$2 LF@$1\n");
+                fprintf(stdout, "NOT LF@$RETVAL LF@$RETVAL\n");
+                fprintf(stdout, "PUSHS LF@$RETVAL\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_LT):
-                fprintf(stdout, "CALL LESSEQUAL\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "POPS LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "POPS LF@$2\n");
+                fprintf(stdout, "GT LF@$RETVAL LF@$2 LF@$1\n");
+                fprintf(stdout, "NOT LF@$RETVAL LF@$RETVAL\n");
+                fprintf(stdout, "PUSHS LF@$RETVAL\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_EOE):
                 return 69;
@@ -455,37 +475,6 @@ int generateInstructionREE(tDLList*list){
     }
 }
 
-void greaterEqual(){
-  fprintf(stdout, "LABEL $GREATEREQUAL\n");
-  fprintf(stdout, "CREATEFRAME\n");
-  fprintf(stdout, "PUSHFRAME\n");
-  fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-  fprintf(stdout, "DEFVAR LF@$1\n");
-  fprintf(stdout, "POPS LF@$1\n");
-  fprintf(stdout, "DEFVAR LF@$2\n");
-  fprintf(stdout, "POPS LF@$2\n");
-  fprintf(stdout, "LT LF@$RETVAL LF@$2 LF@$1\n");
-  fprintf(stdout, "NOT LF@$RETVAL LF@$RETVAL\n");
-  fprintf(stdout, "PUSHS LF@$RETVAL\n");
-  fprintf(stdout, "POPFRAME\n");
-  fprintf(stdout, "RETURN\n");
-}
-
-void lessEqual(){
-    fprintf(stdout, "LABEL $LESSEQUAL\n");
-    fprintf(stdout, "CREATEFRAME\n");
-    fprintf(stdout, "PUSHFRAME\n");
-    fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-    fprintf(stdout, "DEFVAR LF@$1\n");
-    fprintf(stdout, "POPS LF@$1\n");
-    fprintf(stdout, "DEFVAR LF@$2\n");
-    fprintf(stdout, "POPS LF@$2\n");
-    fprintf(stdout, "GT LF@$RETVAL LF@$2 LF@$1\n");
-    fprintf(stdout, "NOT LF@$RETVAL LF@$RETVAL\n");
-    fprintf(stdout, "PUSHS LF@$RETVAL\n");
-    fprintf(stdout, "POPFRAME\n");
-    fprintf(stdout, "RETURN\n");
-}
 
 /*void generateEquality(tDLList *list){
   fprintf(stdout, "PUSHFRAME\n");

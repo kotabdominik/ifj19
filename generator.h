@@ -38,7 +38,5 @@ int generateInstructionREE(tDLList*list);
 void generateWhile(tDLList*list,void* origi);
 void generateIf(tDLList*list,void* origi);
 
-void greaterEqual();
-void lessEqual();
 
 #endif
