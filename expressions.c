@@ -191,9 +191,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               } else if (type1 == LITERAL && zesym == 0) {
-                int* hodnota = (char *) malloc(sizeof(char));
+                char* hodnota = (char *) malloc(sizeof(char));
                 int* typetokenu = (int *) malloc(sizeof(int));
-                *hodnota = token->attribute.string->string;
+                hodnota = token->attribute.string->string;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               } else if (zesym == 1) { //ze symtablu, pushuju key
