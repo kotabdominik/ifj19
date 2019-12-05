@@ -317,6 +317,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                       //c = getchar();
                       continue;
                     }
+                    if (c == EOF) {
+                      *error = 1;
+                      return Token;
+                    }
                     else if (c == '\n') { // Spraví EOL
                       stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '1');stringAddChar(s, '0');
                       //c = getchar();
