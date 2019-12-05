@@ -183,18 +183,24 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             if (zpracuj == 2) { //zpracování i -> E
               //printf("tady jsem jen kdyyž měním na Ečka\n");
               if (type1 == INT) {
-                generateInstruction(I_PUSHS, &(token->attribute.INT), NULL, NULL);
+                int* hodnota = (int*) malloc(sizeof(int));
+                int* typetokenu = (int*) malloc(sizeof(int));
+                *hodnota = token->attribute.INT;
+                *typetokenu = token->type;
+                generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               }
             } else if (zpracuj == 1) { //tady zavorky
               token->attribute = tokenDruhy.attribute;
               newData->dataType = type1;
             } else if (type1 == INT && type2 == INT) {
               if (operacevtokenu == PLUS) {
-                token->attribute.INT = tokenDruhy.attribute.INT + tokenPrvni.attribute.INT;
+                generateInstruction(I_ADDS, NULL, NULL, NULL);
+                //token->attribute.INT = tokenDruhy.attribute.INT + tokenPrvni.attribute.INT;
               } else if (operacevtokenu == MINUS) {
                 token->attribute.INT = tokenDruhy.attribute.INT - tokenPrvni.attribute.INT;
               } else if (operacevtokenu == TIMES) {
-                token->attribute.INT = tokenDruhy.attribute.INT * tokenPrvni.attribute.INT;
+                generateInstruction(I_MULS, NULL, NULL, NULL);
+                //token->attribute.INT = tokenDruhy.attribute.INT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVINT) {
                 if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
