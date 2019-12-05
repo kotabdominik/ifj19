@@ -190,8 +190,13 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 *hodnota = token->attribute.INT;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == INT && zesym == 1) {
-                //printf("je to něco ze symboltablu\n");
+              } else if (type1 == LITERAL && zesym == 0) {
+                int* hodnota = (char *) malloc(sizeof(char));
+                int* typetokenu = (int *) malloc(sizeof(int));
+                *hodnota = token->attribute.string->string;
+                *typetokenu = token->type;
+                generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
+              } else if (zesym == 1) { //ze symtablu, pushuju key
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
                 generateInstruction(I_PUSHS, promena, NULL, promena);
@@ -222,25 +227,18 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 token->attribute.FLOAT = (float)tokenDruhy.attribute.INT / (float)tokenPrvni.attribute.INT;
                 type1 = FLOAT;
               } else if (operacevtokenu == LESS) {
-                if (tokenDruhy.attribute.INT < tokenPrvni.attribute.INT) {
-                  token->attribute.BOOL = true;
-                } else {
-                  token->attribute.BOOL = false;
-                }
-                type1 = BOOL;
-
+                //type1 = BOOL;
+                generateInstruction(I_LT, NULL, NULL, NULL);
               } else if (operacevtokenu == GREATER) {
-                generateInstruction(I_GTS, NULL, NULL, NULL);
+                generateInstruction(I_GT, NULL, NULL, NULL);
               } else if (operacevtokenu == LESSEQ) {
-
+                generateInstruction(I_LTS, NULL, NULL, NULL);
               } else if (operacevtokenu == GREATEREQ) {
-
+                generateInstruction(I_GTS, NULL, NULL, NULL);
               } else if (operacevtokenu == EQ) {
-
+                generateInstruction(I_EQS, NULL, NULL, NULL);
               } else if (operacevtokenu == NOTEQ) {
-
-              } else if (operacevtokenu == ASSIGN) {
-                printf("%d budu zapisovat do %s\n", token->attribute.INT, data->token->attribute.string->string);
+                generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
                 return -1; //neplatná operace mezi 2mi inty
               }
