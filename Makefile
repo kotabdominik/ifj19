@@ -20,6 +20,7 @@ clean:
 	rm -f $(OBJS) $(OUT) $(PROJ)
 
 run:
+	make all
 	./$(PROJ)
 
 int:
