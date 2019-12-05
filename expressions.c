@@ -197,7 +197,8 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
                 //token->attribute.INT = tokenDruhy.attribute.INT + tokenPrvni.attribute.INT;
               } else if (operacevtokenu == MINUS) {
-                token->attribute.INT = tokenDruhy.attribute.INT - tokenPrvni.attribute.INT;
+                generateInstruction(I_SUBS, NULL, NULL, NULL);
+                //token->attribute.INT = tokenDruhy.attribute.INT - tokenPrvni.attribute.INT;
               } else if (operacevtokenu == TIMES) {
                 generateInstruction(I_MULS, NULL, NULL, NULL);
                 //token->attribute.INT = tokenDruhy.attribute.INT * tokenPrvni.attribute.INT;
@@ -205,6 +206,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
                 }
+                generateInstruction(I_IDIVS, NULL, NULL, NULL);
                 token->attribute.INT = tokenDruhy.attribute.INT / tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVFLT) {
                 if (tokenPrvni.attribute.INT == 0) {
@@ -221,7 +223,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 type1 = BOOL;
 
               } else if (operacevtokenu == GREATER) {
-
+                generateInstruction(I_GTS, NULL, NULL, NULL);
               } else if (operacevtokenu == LESSEQ) {
 
               } else if (operacevtokenu == GREATEREQ) {
