@@ -15,16 +15,11 @@
 #define _PARSER_H_
 
 #include "scanner.h"
-#include "scanner.c"
 #include "symtable.h"
-#include "symtable.c"
 #include "list.h"
-#include "list.c"
 #include "string.h"
 #include "error.h"
-#include "generator.c"
 #include "generator.h"
-#include "expressions.c"
 #include "expressions.h"
 
 int parse(symbolTable *ST, tDLList *instrList);

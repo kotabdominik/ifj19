@@ -15,11 +15,11 @@
 #define _SCANNER_H_
 
 #include "strings.h"
+#include "stack.h"
 #include "error.h"
 #include <ctype.h>
 #include <stdbool.h>
-#include "stack.c"
-#include "strings.c"
+#include <malloc.h>
 
 
 typedef enum {
@@ -89,6 +89,7 @@ typedef struct {
 
 
 // Proly na ziskavanie tokenov
+token ungetToken(int *error, tStack *stack, int doIndent);
 token nextToken(int *error, tStack *stack, int doIndent);
 
 void resetToken();

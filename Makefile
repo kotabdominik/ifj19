@@ -7,21 +7,22 @@
 # Kotáb Dominik (xkotab01@stud.fit.vutbr.cz)
 # Moravčík Tomáš (xmorav41@stud.fit.vutbr.cz)
 
-
-SOURCE	= list.c strings.c scanner.c tokenStack.c symtable.c parser.c
-HEADER	= error.h list.h scanner.h stack.h strings.h symtable.h parser.h tokenStack.h
+PROJ = parser
+SOURCE	= expressions.c generator.c parser.c scanner.c stack.c strings.c symtable.c tokenStack.c list.c
 CC	 = gcc
 
-all: $(OBJS)
-	$(CC) -g parser.c -o parser
+all: $(PROJ)
+
+$(PROJ) : $(SOURCE)
+		$(CC) -o $(PROJ) $(SOURCE) -lm
 
 clean:
-	rm -f $(OBJS) $(OUT) parser
+	rm -f $(OBJS) $(OUT) $(PROJ)
 
 run:
-	./parser
+	./$(PROJ)
 
 int:
-	$(CC) -g parser.c -o parser
-	./parser <txt.txt >str.out
+	make all
+	./$(PROJ) <txt.txt >str.out
 	./ic19int str.out

@@ -77,6 +77,7 @@ typedef struct symtable { //tady musi
 } symbolTable;
 
 
+unsigned long hash(unsigned char *str); //získání hashe
 symbolTable *initSymbolTable(unsigned int size); //init celého symbol tablu
 void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
 void insertSymbolTable(symbolTable *sT, token token, elementType type); //přidání prvku do symbol tablu

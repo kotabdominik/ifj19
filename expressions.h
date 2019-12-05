@@ -16,7 +16,6 @@
 
 #include "parser.h"
 #include "tokenStack.h"
-#include "tokenStack.c"
 #include "scanner.h"
 
 #define TABLESIZE 7 //velikost precedenční tabulky

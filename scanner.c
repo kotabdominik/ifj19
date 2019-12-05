@@ -11,9 +11,7 @@
   *
   */
 
-#include <malloc.h>
 #include "scanner.h"
-#include "stack.h"
 
 #define STATE_START 100
 
