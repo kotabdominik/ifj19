@@ -88,7 +88,8 @@
 #define I_PRINT 63
 
 #define I_IF 64
-#define I_WHILE 65
+#define I_WHILE_B 65
+#define I_WHILE_E 66
 
 
 typedef struct

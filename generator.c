@@ -96,7 +96,9 @@ void generatePrint(int *parCounter){
     {
         fprintf(stdout, "POPS LF@$TMPVAL%p\n", parCounter);
         fprintf(stdout, "WRITE LF@$TMPVAL%p\n", parCounter);
+        if(i+1 != *parCounter) fprintf(stdout, "WRITE string@\\032\n");
     }
+    fprintf(stdout, "WRITE string@\\010\n");
     fprintf(stdout, "MOVE LF@$RETVAL%p  string@None\n", parCounter);
 }
 
@@ -289,7 +291,7 @@ void generateEndOfFunction(tDLList*list){
   fprintf(stdout, "LABEL $FUNCTION%d\n", functionCounter);
 }
 
-void generateInstructionREE(tDLList*list){
+int generateInstructionREE(tDLList*list){
     int *parCounter;
     for (;list->First != NULL;list->First = list->First->rptr){
         switch(list->First->Instruction.instType){
@@ -328,7 +330,10 @@ void generateInstructionREE(tDLList*list){
                   tmpItem++;
                 }
                 for (int i = 0; i < *parCounter; i++){
-                    if (tmpItem->elementType.variable->type == DATA_INT) {
+                    if(tmpItem->key != NULL){
+                      fprintf(stdout, "PUSHS GF@$VAR%s\n", tmpItem->key);
+                    }
+                    else if (tmpItem->elementType.variable->type == DATA_INT) {
                       fprintf(stdout, "PUSHS int@%d\n", tmpItem->elementType.variable->value.INT);
                     }
                     else if(tmpItem->elementType.variable->type == DATA_STRING){
@@ -345,12 +350,15 @@ void generateInstructionREE(tDLList*list){
             case(I_IF):
 
                 break;
-            case(I_WHILE):
-
+            case(I_WHILE_B):
+                generateWhile(list, list->First->Instruction.addr1);
+                break;
+            case(I_WHILE_E):
+                return 69;
                 break;
             case(I_PUSHS):
                 if (0) {}
-                int * tmp1 = list->First->Instruction.addr1;
+                int* tmp1 = list->First->Instruction.addr1;
                 int* tmp = list->First->Instruction.addr2;
                 if (*tmp == INT) {
                   fprintf(stdout, "PUSHS int@%d\n", *tmp1);
@@ -359,8 +367,27 @@ void generateInstructionREE(tDLList*list){
             case(I_ADDS):
                 fprintf(stdout, "ADDS\n");
                 break;
+            case(I_SUBS):
+                fprintf(stdout, "SUBS\n");
+                break;
             case(I_MULS):
                 fprintf(stdout, "MULS\n");
+                break;
+            case(I_DIVS):
+                fprintf(stdout, "DIVS\n");
+                break;
+            case(I_IDIVS):
+                fprintf(stdout, "IDIVS\n");
+                break;
+            case(I_DEFVAR):
+                if(0){}
+                symtableItem *ree = list->First->Instruction.addr1;
+                fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
+                break;
+            case(I_POPS):
+                if(0){}
+                symtableItem *reee = list->First->Instruction.addr1;
+                fprintf(stdout, "POPS GF@$VAR%s\n", reee->key);
                 break;
         }
     }
@@ -397,15 +424,15 @@ void generateInstructionREE(tDLList*list){
 }*/
 
 /*
-void generateAdd(){
+void generateAdd(tDLList*list){
   printf("MOVE GF@$VAR%p\n",list->First->Instruction.addr1);
-}
+}*/
 
 
 ///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
-void generateIf(){
+/*void generateIf(){
 
   //zistit condition
 
@@ -416,34 +443,34 @@ void generateIf(){
   generateInstruction(); //dokym nenajdem rovnaky indent
   fprintf(stdout, "LABEL END%p \n",Ta ista adresa pointera);
 
-}
+}*/
 
-void generateWhile(){
+void generateWhile(tDLList*list, void *origi){
 
-  fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", nejake origi uniq meme);
+  fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "CREATEFRAME\n"); ////pre nove var memecka
 
-  for (int i = 0; i < count; i++) { ///daky loop na vars
+  /*for (int i = 0; i < count; i++) { ///daky loop na vars
     printf("DEFVAR TF@$VAR%p\n",dake id meme);
     printf("MOVE TF@$VAR%p LF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
-  }
+  }*/
   fprintf(stdout, "PUSHFRAME\n");
 
   //tu dako zistit condition do loopu
   //XXXX
 
-  fprintf(stdout, "JUMPIFEQ WHILE$END$%p bool@true ?!?!?!\n", nejake origi uniq meme);
+  fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true ?!?!?!\n", origi);
 
-  generateInstruction(); //dokym nenajdem dedent
+  generateInstructionREE(list); //dokym nenajdem dedent
 
   fprintf(stdout, "POPFRAME\n");
   //Pred jumpom vratit vars ako premenne
-  for (int i = 0; i < count; i++) { ///daky loop na vars
+  /*for (int i = 0; i < count; i++) { ///daky loop na vars
     printf("MOVE LF@$VAR%p TF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
-  }
+  }*/
   //
-  fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", nejake origi uniq meme);
-  fprintf(stdout, "LABEL WHILE$END$%p\n", nejake origi uniq meme (moze byt rovnake v instancii) );
+  fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", origi);
+  fprintf(stdout, "LABEL WHILE$END$%p\n", origi);
 
   fprintf(stdout, "POPFRAME\n");
-}*/
+}

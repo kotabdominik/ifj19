@@ -144,9 +144,8 @@ int statement(char *funName){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
-        jmp2 = generateInstruction(I_JUMP, NULL, NULL, NULL);
-        generateInstruction(I_LABEL, NULL, NULL, NULL);
-        jmp2->addr1 = list->Last;
+        jmp1 = generateInstruction(I_WHILE_B, NULL, NULL, NULL);
+        jmp1->addr1 = jmp1;
 
         if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
@@ -164,10 +163,7 @@ int statement(char *funName){
         tokenAct = ungetToken(&error, stack, doIndent);
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        jmp1 = generateInstruction(I_JUMP, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
 
-        /*tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru*/
         if(tokenAct.type != COLON) return PARSING_ERR;
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -333,6 +329,7 @@ int statement(char *funName){
           insertSymbolTable(tableG, tmpToken, VARIABLE); //vlozeni variable do tabulky
           tmpItem = searchSymbolTable(tableG, tmpToken);
           tmpItem->defined = false;
+          generateInstruction(I_DEFVAR, tmpItem, NULL, NULL);
         }
         else{
           tmpItem = searchSymbolTable(tableG, tmpToken);
@@ -410,6 +407,8 @@ int statement(char *funName){
       tokenAct = ungetToken(&error, stack, doIndent);
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
+
+      generateInstruction(I_POPS, tmpItem, NULL, NULL);
 
       tmpItem->defined = true;
       tmpItem->elementType.variable->type = exp->returnType;
@@ -794,6 +793,7 @@ int callParams(char* funName){
         return SEM_MISC_ERR;
       }
       else if(tmpItem != NULL && tmpItem->type == VARIABLE){
+        (tmpItem0->elementType.function->arguments[0]).key = tmpItem->key;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
       }
@@ -876,13 +876,14 @@ int callParamsN(char* funName, int argc){
     return SEM_MISC_ERR;
   }
   else{
-     if(tokenAct.type == STR){
+    if(tokenAct.type == STR){
       symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
         return SEM_MISC_ERR;
       }
       else if(tmpItem != NULL && tmpItem->type == VARIABLE){
+        (tmpItem0->elementType.function->arguments[argc]).key = tmpItem->key;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value = tmpItem->elementType.variable->value;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = tmpItem->elementType.variable->type;
       }

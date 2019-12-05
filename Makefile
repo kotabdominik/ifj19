@@ -14,7 +14,7 @@ CC	 = gcc
 all: $(PROJ)
 
 $(PROJ) : $(SOURCE)
-		$(CC) -o $(PROJ) $(SOURCE) -lm
+		$(CC) -o $(PROJ) $(SOURCE) -lm -g
 
 clean:
 	rm -f $(OBJS) $(OUT) $(PROJ)
