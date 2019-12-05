@@ -67,7 +67,7 @@ int statement(char *funName){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
-        //jmp1 = generateInstruction(I_JUMPIFNEQ, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2. NULL musi byt vysledek expression
+        generateInstruction(I_EOE, NULL, NULL, NULL);
 
         /*tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru*/

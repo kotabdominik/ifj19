@@ -457,17 +457,20 @@ void greater(){
   fprintf(stdout, "LABEL $GREATER\n");
   fprintf(stdout, "CREATEFRAME\n");
   fprintf(stdout, "PUSHFRAME\n");
-  fprintf(stdout, "DEFVAR LF@$RETVAL\n");
+  fprintf(stdout, "DEFVAR LF@$RETVAL1\n");
+  fprintf(stdout, "DEFVAR LF@$RETVAL2\n");
   fprintf(stdout, "DEFVAR LF@$1\n");
   fprintf(stdout, "POPS LF@$1\n");
-
   fprintf(stdout, "DEFVAR LF@$2\n");
   fprintf(stdout, "POPS LF@$2\n");
 
-  //fprintf(stdout, "GT\n", );
+  fprintf(stdout, "GT LF@$RETVAL1 LF@$2 LF@$1\n");
+  fprintf(stdout, "EQ LF@$RETVAL2 LF@$2 LF@$1\n");
 
-
-  fprintf(stdout, "PUSHS LF@$RETVAL\n");
+  fprintf(stdout, "NOT LF@$RETVAL2 LF@$RETVAL2\n");
+  fprintf(stdout, "AND LF@$RETVAL1 LF@$RETVAL1 LF@$RETVAL2\n");
+  
+  fprintf(stdout, "PUSHS LF@$RETVAL1\n");
   fprintf(stdout, "POPFRAME\n");
   fprintf(stdout, "RETURN\n");
 }
