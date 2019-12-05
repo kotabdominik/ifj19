@@ -125,20 +125,16 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               }
               if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
-                type1 = INT;
                 zesym = 1;
-                //data->token->attribute.INT = item->elementType.variable->value.INT;
+                type1 = INT;
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_STRING) {
-                data->token->type = type1 = LITERAL;
-                stringClear(data->token->attribute.string);
-                stringAddString(data->token->attribute.string, item->elementType.variable->value.string);
+                zesym = 1;
+                type1 = LITERAL;
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_FLOAT) {
-                data->token->type = type1 = FLOAT;
-                data->token->attribute.FLOAT = item->elementType.variable->value.FLOAT;
+                zesym = 1;
+                type1 = FLOAT;
               } else { //není v symtablu
-                //data->token->attribute.string->string;
-                //token->type = data->token->type = type1 = KEYWORD;
-                printf("%s není deklarováno\n", data->token->attribute.string->string);
+                return -3; //proměnná není deklarovaná
               }
             } else {
               return -1; //dostanu něco jinýho než int, str, float, lit
@@ -424,6 +420,8 @@ precendentExpression* doPrecedenceOperation(token tokenAct, symbolTable* tableG,
       }
       continue; //nenačítat další token ze vstupu
     } else if (operation == D) { //D jako done xddddddd
+        exp->returnToken.type = current->type;
+        exp->returnToken.attribute = current->attribute;
         if (navr == INT) {
           exp->returnType = DATA_INT;
           exp->returnValue.INT = s->top->data->token->attribute.INT;

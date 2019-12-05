@@ -24,6 +24,7 @@
 typedef struct{
     int returnType;
     value returnValue;
+    token returnToken;
     int error;
 } precendentExpression;
 
