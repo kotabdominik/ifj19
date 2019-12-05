@@ -51,12 +51,11 @@ void degenerate(tDLList *list){
 
 void generateInputs(){
     fprintf(stdout, "LABEL $ALFA\n");
+    fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-
     fprintf(stdout, "READ LF@$RETVAL string\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
-
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
 }
@@ -66,27 +65,21 @@ void generateInputi(){
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-
     fprintf(stdout, "READ LF@$RETVAL int\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
-
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
-
 }
 
 void generateInputf(){
-
     fprintf(stdout, "LABEL $GAMA\n");
+    fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
-    fprintf(stdout, "DEFVAR LF$RETVAL\n");
-
+    fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL float\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
-
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
-
 }
 
 void generatePrint(int *parCounter){
@@ -127,46 +120,69 @@ void generateSubstr(){
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
 
-    fprintf(stdout, "DEFVAR LF@$DELKA\n");
+    fprintf(stdout, "DEFVAR LF@$DELKA\n");//n
     fprintf(stdout, "POPS LF@$DELKA\n");
-    fprintf(stdout, "DEFVAR LF@$POSIT\n");
+    fprintf(stdout, "DEFVAR LF@$POSIT\n");//i
     fprintf(stdout, "POPS LF@$POSIT\n");
-    fprintf(stdout, "DEFVAR LF@$STRING\n");
+    fprintf(stdout, "DEFVAR LF@$STRING\n");//s
     fprintf(stdout, "POPS LF@$STRING\n");
 
     //fprintf(stdout, "MOVE LF@$RETVAL string@\n");/////this shoudda be var into string init, by example_while.src
     //ULOŽENIE PARAMETROV
 
-    //fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
-    //fprintf(stdout, "STRLEN LF@$TMPLEN LF@$1\n");
+    fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
+    fprintf(stdout, "STRLEN LF@$TMPLEN LF@$STRING\n");//delka s
     //KONTROLA POZICIE
-    /*fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
-    fprintf(stdout, "GT LF@$BOOLCHECK LF@$2 LF@$TMPLEN\n");
+
+
+    //fprintf(stdout, "WRITE LF@$DELKA\n");
+
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
+
+
+    fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@-1\n");
+    //
+    fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
     fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
-    fprintf(stdout, "LT LF@$BOOLCHECK LF@$2 int@-1\n");
+
+    fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
+
     fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
-    fprintf(stdout, "LT LF@$BOOLCHECK LF@$3 int@-1\n");
+    fprintf(stdout, "GT LF@$BOOLCHECK int@-1 LF@$DELKA\n");
+
+
     fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
-    *///FUNKCIA
-    //fprintf(stdout, "GETCHAR LF@$RETVAL LF@$STRING_S LF@$POSIT_I\n");
-    //fprintf(stdout, "ADD LF@$POSIT_I LF@$POSIT_I int@1\n");//inkrementácia
-    fprintf(stdout, "DEFVAR LF@$TMPSTR\n");
-    fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");//podmienka na while loop
+    //FUNKCIA
+    fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");
+    //
+    fprintf(stdout, "GETCHAR LF@$RETVAL LF@$STRING LF@$POSIT\n");//prvy znak return stringu
+    fprintf(stdout, "ADD LF@$POSIT LF@$POSIT int@1\n");//inkrementácia pozicie z ktorej sa bude brat
+    fprintf(stdout, "DEFVAR LF@$TMPSTR\n");//char ktory sa bude pridavat
+
+
+
+
+
+    fprintf(stdout, "ADD LF@$DELKA LF@$DELKA LF@$POSIT\n");
+
+    fprintf(stdout, "SUB LF@$DELKA LF@$DELKA int@1\n");//podmienka na while loop hmmmmmm?
     //SMYČKA
     fprintf(stdout, "LABEL $WHILE_LOOP_B\n");
-    fprintf(stdout, "JUMPIFEQ $WHILE_LOOP_E LF@$POSIT_I LF@$LENGTH_N\n");//skoč ak si dokončil
-    fprintf(stdout, "JUMPIFEQ $WHILE_LOOP_E LF@$POSIT_I LF@$TMPLEN\n");//skoč ak je koniec stringu
-    fprintf(stdout, "GETCHAR LF@$TMPSTR LF@$STRING_S LF@$POSIT_I\n");//getchar
+    fprintf(stdout, "JUMPIFEQ $WHILE_LOOP_E LF@$POSIT LF@$DELKA\n");//skoč ak si dokončil
+    fprintf(stdout, "JUMPIFEQ $WHILE_LOOP_E LF@$POSIT LF@$TMPLEN\n");//skoč ak je koniec stringu
+    fprintf(stdout, "GETCHAR LF@$TMPSTR LF@$STRING LF@$POSIT\n");//getchar
     fprintf(stdout, "CONCAT LF@$RETVAL LF@$RETVAL LF@$TMPSTR\n");//concat stringy
-    fprintf(stdout, "ADD LF@$POSIT_I LF@$POSIT_I int@1\n");//inkrementácia
+    fprintf(stdout, "ADD LF@$POSIT LF@$POSIT int@1\n");//inkrementácia
     fprintf(stdout, "JUMP $WHILE_LOOP_B\n");
     //KONIEC SMYČKY
     fprintf(stdout, "LABEL $WHILE_LOOP_E\n");
+    fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
     //ERROR
     fprintf(stdout, "LABEL $ERROR\n");
     fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+    fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
 }
@@ -226,13 +242,13 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-    /*generateInputs();
-    generateInputi();
-    generateSubstr();
+  generateSubstr();
+    /*generateInputi();
+    generateInputs();
+    generateInputf();
     generateOrd();
     generateLen();
     generateChr();
-    generateInputf();
     //generatePrint();*/
 }
 
@@ -280,8 +296,9 @@ int generateInstructionREE(tDLList*list){
     for (;list->First != NULL;list->First = list->First->rptr){
         switch(list->First->Instruction.instType){
             case(I_INPUTS):
-                generateInputs();
-                fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
+                /*generateInputs();
+                fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);*/
+                fprintf(stdout, "CALL $ALFA\n");
                 break;
             case(I_INPUTI):
                 //generateInputi();
@@ -289,14 +306,15 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "CALL $BETA\n");
                 break;
             case(I_INPUTF):
-                generateInputf();
-                fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
+                /*generateInputf();
+                fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);*/
+                fprintf(stdout, "CALL $GAMA\n");
                 break;
             case(I_LEN):
                 //generateLen();
                 if (0) {}
                 char* st = list->First->Instruction.addr1;
-                fprintf(stdout, "PUSHS string@%s\n", st);
+                //fprintf(stdout, "PUSHS string@%s\n", st);
                 fprintf(stdout, "CALL $LENGTH\n");
                 break;
             case(I_SUBSTR):
@@ -306,9 +324,9 @@ int generateInstructionREE(tDLList*list){
                 char* retezec = list->First->Instruction.addr1;
                 int* pozicec = list->First->Instruction.addr2;
                 int* pozicexd = list->First->Instruction.addr3;
-                fprintf(stdout, "PUSHS string@%s\n", retezec);
+                /*fprintf(stdout, "PUSHS string@%s\n", retezec);
                 fprintf(stdout, "PUSHS int@%d\n", *pozicec);
-                fprintf(stdout, "PUSHS int@%d\n", *pozicexd);
+                fprintf(stdout, "PUSHS int@%d\n", *pozicexd);*/
                 fprintf(stdout, "CALL $SUBSTR\n");
                 break;
             case(I_ORD):
@@ -317,8 +335,8 @@ int generateInstructionREE(tDLList*list){
                 if (0) {}
                 char* retez = list->First->Instruction.addr1;
                 int* pozice = list->First->Instruction.addr2;
-                fprintf(stdout, "PUSHS string@%s\n", retez);
-                fprintf(stdout, "PUSHS int@%d\n", *pozice);
+                //fprintf(stdout, "PUSHS string@%s\n", retez);
+                //fprintf(stdout, "PUSHS int@%d\n", *pozice);
                 fprintf(stdout, "CALL $ORD\n");
 
                 break;
@@ -327,7 +345,7 @@ int generateInstructionREE(tDLList*list){
                 //fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
                 if (0) {}
                 int* chr = list->First->Instruction.addr1;
-                fprintf(stdout, "PUSHS int@%d\n", *chr);
+                //fprintf(stdout, "PUSHS int@%d\n", *chr);
                 fprintf(stdout, "CALL $CHAR\n");
                 break;
             case(I_PRINT):

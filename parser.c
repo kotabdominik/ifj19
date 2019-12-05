@@ -458,6 +458,11 @@ int statement(char *funName){
         }
       }
 
+      if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != LITERAL && tokenAct.type != LEFTBRACKET && tokenAct.type != DOCCOM && tokenAct.type != STR && !(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE)){
+        fprintf(stderr, "NELEGALNI EXPRESSION\n");
+        return PARSING_ERR;
+      }
+
       symtableItem *tmpItemREE = NULL;
       symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
@@ -557,7 +562,7 @@ int statement(char *funName){
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, &tmpToken, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tmpToken, &tokenAct, tableG, table2);
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
@@ -850,8 +855,9 @@ int callParams(char* funName){
       }
       else if(tmpItem != NULL && tmpItem->type == VARIABLE){
         (tmpItem0->elementType.function->arguments[0]).key = tmpItem->key;
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
+        generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
       }
       else{
         fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
@@ -862,14 +868,29 @@ int callParams(char* funName){
       if(tokenAct.type == INT){
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.INT = tokenAct.attribute.INT;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_INT;
+        int* hodnota = (int*) malloc(sizeof(int));
+        int* typTokenu = (int*) malloc(sizeof(int));
+        *hodnota = tokenAct.attribute.INT;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == FLOAT){
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_FLOAT;
+        double* hodnota = (double*) malloc(sizeof(double));
+        int* typTokenu = (int*) malloc(sizeof(int));
+        *hodnota = tokenAct.attribute.FLOAT;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.string = tokenAct.attribute.string->string;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_STRING;
+        char* hodnota = (char*) malloc(sizeof(char));
+        int* typTokenu = (int*) malloc(sizeof(int));
+        hodnota = tokenAct.attribute.string->string;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
     }
     else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
@@ -940,8 +961,9 @@ int callParamsN(char* funName, int argc){
       }
       else if(tmpItem != NULL && tmpItem->type == VARIABLE){
         (tmpItem0->elementType.function->arguments[argc]).key = tmpItem->key;
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value = tmpItem->elementType.variable->value;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->value = tmpItem->elementType.variable->value;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = tmpItem->elementType.variable->type;
+        generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
       }
       else{
         fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
@@ -952,14 +974,29 @@ int callParamsN(char* funName, int argc){
       if(tokenAct.type == INT){
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.INT = tokenAct.attribute.INT;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_INT;
+        int* hodnota = (int*) malloc(sizeof(int));
+        int* typTokenu = (int*) malloc(sizeof(int));
+        *hodnota = tokenAct.attribute.INT;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == FLOAT){
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_FLOAT;
+        double* hodnota = (double*) malloc(sizeof(double));
+        int* typTokenu = (int*) malloc(sizeof(int));
+        *hodnota = tokenAct.attribute.FLOAT;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.string = tokenAct.attribute.string->string;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_STRING;
+        char* hodnota = (char*) malloc(sizeof(char));
+        int* typTokenu = (int*) malloc(sizeof(int));
+        hodnota = tokenAct.attribute.string->string;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
     }
     else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
@@ -1257,3 +1294,4 @@ int main(){
 
 
 // indent a za nim dokumentacni komentar
+//none v callparams + v pushs(generatoru)
