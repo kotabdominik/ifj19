@@ -88,17 +88,16 @@ void generateInputf(){
 
 }
 
-void generatePrint(int parCounter){
-
-    fprintf(stdout, "LABEL $DELTA\n");
-    fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-    fprintf(stdout, "DEFVAR LF@$TMPVAL\n");
-    for (int i = 0; i < parCounter; i++)
+void generatePrint(int *parCounter){
+    fprintf(stdout, "LABEL $DELTA%p\n", parCounter);
+    fprintf(stdout, "DEFVAR LF@$RETVAL%p\n", parCounter);
+    fprintf(stdout, "DEFVAR LF@$TMPVAL%p\n", parCounter);
+    for (int i = 0; i < *parCounter; i++)
     {
-        fprintf(stdout, "POPS LF@$TMPVAL\n");
-        fprintf(stdout, "WRITE LF@$TMPVAL\n");
+        fprintf(stdout, "POPS LF@$TMPVAL%p\n", parCounter);
+        fprintf(stdout, "WRITE LF@$TMPVAL%p\n", parCounter);
     }
-    fprintf(stdout, "MOVE LF@$RETVAL  string@None\n");
+    fprintf(stdout, "MOVE LF@$RETVAL%p  string@None\n", parCounter);
 }
 
 void generateLen(){
@@ -248,6 +247,7 @@ void generateBuiltIn(){
     generateSubstr();
     generateOrd();
     generateChr();*/
+    //generatePrint();
 }
 
 ///potrebujem info k typom
@@ -340,7 +340,7 @@ void generateInstructionREE(tDLList*list){
                     tmpItem--;
                     //tmpItem++;
                 }
-                generatePrint(*parCounter);
+                generatePrint(parCounter);
                 break;
             case(I_IF):
 
@@ -348,11 +348,26 @@ void generateInstructionREE(tDLList*list){
             case(I_WHILE):
 
                 break;
+            case(I_PUSHS):
+                if (0) {}
+                int * tmp1 = list->First->Instruction.addr1;
+                int* tmp = list->First->Instruction.addr2;
+                if (*tmp == INT) {
+                  fprintf(stdout, "PUSHS int@%d\n", *tmp1);
+                }
+                break;
+            case(I_ADDS):
+                fprintf(stdout, "ADDS\n");
+                break;
+            case(I_MULS):
+                fprintf(stdout, "MULS\n");
+                break;
         }
     }
 }
 
-/*void generateEquality(){
+
+/*void generateEquality(tDLList *list){
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$RETVAL\n",list->First->Instruction.addr1);
   fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
@@ -362,19 +377,19 @@ void generateInstructionREE(tDLList*list){
   fprintf(stdout, "MOVE LF@$EQ2%p ???\n",list->First->Instruction.addr2);
   fprintf(stdout, "MOVE LF@$EQ3%p string@%s\n",list->First->Instruction.addr3);
 
-  fprintf(stdout, "JUMPIFEQ $EQ_LESSER LF@$EQ3%p string@<\n",list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_GREATER LF@$EQ3%p string@>\n",list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_LSREQ LF@$EQ3%p string@<=\n",list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_GTREQ LF@$EQ3%p string@>=\n",list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_EQ LF@$EQ3%p string@==\n",list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_NOTEQ LF@$EQ3%p string@!=\n",list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_LESSER%p LF@$EQ3%p string@<\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_GREATER%p LF@$EQ3%p string@>\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_LSREQ%p LF@$EQ3%p string@<=\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_GTREQ%p LF@$EQ3%p string@>=\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_EQ%p LF@$EQ3%p string@==\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
+  fprintf(stdout, "JUMPIFEQ $EQ_NOTEQ%p LF@$EQ3%p string@!=\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
 
-  fprintf(stdout, "LABEL $EQ_LESSER\n");
-  fprintf(stdout, "LABEL $EQ_GREATER\n");
-  fprintf(stdout, "LABEL $EQ_LSREQ\n");
-  fprintf(stdout, "LABEL $EQ_GTREQ\n");
-  fprintf(stdout, "LABEL $EQ_EQ\n");
-  fprintf(stdout, "LABEL $EQ_NOTEQ\n");
+  fprintf(stdout, "LABEL $EQ_LESSER%p\n",list->First->Instruction.addr3);
+  fprintf(stdout, "LABEL $EQ_GREATER%p\n",list->First->Instruction.addr3);
+  fprintf(stdout, "LABEL $EQ_LSREQ%p\n",list->First->Instruction.addr3);
+  fprintf(stdout, "LABEL $EQ_GTREQ%p\n",list->First->Instruction.addr3);
+  fprintf(stdout, "LABEL $EQ_EQ%p\n",list->First->Instruction.addr3);
+  fprintf(stdout, "LABEL $EQ_NOTEQ%p\n",list->First->Instruction.addr3);
 
   fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
   fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
