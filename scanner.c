@@ -340,19 +340,13 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 }
                 if (c == '\n'){
                     c = getchar();
-                    if (c == '#'){
-                        ungetc(c, stdin);
-                        continue;
-                    }
-                    else {
-                        Token.type = EOL;
-                        ungetc(c, stdin);
-                        return Token;
-                    }
-                    if (c == EOF){
-                        Token.type = EOFTOKEN;
-                        return Token;
-                    }
+                    Token.type = EOL;
+                    ungetc(c, stdin);
+                    return Token;
+                }
+                else if (c == EOF){
+                    Token.type = EOFTOKEN;
+                    return Token;
                 }
                 break;
 
