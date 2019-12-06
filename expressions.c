@@ -116,6 +116,8 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               type1 = FLOAT;
             } else if (data->token->type == LITERAL || data->token->type == DOCCOM) {
               type1 = LITERAL;
+            } else if (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) {
+              type1 = KEYWORD;
             } else if (data->token->type == STR) {
               symtableItem* item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
               if (!item && tableGG) { //to jestli je item funkce se ošetřuje jinde prej, dává to PARSING_ERR (2)
@@ -320,7 +322,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else {
                 return -5; //neplatná operace mezi int a float
               }
-            } else if (type1 == NONE || type2 == NONE) {
+            } else if (type1 == KEYWORD || type2 == KEYWORD) {
               if (operacevtokenu == LESS) { // <
                 generateInstruction(I_LTS, NULL, NULL, NULL);
               } else if (operacevtokenu == GREATER) { // >

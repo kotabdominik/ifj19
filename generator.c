@@ -480,7 +480,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
                 checkFloat2Int();
 
-                fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%d LF@$2\n", 0);
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$2\n", 0);
                 fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
                 fprintf(stdout, "POPFRAME\n");
