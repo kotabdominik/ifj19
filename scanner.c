@@ -69,12 +69,13 @@ token ungetToken(int *error, tStack *stack, int doIndent){
     }
 
     return Token;
-};
+}
 
 
 token nextToken(int *error, tStack *stack, int doIndent) {
 
     token Token;
+    Token.type = 0;
 
     int tmpNum = 0;
     int counter = 0;
@@ -87,7 +88,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
         stackReset = FALSE;
     }
 
-    char c, tmp;
+    char c;
 
 
 
@@ -299,7 +300,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 }
                 Token.type = DOCCOM;
 
-                while (c = getchar()) {
+                while ( (c = getchar()) ) {
                     if (c == '"') {
                         if (c = getchar(), c == '"') {
                             if (c = getchar(), c == '"') {

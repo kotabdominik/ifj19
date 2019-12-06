@@ -16,11 +16,11 @@
 /*
  * vrací hash hodnotu do symbol table
  */
-unsigned long hash(unsigned char *str) { //https://stackoverflow.com/a/7666577
+unsigned long hash(char *str) { //https://stackoverflow.com/a/7666577
   unsigned long hash = MAX_SYMTABLE_SIZE;
   int c;
 
-  while (c = *str++) {
+  while ( (c = *str++) ) {
     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
   }
 

@@ -58,7 +58,7 @@ int stringAddString(smartString *str, char* c) {
     stringInit(str);
   }
 
-  for (int i = 0; i < strlen(c); i++) {
+  for (unsigned int i = 0; i < strlen(c); i++) {
     stringAddChar(str, c[i]);
   }
   //OwO
@@ -68,7 +68,7 @@ int stringAddString(smartString *str, char* c) {
 
 int stringIsKeyword(smartString *str) {
   char *keywords[] = {"def\0", "else\0", "if\0", "None\0", "pass\0", "return\0", "while\0"};
-  for (int i = 0; i < (sizeof(keywords) / sizeof(keywords[0])); i++) {
+  for (unsigned int i = 0; i < (sizeof(keywords) / sizeof(keywords[0])); i++) {
     if (strcmp(keywords[i], str->string) == 0)
       return i; //ano je
   }

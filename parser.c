@@ -41,7 +41,7 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 //-----------------------------------------STATEMENT--------------------------------------
 int statement(char *funName){
   int result;
-  tInstr *jmp1, *jmp2;
+  tInstr *jmp1;
 
   if(tokenAct.type == KEYWORD){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
@@ -464,10 +464,8 @@ int statement(char *funName){
         return PARSING_ERR;
       }
 
-      symtableItem *tmpItemREE = NULL;
       symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
-        tmpItemREE = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
       precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
@@ -659,7 +657,6 @@ int function(){
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
-    token tmpToken = tokenAct;
     if(tokenAct.type != COLON){
       fprintf(stderr, "Za DEF ID ( pripadne argumenty ) musi nasledovat : \n");
       return PARSING_ERR;
