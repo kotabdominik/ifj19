@@ -369,7 +369,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     Token.type = STR;
 
                     while (1) {
-                        if (!(isalpha(c)) || !(isdigit(c) || (c != '_'))) {
+                        if ( (isalnum(c) == 0) && (c != '_') ) {
                             break;
                         }
                         stringAddChar(s, c);
