@@ -704,6 +704,7 @@ int program(){
     doIndent = 0;
     //prvni token
     tokenAct = nextToken(&error, stack, doIndent);
+    token tmptoksafgionasg = tokenAct;
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
     while(tokenAct.type != EOFTOKEN){ // prochazi se cely program
@@ -1014,6 +1015,7 @@ int callParamsN(char* funName, int argc){
 int initFunctions(){
     int result = OK;
     tokenAct = nextToken(&error, stack, doIndent);
+    token rrrrrrrrrrrrrr = tokenAct;
     if(error != OK) return error;
 
     while(tokenAct.type != EOFTOKEN){
@@ -1276,12 +1278,14 @@ int main(){
     stack = malloc(sizeof(tStack));
     stackInit(stack);
     stackPush(stack, 0);
+    tokenAct.type = 0;
+    tokenAct.attribute.INT = 0;
 
     tDLList *instrList = malloc(sizeof(tDLList));
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
     //setFile("txt.txt");
-    freopen("txt.txt","r",stdin);
+    //freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     if(result != OK) return result;
     //printf("%d\n", result);
