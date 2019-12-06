@@ -379,7 +379,13 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
     return NULL;
   }
 
-  token* current = tokenAct2;
+  token* current;
+  if (tokenAct2) {
+    current = tokenAct2;
+  } else {
+    current = &tokenAct;
+  }
+
   tokenStack *s = (tokenStack*) malloc(sizeof(tokenStack));
   if(s == NULL){
     exp->error = INTERN_ERR;
