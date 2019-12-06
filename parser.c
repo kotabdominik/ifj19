@@ -47,7 +47,7 @@ int statement(char *funName){
     if(tokenAct.attribute.keyword == IF){ // IF----------------------------------
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM && tokenAct.type != LEFTBRACKET){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM && tokenAct.type != LEFTBRACKET && !(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE)){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -152,7 +152,7 @@ int statement(char *funName){
         jmp1 = generateInstruction(I_WHILE_B, NULL, NULL, NULL);
         jmp1->addr1 = jmp1;
 
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM && tokenAct.type != LEFTBRACKET){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM && tokenAct.type != LEFTBRACKET && !(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE)){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -477,7 +477,7 @@ int statement(char *funName){
         return PARSING_ERR;
       }
       }
-      
+
       symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
         table2 = tmpItem->elementType.function->sT;
