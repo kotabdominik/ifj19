@@ -80,11 +80,9 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
   int index1, index2 = 0;
   index1 = getPrecedenceIndex(stackToken);
   index2 = getPrecedenceIndex(vstupniToken);
-  //printf("%did1, %did2\n", index1, index2);
   if (index1 == -1 || index2 == -1) {
     return E;
   }
-  //printf("%d a %d pricemz tokeny meli\n", stackToken->type, vstupniToken->type);
   return precedenceTable[index1][index2];
 }
 
@@ -149,7 +147,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         if (data->token->type == PLUS || data->token->type == MINUS || data->token->type == TIMES || data->token->type == DIVFLT || data->token->type == DIVINT || data->token->type == LESS || data->token->type == GREATER || data->token->type == LESSEQ || data->token->type == GREATEREQ || data->token->type == EQ || data->token->type == NOTEQ) {
           state = 2;
         } else {
-          return -1; //neplatný výraz mezi 2mi věcmi
+          return -5; //neplatný výraz mezi 2mi věcmi
         }
         zpracuj = 3;
         operacevtokenu = data->token->type;
@@ -232,13 +230,13 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) {
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                return -1; //neplatná operace mezi 2mi inty
+                return -5; //neplatná operace mezi 2mi inty
               }
             } else if (type1 == LITERAL && type2 == LITERAL) {
               if (operacevtokenu == PLUS) {
                 generateInstruction(I_CONCAT, NULL, NULL, NULL);
               } else {
-                return -1; //neplatná operace
+                return -5; //neplatná operace meyi dvěma str
               }
             } else if (type1 == FLOAT && type2 == FLOAT) {
               if (operacevtokenu == PLUS) {
@@ -265,7 +263,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) {
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                return -1; //neplatná operace mezi 2mi floaty
+                return -5; //neplatná operace mezi 2mi floaty
               }
             } else if (type1 == INT && type2 == FLOAT) { //todo
               type1 = FLOAT;
@@ -281,7 +279,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 }
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
               } else {
-                return -1; //neplatná operace
+                return -5; //neplatná operace mezi int a float
               }
             } else if (type1 == FLOAT && type2 == INT) { //todo
               type2 = FLOAT;
@@ -297,10 +295,10 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 }
                 token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
               } else {
-                return -1; //neplatná operace
+                return -5; //neplatná operace mezi int a float
               }
             } else {
-              return -3; //neplatná operace mezi dvěmy typy, semantická chyba
+              return -5; //neplatná operace mezi dvěmy typy, semantická chyba
             }
 
             if (data != NULL) {
@@ -403,6 +401,9 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
       } else if (a == -4) {
         exp->error = DIVISION_BY_ZERO;
         return exp;
+      } else if (a == -5) {
+        exp->error = SEM_RUN_ERR;
+        return exp;
       }
       continue; //nenačítat další token ze vstupu
     } else if (operation == D) { //D jako done xddddddd
@@ -442,45 +443,3 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
     current->type = tmptkn.type;
   }
 }
-/*
-void main() {
-  stack = malloc(sizeof(tStack));
-  stackInit(stack);
-  stackPush(stack, 0);
-  symbolTable *table = initSymbolTable(MAX_SYMTABLE_SIZE);
-  symbolTable* table2 = initSymbolTable(MAX_SYMTABLE_SIZE);
-  token TokenUwu, TokenOwo, TokenQQ;
-  smartString *s = malloc(sizeof(smartString));
-  if (s == NULL){
-      return;
-  }
-  stringInit(s);
-  stringAddString(s, "uwu");
-  TokenUwu.attribute.string = s;
-  TokenUwu.type = STR;
-  insertSymbolTable(table, TokenUwu, VARIABLE);
-  symtableItem* item = searchSymbolTableWithString(table, "uwu");
-  item->elementType.variable->value.INT = 5;
-  item->elementType.variable->type = DATA_INT;
-
-  token token1;
-  token1 = nextToken(&errorE, stack, doIndentE);
-  if (errorE != OK) {
-    printf("%d\n", errorE);
-    return;
-  }
-  precendentExpression* exp = doPrecedenceOperation(token1, table, table2);
-  if (exp == NULL || exp->error != OK) {
-    printf("%d\n", exp->error);
-    return;
-  }
-  if (*exp->returnType == INT) {
-    printf("'%d'vracím jako int\n", exp->returnToken->attribute.INT);
-  } else if (*exp->returnType == LITERAL) {
-    printf("'%s'vracím jako string\n", exp->returnToken->attribute.string->string);
-  } else if (*exp->returnType == FLOAT) {
-    printf("'%f'vracím float\n", exp->returnToken->attribute.FLOAT);
-  } else if (*exp->returnType == BOOL) {
-    printf("'%d'vracím pravdivostní hodnotu\n", exp->returnToken->attribute.BOOL);
-  }
-}*/
