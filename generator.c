@@ -79,6 +79,11 @@ void generateInputf(){
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL float\n");
+
+    fprintf(stdout, "DEFVAR LF@$TMPVAL\n");
+    fprintf(stdout, "TYPE LF@$TMPVAL LF@$RETVAL\n");
+    fprintf(stdout, "JUMPIFNEQ $ZEROERROR LF@$TMPVAL string@float\n");
+
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
@@ -105,15 +110,13 @@ void generatePrint(int *parCounter){
 }
 
 void generateLen(){
-
     fprintf(stdout, "LABEL $LENGTH\n");
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$1\n");
     fprintf(stdout, "POPS LF@$1\n");
-
-    fprintf(stdout, "STRLEN LF@$RETVAL LF@$1\n"); ///premenne parametrov su MEME (zapis cislami)
+    fprintf(stdout, "STRLEN LF@$RETVAL LF@$1\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
@@ -127,40 +130,26 @@ void generateSubstr(){
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-
     fprintf(stdout, "DEFVAR LF@$DELKA\n");//n
     fprintf(stdout, "POPS LF@$DELKA\n");
     fprintf(stdout, "DEFVAR LF@$POSIT\n");//i
     fprintf(stdout, "POPS LF@$POSIT\n");
     fprintf(stdout, "DEFVAR LF@$STRING\n");//s
     fprintf(stdout, "POPS LF@$STRING\n");
-
-    //fprintf(stdout, "MOVE LF@$RETVAL string@\n");/////this shoudda be var into string init, by example_while.src
     //ULOŽENIE PARAMETROV
-
     fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
     fprintf(stdout, "STRLEN LF@$TMPLEN LF@$STRING\n");//delka s
     //KONTROLA POZICIE
-
-
-    //fprintf(stdout, "WRITE LF@$DELKA\n");
-
     fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
-
-    //
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@-1\n");
-    //fprintf(stdout, "ADD LF@$DELKA LF@$DELKA int@-1\n");
-    //
     fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
-    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
-
+    fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
-
-    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "GT LF@$BOOLCHECK int@0 LF@$DELKA\n");
-    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "EQ LF@$BOOLCHECK int@0 LF@$DELKA\n");
-    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
     //FUNKCIA
     //fprintf(stdout, "ADD LF@$DELKA LF@$DELKA int@1\n");
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");
@@ -168,9 +157,7 @@ void generateSubstr(){
     fprintf(stdout, "GETCHAR LF@$RETVAL LF@$STRING LF@$POSIT\n");//prvy znak return stringu
     fprintf(stdout, "ADD LF@$POSIT LF@$POSIT int@1\n");//inkrementácia pozicie z ktorej sa bude brat
     fprintf(stdout, "DEFVAR LF@$TMPSTR\n");//char ktory sa bude pridavat
-
     fprintf(stdout, "ADD LF@$DELKA LF@$DELKA LF@$POSIT\n");
-
     fprintf(stdout, "SUB LF@$DELKA LF@$DELKA int@1\n");//podmienka na while loop hmmmmmm?
     //SMYČKA
     fprintf(stdout, "LABEL $WHILE_LOOP_B\n");
@@ -186,7 +173,7 @@ void generateSubstr(){
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
     //ERROR
-    fprintf(stdout, "LABEL $ERRORSUB\n");
+    fprintf(stdout, "LABEL $ERRORSUBSTR\n");
     fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
@@ -238,13 +225,10 @@ void generateChr(){
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-
     fprintf(stdout, "DEFVAR LF@$ASC\n");
     fprintf(stdout, "POPS LF@$ASC\n");
-
     fprintf(stdout, "INT2CHAR LF@$RETVAL LF@$ASC\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
-
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
 }
@@ -253,14 +237,16 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  generateOrd();
-  generateInputi();
-  generateSubstr();
-  generateInputs();
-  generateInputf();
+  checkFloat2Int();
+  checkInt2Float();
   generateLen();
-  generateChr();
-    /*
+  generateInputf();
+  /*
+  generateInputi();
+  generateOrd();
+  generateSubstr();
+    generateInputs();
+    generateChr();
     //generatePrint();*/
 }
 
@@ -269,85 +255,45 @@ void generateBuiltIn(){
 
 int generateInstructionREE(tDLList*list){
     int *parCounter;
+    int *labcount = 0;
     for (;list->First != NULL;list->First = list->First->rptr){
         switch(list->First->Instruction.instType){
             case(I_INPUTS):
-                /*generateInputs();
-                fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);*/
                 fprintf(stdout, "CALL $ALFA\n");
                 break;
             case(I_INPUTI):
-                //generateInputi();
-                //fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
                 fprintf(stdout, "CALL $BETA\n");
                 break;
             case(I_INPUTF):
-                /*generateInputf();
-                fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);*/
                 fprintf(stdout, "CALL $GAMA\n");
                 break;
             case(I_LEN):
-                //generateLen();
                 if (0) {}
                 char* st = list->First->Instruction.addr1;
-                //fprintf(stdout, "PUSHS string@%s\n", st);
                 fprintf(stdout, "CALL $LENGTH\n");
                 break;
             case(I_SUBSTR):
-                //generateSubstr();
-                //fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
                 if (0) {}
                 char* retezec = list->First->Instruction.addr1;
                 int* pozicec = list->First->Instruction.addr2;
                 int* pozicexd = list->First->Instruction.addr3;
-                /*fprintf(stdout, "PUSHS string@%s\n", retezec);
-                fprintf(stdout, "PUSHS int@%d\n", *pozicec);
-                fprintf(stdout, "PUSHS int@%d\n", *pozicexd);*/
                 fprintf(stdout, "CALL $SUBSTR\n");
                 break;
             case(I_ORD):
-                //generateOrd();
-                //fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
                 if (0) {}
                 char* retez = list->First->Instruction.addr1;
                 int* pozice = list->First->Instruction.addr2;
-                //fprintf(stdout, "PUSHS string@%s\n", retez);
-                //fprintf(stdout, "PUSHS int@%d\n", *pozice);
                 fprintf(stdout, "CALL $ORD\n");
-
                 break;
             case(I_CHR):
-                //generateChr();
-                //fprintf(stdout, "MOVE LF@$VAR%p TF@RETVAL\n",list->First->Instruction.addr1);
                 if (0) {}
                 int* chr = list->First->Instruction.addr1;
-                //fprintf(stdout, "PUSHS int@%d\n", *chr);
                 fprintf(stdout, "CALL $CHAR\n");
                 break;
             case(I_PRINT):
                 parCounter = list->First->Instruction.addr2;  ////////////////////////dohodni sa s jindrom
                 if(parCounter == 0) break;
                 symtableItem *tmpItem = list->First->Instruction.addr3;
-                /*for (int i = 0; i < *parCounter - 1; i++){
-                  tmpItem++;
-                }*/
-                /*for (int i = 0; i < *parCounter; i++){
-                    if(tmpItem->key != NULL){
-                      fprintf(stdout, "PUSHS GF@$VAR%s\n", tmpItem->key);
-                    }
-                    else if (tmpItem->elementType.variable->type == DATA_INT) {
-                      fprintf(stdout, "PUSHS int@%d\n", tmpItem->elementType.variable->value.INT);
-                    }
-                    else if(tmpItem->elementType.variable->type == DATA_STRING){
-                      fprintf(stdout, "PUSHS string@%s\n", tmpItem->elementType.variable->value.string);
-                    }
-                    else if(tmpItem->elementType.variable->type == DATA_FLOAT){
-                      fprintf(stdout, "PUSHS float@%a\n", tmpItem->elementType.variable->value.FLOAT);
-                    }
-                    tmpItem--;
-                    //tmpItem++;
-                }
-                */
                 generatePrint(parCounter);
                 break;
             case(I_IF):
@@ -358,7 +304,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_IF_E):
                 return 88;
-
             case(I_WHILE_B):
                 generateWhile(list, list->First->Instruction.addr1);
                 break;
@@ -387,7 +332,7 @@ int generateInstructionREE(tDLList*list){
                 }
                 break;
             case(I_ADDS):
-                /*fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -396,23 +341,15 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
                 fprintf(stdout, "POPS LF@$VAL2\n");//delitel
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
-                //checkInt2Float();
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                checkInt2Float();
+                fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
-                fprintf(stdout, "POPFRAME\n");*/
-                fprintf(stdout, "ADDS\n"); //tmp
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_SUBS):
-                fprintf(stdout, "SUBS\n");
-                break;
-            case(I_MULS):
-                fprintf(stdout, "MULS\n");
-                break;
-            case(I_DIVS):
-              /*  fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -421,18 +358,31 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
                 fprintf(stdout, "POPS LF@$VAL2\n");//delitel
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
-                //checkInt2Float();
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                checkInt2Float();
-
-                fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%a LF@$2\n", 0.0);
-                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
-
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "SUB LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
-                fprintf(stdout, "POPFRAME\n");*/
+                fprintf(stdout, "POPFRAME\n");
                 break;
-            case(I_IDIVS):
+            case(I_MULS):
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "MUL LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
+                break;
+            case(I_DIVS):
                 fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -445,15 +395,40 @@ int generateInstructionREE(tDLList*list){
                 //checkInt2Float();
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                //checkFloat2Int(); tmp
+                //checkInt2Float();
+                fprintf(stdout, "CALL $checkINT2FLT\n");
 
-                fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$2\n", 0);
-//                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
-                fprintf(stdout, "IDIV LF@$REESULT LF@$VAL1 LF@$VAL2\n");
-
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%a LF@$2\n", 0.0);
+                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
                 fprintf(stdout, "POPFRAME\n");
                 break;
+            case(I_IDIVS):
+                fprintf(stdout, "IDIVS\n");
+
+                /*fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                //DEFINICE PROMENNYCH
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                //INICIALIZACE
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                //CHECKOVANI FLOATU ATD
+                fprintf(stdout, "CALL $checkFLT2INT\n");
+                fprintf(stdout, "DEFVAR LF@$T3\n");
+                fprintf(stdout, "TYPE LF@$T3\n");
+                fprintf(stdout, "JUMPIFEQ $ int@%d LF@$2\n", 0);
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$2\n", 0);
+                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
+                */break;
             case(I_DEFVAR):
                 if(0){}
                 symtableItem *ree = list->First->Instruction.addr1;
@@ -511,17 +486,12 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
-
                 fprintf(stdout, "DEFVAR LF@$STR1\n");
                 fprintf(stdout, "POPS LF@$STR1\n");
-
-
                 fprintf(stdout, "DEFVAR LF@$STR2\n");
                 fprintf(stdout, "POPS LF@$STR2\n");
-
                 fprintf(stdout, "CONCAT LF@$RETVAL LF@$STR2 LF@$STR1\n");
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
-
                 fprintf(stdout, "POPFRAME\n");
                 break;
         }
@@ -530,48 +500,42 @@ int generateInstructionREE(tDLList*list){
 
 //converts int to float if needed
 void checkInt2Float(){
-
+  fprintf(stdout, "LABEL $checkINT2FLT\n");
   fprintf(stdout, "DEFVAR LF@$T1\n");
   fprintf(stdout, "DEFVAR LF@$T2\n");
-
   fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
   fprintf(stdout, "TYPE LF@$T2 LF@$2\n");
-
   fprintf(stdout, "DEFVAR LF@$BOOLCHECK0\n");
   fprintf(stdout, "DEFVAR LF@$BOOLCHECK1\n");
   fprintf(stdout, "DEFVAR LF@$BOOLCHECK2\n");
-
   fprintf(stdout, "EQ LF@$BOOLCHECK0 LF@$T1 string@int\n");
-  fprintf(stdout, "EQ LF@$BOOLCHECK1 LF@$T1 string@int\n");
+  fprintf(stdout, "EQ LF@$BOOLCHECK1 LF@$T2 string@int\n");
   fprintf(stdout, "AND LF@$BOOLCHECK2 LF@$BOOLCHECK0 LF@$BOOLCHECK1\n");
-  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$BOOLCHEK2 string@true\n");
-
-  fprintf(stdout, "LABEL $LAB0\n");
-  fprintf(stdout, "JUMPIFEQ $LAB1 LF@$T1 string@float\n");
+  fprintf(stdout, "JUMPIFEQ $LAB22 LF@$BOOLCHECK2 bool@true\n");
+  fprintf(stdout, "LABEL $LAB00\n");
+  fprintf(stdout, "JUMPIFEQ $LAB11 LF@$T1 string@float\n");
   fprintf(stdout, "INT2FLOAT LF@$1 LF@$1\n");
-  fprintf(stdout, "LABEL $LAB1\n");
-  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$T2 string@float\n");
+  fprintf(stdout, "LABEL $LAB11\n");
+  fprintf(stdout, "JUMPIFEQ $LAB22 LF@$T2 string@float\n");
   fprintf(stdout, "INT2FLOAT LF@$2 LF@$2\n");
-  fprintf(stdout, "LABEL $LAB2\n");
-
+  fprintf(stdout, "LABEL $LAB22\n");
+  fprintf(stdout, "RETURN\n");
 }
 
 //converts float to int if needed
 void checkFloat2Int(){
-
+  fprintf(stdout, "LABEL $checkFLT2INT\n");
   fprintf(stdout, "DEFVAR LF@$T1\n");
   fprintf(stdout, "DEFVAR LF@$T2\n");
-
   fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
   fprintf(stdout, "TYPE LF@$T2 LF@$2\n");
-
   fprintf(stdout, "JUMPIFEQ $LAB1 LF@$T1 string@int\n");
   fprintf(stdout, "FLOAT2INT LF@$1 LF@$1\n");
   fprintf(stdout, "LABEL $LAB1\n");
   fprintf(stdout, "JUMPIFEQ $LAB2 LF@$T2 string@int\n");
   fprintf(stdout, "FLOAT2INT LF@$2 LF@$2\n");
   fprintf(stdout, "LABEL $LAB2\n");
-
+  fprintf(stdout, "RETURN\n");
 }
 
 
@@ -604,12 +568,6 @@ void checkFloat2Int(){
 
 }*/
 
-/*
-void generateAdd(tDLList*list){
-  printf("MOVE GF@$VAR%p\n",list->First->Instruction.addr1);
-}*/
-
-
 ///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
@@ -636,60 +594,24 @@ void generateIf(tDLList*list, void *origi){
 }
 
 void generateWhile(tDLList*list, void *origi){
-
   fprintf(stdout, "CREATEFRAME\n");
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
-
   tDLElemPtr jmp2 = list->First->rptr;
-
   list->First = list->First->rptr;
   generateInstructionREE(list);
-
-
   fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "POPS LF@$COND%p\n", origi);
   fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true LF@$COND%p\n", origi, origi);
-
   list->First = list->First->rptr;
   generateInstructionREE(list); //dokym nenajdem dedent
-
   tDLElemPtr jmp1 = list->First;
   list->First = jmp2;
   generateInstructionREE(list); //dokym nenajdem konec expression(podminky)
   list->First = jmp1;
-
   fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "LABEL WHILE$END$%p\n", origi);
-
   fprintf(stdout, "POPFRAME\n");
-
-  //fprintf(stdout, "POPFRAME\n");
-  //fprintf(stdout, "CREATEFRAME\n"); ////pre nove var memecka
-
-  /*for (int i = 0; i < count; i++) { ///daky loop na vars
-    printf("DEFVAR TF@$VAR%p\n",dake id meme);
-    printf("MOVE TF@$VAR%p LF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
-  }*/
-  //fprintf(stdout, "PUSHFRAME\n");
-
-  //tu dako zistit condition do loopu
-  //XXXX
-
-
-  /*
-  int whileCounter = 0;
-  fprintf(stdout, "DEFVAR LF@$COND%p_%d\n", origi, ++whileCounter);
-  fprintf(stdout, "POPS LF@$COND%p_%d\n", origi, whileCounter);
-  */
-
-
-  //fprintf(stdout, "POPFRAME\n");
-  //Pred jumpom vratit vars ako premenne
-  /*for (int i = 0; i < count; i++) { ///daky loop na vars
-    printf("MOVE LF@$VAR%p TF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
-  }*/
-  //
 }
 
 

@@ -239,7 +239,7 @@ int statement(char *funName){
         }
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM  && tokenAct.type != LEFTBRACKET){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != STR && tokenAct.type != LITERAL && tokenAct.type != DOCCOM  && tokenAct.type != LEFTBRACKET && !(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE)){
           fprintf(stderr, "Ocekaval se vyraz, ale prisel necekany token\n");
           return PARSING_ERR;
         }
@@ -254,8 +254,8 @@ int statement(char *funName){
 
         tokenAct = exp->returnToken;
 
-        generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
-        generateInstruction(I_RETURN, NULL, NULL, NULL);
+        //generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
+        //generateInstruction(I_RETURN, NULL, NULL, NULL);
 
         /*tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru*/
