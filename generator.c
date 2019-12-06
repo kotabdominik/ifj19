@@ -40,6 +40,8 @@ void degenerate(tDLList *list){
     fprintf(stdout, ".IFJcode19\n");
     fprintf(stdout, "JUMP $$MAIN\n");
     generateBuiltIn();
+    fprintf(stdout, "LABEL $ZEROERROR\n");
+    fprintf(stdout, "EXIT int@%d\n", DIVISION_BY_ZERO);
     fprintf(stdout, "LABEL $$MAIN\n");
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
@@ -250,8 +252,8 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  generateSubstr();
   /*
+  generateSubstr();
     generateInputi();
     generateInputs();
     generateInputf();
@@ -420,7 +422,22 @@ int generateInstructionREE(tDLList*list){
                 }
                 break;
             case(I_ADDS):
-                fprintf(stdout, "ADDS\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                //checkInt2Float();
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                checkInt2Float();
+                fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_SUBS):
                 fprintf(stdout, "SUBS\n");
@@ -429,7 +446,24 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "MULS\n");
                 break;
             case(I_DIVS):
-                fprintf(stdout, "DIVS\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                //checkInt2Float();
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                checkInt2Float();
+
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%a LF@$2\n", 0.0);
+                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_IDIVS):
                 fprintf(stdout, "IDIVS\n");
