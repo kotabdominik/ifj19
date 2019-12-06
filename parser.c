@@ -165,6 +165,7 @@ int statement(char *funName){
         precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
         if(exp->error != OK) return exp->error;
 
+        generateInstruction(I_EOE, NULL, NULL, NULL); //konec expression
         tokenAct = exp->returnToken;
 
         if(tokenAct.type != COLON) return PARSING_ERR;
