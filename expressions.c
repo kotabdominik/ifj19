@@ -466,8 +466,8 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
 
     current = malloc(sizeof(token)); //načítáme další token ze vstupu (nebo z parseru)
     if (tokenAct2) { //zpracujeme token z parseru
-      current->attribute = tokenAct->attribute;
-      current->type = tokenAct->type;
+      current->attribute = tokenAct.attribute;
+      current->type = tokenAct.type;
       tokenAct2 = NULL;
       continue;
     }
