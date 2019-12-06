@@ -239,6 +239,7 @@ void generateChr(){
 void generateBuiltIn(){
   checkFloat2Int();
   checkInt2Float();
+  checkInt2FloatDiv();
   generateLen();
   generateInputf();
   /*
@@ -392,12 +393,9 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
                 fprintf(stdout, "POPS LF@$VAL2\n");//delitel
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
-                //checkInt2Float();
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                //checkInt2Float();
-                fprintf(stdout, "CALL $checkINT2FLT\n");
-
+                fprintf(stdout, "CALL $checkINT2FLTDIV\n");
                 fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%a LF@$2\n", 0.0);
                 fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -428,7 +426,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
                 fprintf(stdout, "POPFRAME\n");
-                */break;
+                */
+                break;
             case(I_DEFVAR):
                 if(0){}
                 symtableItem *ree = list->First->Instruction.addr1;
@@ -519,6 +518,21 @@ void checkInt2Float(){
   fprintf(stdout, "JUMPIFEQ $LAB22 LF@$T2 string@float\n");
   fprintf(stdout, "INT2FLOAT LF@$2 LF@$2\n");
   fprintf(stdout, "LABEL $LAB22\n");
+  fprintf(stdout, "RETURN\n");
+}
+
+void checkInt2FloatDiv(){
+  fprintf(stdout, "LABEL $checkINT2FLTDIV\n");
+  fprintf(stdout, "DEFVAR LF@$T1\n");
+  fprintf(stdout, "DEFVAR LF@$T2\n");
+  fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
+  fprintf(stdout, "TYPE LF@$T2 LF@$2\n");
+  fprintf(stdout, "JUMPIFEQ $LAB111 LF@$T1 string@float\n");
+  fprintf(stdout, "INT2FLOAT LF@$1 LF@$1\n");
+  fprintf(stdout, "LABEL $LAB111\n");
+  fprintf(stdout, "JUMPIFEQ $LAB222 LF@$T2 string@float\n");
+  fprintf(stdout, "INT2FLOAT LF@$2 LF@$2\n");
+  fprintf(stdout, "LABEL $LAB222\n");
   fprintf(stdout, "RETURN\n");
 }
 
