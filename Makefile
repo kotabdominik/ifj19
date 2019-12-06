@@ -44,3 +44,5 @@ test:
 	./$(PROJ) < tests/test3.py > tests/test3.out
 	cat tests/test3.ins
 	./ic19int tests/test3.out
+	./$(PROJ) < tests/test4.py > tests/test4.out
+	./ic19int tests/test4.out

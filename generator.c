@@ -152,15 +152,15 @@ void generateSubstr(){
     //fprintf(stdout, "ADD LF@$DELKA LF@$DELKA int@-1\n");
     //
     fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
-    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
 
     fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
 
-    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "GT LF@$BOOLCHECK int@0 LF@$DELKA\n");
-    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "EQ LF@$BOOLCHECK int@0 LF@$DELKA\n");
-    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORSUB LF@$BOOLCHECK bool@true\n");
     //FUNKCIA
     //fprintf(stdout, "ADD LF@$DELKA LF@$DELKA int@1\n");
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");
@@ -186,7 +186,7 @@ void generateSubstr(){
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
     //ERROR
-    fprintf(stdout, "LABEL $ERROR\n");
+    fprintf(stdout, "LABEL $ERRORSUB\n");
     fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
@@ -213,9 +213,9 @@ void generateOrd(){
     //
     fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
     fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
-    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORORD LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
-    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORORD LF@$BOOLCHECK bool@true\n");
     //
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");
     //VÝPOČET A NÁVRAT
@@ -225,7 +225,7 @@ void generateOrd(){
     fprintf(stdout, "RETURN\n");
     //ERROR
 
-    fprintf(stdout, "LABEL $ERROR\n");
+    fprintf(stdout, "LABEL $ERRORORD\n");
     fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
@@ -253,14 +253,14 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  /*
   generateOrd();
   generateInputi();
   generateSubstr();
-    generateInputs();
-    generateInputf();
-    generateLen();
-    generateChr();
+  generateInputs();
+  generateInputf();
+  generateLen();
+  generateChr();
+    /*
     //generatePrint();*/
 }
 
@@ -387,7 +387,7 @@ int generateInstructionREE(tDLList*list){
                 }
                 break;
             case(I_ADDS):
-                fprintf(stdout, "CREATEFRAME\n");
+                /*fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -402,7 +402,8 @@ int generateInstructionREE(tDLList*list){
                 checkInt2Float();
                 fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
-                fprintf(stdout, "POPFRAME\n");
+                fprintf(stdout, "POPFRAME\n");*/
+                fprintf(stdout, "ADDS\n"); //tmp
                 break;
             case(I_SUBS):
                 fprintf(stdout, "SUBS\n");
@@ -411,7 +412,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "MULS\n");
                 break;
             case(I_DIVS):
-                fprintf(stdout, "CREATEFRAME\n");
+              /*  fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -427,8 +428,9 @@ int generateInstructionREE(tDLList*list){
 
                 fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%a LF@$2\n", 0.0);
                 fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
+
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
-                fprintf(stdout, "POPFRAME\n");
+                fprintf(stdout, "POPFRAME\n");*/
                 break;
             case(I_IDIVS):
                 fprintf(stdout, "CREATEFRAME\n");
@@ -443,10 +445,12 @@ int generateInstructionREE(tDLList*list){
                 //checkInt2Float();
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                checkFloat2Int();
+                //checkFloat2Int(); tmp
 
                 fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$2\n", 0);
-                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
+//                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "IDIV LF@$REESULT LF@$VAL1 LF@$VAL2\n");
+
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
                 fprintf(stdout, "POPFRAME\n");
                 break;
@@ -538,9 +542,9 @@ void checkInt2Float(){
   fprintf(stdout, "DEFVAR LF@$BOOLCHECK2\n");
 
   fprintf(stdout, "EQ LF@$BOOLCHECK0 LF@$T1 string@int\n");
-  fprintf(stdout, "EQ LF@$BOOLCHECK1 LF@$T2 string@int\n");
+  fprintf(stdout, "EQ LF@$BOOLCHECK1 LF@$T1 string@int\n");
   fprintf(stdout, "AND LF@$BOOLCHECK2 LF@$BOOLCHECK0 LF@$BOOLCHECK1\n");
-  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$BOOLCHECK2 bool@true\n");
+  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$BOOLCHEK2 string@true\n");
 
   fprintf(stdout, "LABEL $LAB0\n");
   fprintf(stdout, "JUMPIFEQ $LAB1 LF@$T1 string@float\n");
