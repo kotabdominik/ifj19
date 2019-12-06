@@ -207,14 +207,14 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 generateInstruction(I_MULS, NULL, NULL, NULL);
               } else if (operacevtokenu == DIVINT) {
-                if (tokenPrvni.attribute.INT == 0) {
+                /*if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
-                }
+                }*/
                 generateInstruction(I_IDIVS, NULL, NULL, NULL);
               } else if (operacevtokenu == DIVFLT) {
-                if (tokenPrvni.attribute.INT == 0) {
+                /*if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
-                }
+                }*/
                 token->attribute.FLOAT = (double)tokenDruhy.attribute.INT / (double)tokenPrvni.attribute.INT;
                 type1 = FLOAT;
               } else if (operacevtokenu == LESS) {
@@ -246,9 +246,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 generateInstruction(I_MULS, NULL, NULL, NULL);
               } else if (operacevtokenu == DIVFLT) {
-                if (tokenPrvni.attribute.FLOAT == 0) {
+                /*if (tokenPrvni.attribute.FLOAT == 0) {
                   return -4; //dělení nulou lmao
-                }
+                }*/
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
               } else if (operacevtokenu == LESS) {
                 generateInstruction(I_LTS, NULL, NULL, NULL);
@@ -274,9 +274,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVFLT) {
-                if (tokenPrvni.attribute.INT == 0) {
+                /*if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
-                }
+                }*/
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
               } else {
                 return -5; //neplatná operace mezi int a float
@@ -290,9 +290,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.INT * tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == DIVFLT) {
-                if (tokenPrvni.attribute.FLOAT == 0) {
+                /*if (tokenPrvni.attribute.FLOAT == 0) {
                   return -4; //dělení nulou lmao
-                }
+                }*/
                 token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
               } else {
                 return -5; //neplatná operace mezi int a float

@@ -11,6 +11,8 @@ PROJ = parser
 SOURCE	= expressions.c generator.c parser.c scanner.c stack.c strings.c symtable.c tokenStack.c list.c
 CC	 = gcc
 WARNINGS = -Wall -pedantic -Wextra
+INPUT = txt.txt
+OUTPUT = str.out
 
 all: $(PROJ)
 
@@ -25,9 +27,20 @@ clean:
 
 run:
 	make all
-	./$(PROJ)
+	./$(PROJ) < $(INPUT)
 
 int:
 	make all
-	./$(PROJ) <txt.txt >str.out
-	./ic19int str.out
+	./$(PROJ) < $(INPUT) > $(OUTPUT)
+	./ic19int $(OUTPUT)
+
+test:
+	./$(PROJ) < tests/test1.py > tests/test1.out
+	cat tests/test1.ins
+	./ic19int tests/test1.out < tests/test1.in
+	./$(PROJ) < tests/test2.py > tests/test2.out
+	cat tests/test2.ins
+	./ic19int tests/test2.out < tests/test2.in
+	./$(PROJ) < tests/test3.py > tests/test3.out
+	cat tests/test3.ins
+	./ic19int tests/test3.out
