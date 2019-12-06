@@ -83,17 +83,23 @@ void generateInputf(){
 }
 
 void generatePrint(int *parCounter){
-    fprintf(stdout, "LABEL $DELTA%p\n", parCounter);
+    //fprintf(stdout, "LABEL $DELTA%p\n", parCounter);
+    fprintf(stdout, "CREATEFRAME\n");
+    fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL%p\n", parCounter);
-    fprintf(stdout, "DEFVAR LF@$TMPVAL%p\n", parCounter);
+    //fprintf(stdout, "DEFVAR LF@$TMPVAL%p\n", parCounter);
     for (int i = 0; i < *parCounter; i++)
     {
-        fprintf(stdout, "POPS LF@$TMPVAL%p\n", parCounter);
-        fprintf(stdout, "WRITE LF@$TMPVAL%p\n", parCounter);
-        if(i+1 != *parCounter) fprintf(stdout, "WRITE string@\\032\n");
+      fprintf(stdout, "DEFVAR LF@$PEPEGA%d\n", i);
+      fprintf(stdout, "POPS LF@$PEPEGA%d\n", i);
+    }
+    for(int j = *parCounter-1; j >= 0; j--){
+      fprintf(stdout, "WRITE LF@$PEPEGA%d\n", j);
+      if(j != 0) fprintf(stdout, "WRITE string@\\032\n");
     }
     fprintf(stdout, "WRITE string@\\010\n");
     fprintf(stdout, "MOVE LF@$RETVAL%p  string@None\n", parCounter);
+    fprintf(stdout, "POPFRAME\n");
 }
 
 void generateLen(){
@@ -245,6 +251,7 @@ void generateChr(){
 
 void generateBuiltIn(){
   generateSubstr();
+  /*
     generateInputi();
     generateInputs();
     generateInputf();
@@ -352,11 +359,12 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_PRINT):
                 parCounter = list->First->Instruction.addr2;  ////////////////////////dohodni sa s jindrom
+                if(parCounter == 0) break;
                 symtableItem *tmpItem = list->First->Instruction.addr3;
-                for (int i = 0; i < *parCounter - 1; i++){
+                /*for (int i = 0; i < *parCounter - 1; i++){
                   tmpItem++;
-                }
-                for (int i = 0; i < *parCounter; i++){
+                }*/
+                /*for (int i = 0; i < *parCounter; i++){
                     if(tmpItem->key != NULL){
                       fprintf(stdout, "PUSHS GF@$VAR%s\n", tmpItem->key);
                     }
@@ -372,6 +380,7 @@ int generateInstructionREE(tDLList*list){
                     tmpItem--;
                     //tmpItem++;
                 }
+                */
                 generatePrint(parCounter);
                 break;
             case(I_IF):
@@ -572,6 +581,8 @@ void generateAdd(tDLList*list){
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
 void generateIf(tDLList*list, void *origi){
 
+  fprintf(stdout, "CREATEFRAME\n");
+  fprintf(stdout, "PUSHFRAME\n");
   //zistit condition
   list->First = list->First->rptr;
   generateInstructionREE(list);
@@ -587,19 +598,39 @@ void generateIf(tDLList*list, void *origi){
   list->First = list->First->rptr;
   generateInstructionREE(list); //dokym nenajdem rovnaky indent
   fprintf(stdout, "LABEL END%p\n",origi);
-
+  fprintf(stdout, "POPFRAME\n");
 }
 
 void generateWhile(tDLList*list, void *origi){
 
+  fprintf(stdout, "CREATEFRAME\n");
+  fprintf(stdout, "PUSHFRAME\n");
+  fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
+
+  tDLElemPtr jmp2 = list->First->rptr;
 
   list->First = list->First->rptr;
   generateInstructionREE(list);
 
-  fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
-  fprintf(stdout, "POPS LF@$COND%p\n", origi);
 
   fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", origi);
+  fprintf(stdout, "POPS LF@$COND%p\n", origi);
+  fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true LF@$COND%p\n", origi, origi);
+
+  list->First = list->First->rptr;
+  generateInstructionREE(list); //dokym nenajdem dedent
+
+  tDLElemPtr jmp1 = list->First;
+  list->First = jmp2;
+  generateInstructionREE(list); //dokym nenajdem konec expression(podminky)
+  list->First = jmp1;
+
+  fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", origi);
+  fprintf(stdout, "LABEL WHILE$END$%p\n", origi);
+
+  fprintf(stdout, "POPFRAME\n");
+
+  //fprintf(stdout, "POPFRAME\n");
   //fprintf(stdout, "CREATEFRAME\n"); ////pre nove var memecka
 
   /*for (int i = 0; i < count; i++) { ///daky loop na vars
@@ -618,11 +649,6 @@ void generateWhile(tDLList*list, void *origi){
   fprintf(stdout, "POPS LF@$COND%p_%d\n", origi, whileCounter);
   */
 
-  fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true LF@$COND%p\n", origi, origi);
-
-  list->First = list->First->rptr;
-
-  generateInstructionREE(list); //dokym nenajdem dedent
 
   //fprintf(stdout, "POPFRAME\n");
   //Pred jumpom vratit vars ako premenne
@@ -630,8 +656,7 @@ void generateWhile(tDLList*list, void *origi){
     printf("MOVE LF@$VAR%p TF@$VAR%p\n",cez dake to id, vsetky by mali byt rovnake);
   }*/
   //
-  fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", origi);
-  fprintf(stdout, "LABEL WHILE$END$%p\n", origi);
-
-  fprintf(stdout, "POPFRAME\n");
 }
+
+
+//bug .. print ma vracet None
