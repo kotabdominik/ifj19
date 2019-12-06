@@ -130,6 +130,8 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_FLOAT) {
                 zesym = 1;
                 type1 = FLOAT;
+              } else if (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) {
+                type1 = NONE;
               } else { //není v symtablu
                 return -3; //proměnná není deklarovaná
               }
@@ -200,104 +202,139 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             } else if (zpracuj == 1) { //tady zavorky
               newData->dataType = type1;
             } else if (type1 == INT && type2 == INT) {
-              if (operacevtokenu == PLUS) {
+              if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
-              } else if (operacevtokenu == MINUS) {
+              } else if (operacevtokenu == MINUS) { // -
                 generateInstruction(I_SUBS, NULL, NULL, NULL);
-              } else if (operacevtokenu == TIMES) {
+              } else if (operacevtokenu == TIMES) { // *
                 generateInstruction(I_MULS, NULL, NULL, NULL);
-              } else if (operacevtokenu == DIVINT) {
-                /*if (tokenPrvni.attribute.INT == 0) {
-                  return -4; //dělení nulou lmao
-                }*/
+              } else if (operacevtokenu == DIVINT) { // //
                 generateInstruction(I_IDIVS, NULL, NULL, NULL);
-              } else if (operacevtokenu == DIVFLT) {
-                /*if (tokenPrvni.attribute.INT == 0) {
-                  return -4; //dělení nulou lmao
-                }*/
+              } else if (operacevtokenu == DIVFLT) { // /
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
-                type1 = FLOAT;
-              } else if (operacevtokenu == LESS) {
+                type1 = FLOAT; //idk honestly
+              } else if (operacevtokenu == LESS) { // <
                 generateInstruction(I_LTS, NULL, NULL, NULL);
-              } else if (operacevtokenu == GREATER) {
+              } else if (operacevtokenu == GREATER) { // >
                 generateInstruction(I_GTS, NULL, NULL, NULL);
-              } else if (operacevtokenu == LESSEQ) {
+              } else if (operacevtokenu == LESSEQ) { // <=
                 generateInstruction(I_LT, NULL, NULL, NULL);
-              } else if (operacevtokenu == GREATEREQ) {
+              } else if (operacevtokenu == GREATEREQ) { // >=
                 generateInstruction(I_GT, NULL, NULL, NULL);
-              } else if (operacevtokenu == EQ) {
+              } else if (operacevtokenu == EQ) { // ==
                 generateInstruction(I_EQS, NULL, NULL, NULL);
-              } else if (operacevtokenu == NOTEQ) {
+              } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
                 return -5; //neplatná operace mezi 2mi inty
               }
             } else if (type1 == LITERAL && type2 == LITERAL) {
-              if (operacevtokenu == PLUS) {
+              if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_CONCAT, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESS) { // <
+                generateInstruction(I_LTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATER) { // >
+                generateInstruction(I_GTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESSEQ) { // <=
+                generateInstruction(I_LT, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATEREQ) { // >=
+                generateInstruction(I_GT, NULL, NULL, NULL);
+              } else if (operacevtokenu == EQ) { // ==
+                generateInstruction(I_EQS, NULL, NULL, NULL);
+              } else if (operacevtokenu == NOTEQ) { // =!
+                generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                return -5; //neplatná operace meyi dvěma str
+                return -5; //neplatná operace mezi dvěma str
               }
             } else if (type1 == FLOAT && type2 == FLOAT) {
-              if (operacevtokenu == PLUS) {
+              if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
-              } else if (operacevtokenu == MINUS) {
+              } else if (operacevtokenu == MINUS) { // -
                 generateInstruction(I_SUBS, NULL, NULL, NULL);
-              } else if (operacevtokenu == TIMES) {
+              } else if (operacevtokenu == TIMES) { // *
                 generateInstruction(I_MULS, NULL, NULL, NULL);
-              } else if (operacevtokenu == DIVFLT) {
-                /*if (tokenPrvni.attribute.FLOAT == 0) {
-                  return -4; //dělení nulou lmao
-                }*/
+              } else if (operacevtokenu == DIVFLT) { // /
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
-              } else if (operacevtokenu == LESS) {
+              } else if (operacevtokenu == LESS) { // <
                 generateInstruction(I_LTS, NULL, NULL, NULL);
-              } else if (operacevtokenu == GREATER) {
+              } else if (operacevtokenu == GREATER) { // >
                 generateInstruction(I_GTS, NULL, NULL, NULL);
-              } else if (operacevtokenu == LESSEQ) {
+              } else if (operacevtokenu == LESSEQ) { // <=
                 generateInstruction(I_LT, NULL, NULL, NULL);
-              } else if (operacevtokenu == GREATEREQ) {
+              } else if (operacevtokenu == GREATEREQ) { // >=
                 generateInstruction(I_GT, NULL, NULL, NULL);
-              } else if (operacevtokenu == EQ) {
+              } else if (operacevtokenu == EQ) { // ==
                 generateInstruction(I_EQS, NULL, NULL, NULL);
-              } else if (operacevtokenu == NOTEQ) {
+              } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
                 return -5; //neplatná operace mezi 2mi floaty
               }
             } else if (type1 == INT && type2 == FLOAT) { //todo
               type1 = FLOAT;
-              if (operacevtokenu == PLUS) {
-                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT + tokenPrvni.attribute.INT;
-              } else if (operacevtokenu == MINUS) {
-                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT - tokenPrvni.attribute.INT;
-              } else if (operacevtokenu == TIMES) {
-                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.INT;
-              } else if (operacevtokenu == DIVFLT) {
+              if (operacevtokenu == PLUS) { // +
+                generateInstruction(I_ADDS, NULL, NULL, NULL);
+              } else if (operacevtokenu == MINUS) { // -
+                generateInstruction(I_SUBS, NULL, NULL, NULL);
+              } else if (operacevtokenu == TIMES) { // *
+                generateInstruction(I_MULS, NULL, NULL, NULL);
+              } else if (operacevtokenu == DIVFLT) { // /
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
-                /*if (tokenPrvni.attribute.INT == 0) {
-                  return -4; //dělení nulou lmao
-                }*/
-                //token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
+              } else if (operacevtokenu == LESS) { // <
+                generateInstruction(I_LTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATER) { // >
+                generateInstruction(I_GTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESSEQ) { // <=
+                generateInstruction(I_LT, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATEREQ) { // >=
+                generateInstruction(I_GT, NULL, NULL, NULL);
+              } else if (operacevtokenu == EQ) { // ==
+                generateInstruction(I_EQS, NULL, NULL, NULL);
+              } else if (operacevtokenu == NOTEQ) { // !=
+                generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
                 return -5; //neplatná operace mezi int a float
               }
             } else if (type1 == FLOAT && type2 == INT) { //todo
               type2 = FLOAT;
-              if (operacevtokenu == PLUS) {
-                token->attribute.FLOAT = tokenDruhy.attribute.INT + tokenPrvni.attribute.FLOAT;
-              } else if (operacevtokenu == MINUS) {
-                token->attribute.FLOAT = tokenDruhy.attribute.INT - tokenPrvni.attribute.FLOAT;
-              } else if (operacevtokenu == TIMES) {
-                token->attribute.FLOAT = tokenDruhy.attribute.INT * tokenPrvni.attribute.FLOAT;
-              } else if (operacevtokenu == DIVFLT) {
+              if (operacevtokenu == PLUS) { // +
+                generateInstruction(I_ADDS, NULL, NULL, NULL);
+              } else if (operacevtokenu == MINUS) { // -
+                generateInstruction(I_SUBS, NULL, NULL, NULL);
+              } else if (operacevtokenu == TIMES) { // *
+                generateInstruction(I_MULS, NULL, NULL, NULL);
+              } else if (operacevtokenu == DIVFLT) { // /
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
-                /*if (tokenPrvni.attribute.FLOAT == 0) {
-                  return -4; //dělení nulou lmao
-                }*/
-                //token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
+              } else if (operacevtokenu == LESS) { // <
+                generateInstruction(I_LTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATER) { // >
+                generateInstruction(I_GTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESSEQ) { // <=
+                generateInstruction(I_LT, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATEREQ) { // >=
+                generateInstruction(I_GT, NULL, NULL, NULL);
+              } else if (operacevtokenu == EQ) { // ==
+                generateInstruction(I_EQS, NULL, NULL, NULL);
+              } else if (operacevtokenu == NOTEQ) { // !=
+                generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
                 return -5; //neplatná operace mezi int a float
+              }
+            } else if (type1 == NONE || type2 == NONE) {
+              if (operacevtokenu == LESS) { // <
+                generateInstruction(I_LTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATER) { // >
+                generateInstruction(I_GTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESSEQ) { // <=
+                generateInstruction(I_LT, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATEREQ) { // >=
+                generateInstruction(I_GT, NULL, NULL, NULL);
+              } else if (operacevtokenu == EQ) { // ==
+                generateInstruction(I_EQS, NULL, NULL, NULL);
+              } else if (operacevtokenu == NOTEQ) { // !=
+                generateInstruction(I_NQS, NULL, NULL, NULL);
+              } else {
+                return -5; //neplatná operace mezi NONE a čímkoliv jinýho
               }
             } else {
               return -5; //neplatná operace mezi dvěmy typy, semantická chyba
@@ -308,7 +345,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             }
 
             *type = type1; //návratový typ
-            //printf("%d a %d typy nakonci\n", type1, type2);
             newData->dataType = type1;
             newData->token = token;
             tokenStackPush(s,newData);
@@ -343,7 +379,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
     return NULL;
   }
 
-  token* current = &tokenAct;
+  token* current = tokenAct2;
   tokenStack *s = (tokenStack*) malloc(sizeof(tokenStack));
   if(s == NULL){
     exp->error = INTERN_ERR;
@@ -430,8 +466,8 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
 
     current = malloc(sizeof(token)); //načítáme další token ze vstupu (nebo z parseru)
     if (tokenAct2) { //zpracujeme token z parseru
-      current->attribute = tokenAct2->attribute;
-      current->type = tokenAct2->type;
+      current->attribute = tokenAct->attribute;
+      current->type = tokenAct->type;
       tokenAct2 = NULL;
       continue;
     }
