@@ -169,10 +169,6 @@ void generateSubstr(){
     fprintf(stdout, "ADD LF@$POSIT LF@$POSIT int@1\n");//inkrementácia pozicie z ktorej sa bude brat
     fprintf(stdout, "DEFVAR LF@$TMPSTR\n");//char ktory sa bude pridavat
 
-
-
-
-
     fprintf(stdout, "ADD LF@$DELKA LF@$DELKA LF@$POSIT\n");
 
     fprintf(stdout, "SUB LF@$DELKA LF@$DELKA int@1\n");//podmienka na while loop hmmmmmm?
@@ -209,27 +205,32 @@ void generateOrd(){
     fprintf(stdout, "DEFVAR LF@$STRING\n");
     fprintf(stdout, "POPS LF@$STRING\n");
 
-    //fprintf(stdout, "DEFVAR LF@$CHR2INT\n");
-    //fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
-    //fprintf(stdout, "STRLEN LF@$TMPLEN LF@$1\n");
+    fprintf(stdout, "DEFVAR LF@$CHR2INT\n");
+    fprintf(stdout, "DEFVAR LF@$TMPLEN\n");
+    fprintf(stdout, "STRLEN LF@$TMPLEN LF@$STRING\n");
     //KONTROLA POZICIE
-    //fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
-    //fprintf(stdout, "GT LF@$BOOLCHECK LF@$2 LF@$TMPLEN\n");
-    //fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
-    //fprintf(stdout, "LT LF@$BOOLCHECK LF@$2 int@0\n");
-    //fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@-1\n");
+    //
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
+    fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
+    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
+    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    //
+    fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");
     //VÝPOČET A NÁVRAT
     fprintf(stdout, "STRI2INT LF@$RETVAL LF@$STRING LF@$POSIT\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
     //ERROR
-    /*
+
     fprintf(stdout, "LABEL $ERROR\n");
     fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+    fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
-*/
+
 }
 //chr(i)– Vrátí jednoznakový řetězec se znakem, jehož ASCII kód je zadán para-metrem𝑖. Případ, kdy je𝑖mimo interval[0; 255], vede na běhovou chybu při prácis řetězcem.
 void generateChr(){
@@ -252,55 +253,19 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  generateInputi();
+  generateOrd();
   /*
+  generateInputi();
   generateSubstr();
     generateInputs();
     generateInputf();
-    generateOrd();
     generateLen();
     generateChr();
     //generatePrint();*/
 }
 
-///potrebujem info k typom
-//nedeklarujem, len priradujem
-
-/*
-void generateAssign(tDLList*list){
-  if(list->First->Instruction.addr2 == INT){
-    fprintf(stdout, "PUSHS int@%d\n", list->First->Instruction.addr1 );
-  }
-  else if (list->First->Instruction.addr2 == FLOAT){
-    fprintf(stdout, "PUSHS float@%a\n", list->First->Instruction.addr1 );
-  }
-  else if (list->First->Instruction.addr2 == LITERAL){
-    fprintf(stdout, "PUSHS string@%s\n", list->First->Instruction.addr1 );
-  }
-}
-
-*/
-
-/*void generateGFVariable(tDLList*list){
-  printf("DEFVAR LF@$VAR%p\n",list->First->Instruction.addr1);
-}*/
 
 
-void generateBeginingOfFunction(tDLList*list){
-  fprintf(stdout, "JUMP $FUNCTION%d\n", ++functionCounter);
-  fprintf(stdout, "LABEL $FUNCTIONNAME%p\n", list->First->Instruction.addr1);
-  fprintf(stdout, "PUSHFRAME\n");
-  fprintf(stdout, "DEFVAR LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
-  fprintf(stdout, "MOVE LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
-  fprintf(stdout, "PUSHS LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
-}
-
-void generateEndOfFunction(tDLList*list){
-  fprintf(stdout, "POPS LF@RETURNVALUE%p\n", list->First->Instruction.addr1);
-  fprintf(stdout, "POPFRAME\n");
-  fprintf(stdout, "RETURN\n");
-  fprintf(stdout, "LABEL $FUNCTION%d\n", functionCounter);
-}
 
 int generateInstructionREE(tDLList*list){
     int *parCounter;
