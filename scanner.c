@@ -427,7 +427,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 break;
 
                             case (STATE_P1): //Je float
-                                if (isalnum(c)) { //Musí nasledovať číslo
+                                if (isdigit(c)) { //Musí nasledovať číslo
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_F3;

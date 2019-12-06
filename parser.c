@@ -842,7 +842,7 @@ int callParams(char* funName){
 
   if(tmpItem0->elementType.function->argCount <= 0 && strcmp(funName, "print") != 0){
     fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
-    return SEM_MISC_ERR;
+    return SEM_PAR_ERR;
   }
   else{
     if(tokenAct.type == STR){
