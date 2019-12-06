@@ -139,8 +139,9 @@ void generateSubstr(){
 
     fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
 
-
+    //
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@-1\n");
+    //fprintf(stdout, "ADD LF@$DELKA LF@$DELKA int@-1\n");
     //
     fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
     fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
@@ -148,11 +149,12 @@ void generateSubstr(){
     fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
 
     fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
-    fprintf(stdout, "GT LF@$BOOLCHECK int@-1 LF@$DELKA\n");
-
-
+    fprintf(stdout, "GT LF@$BOOLCHECK int@0 LF@$DELKA\n");
+    fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "EQ LF@$BOOLCHECK int@0 LF@$DELKA\n");
     fprintf(stdout, "JUMPIFEQ $ERROR LF@$BOOLCHECK bool@true\n");
     //FUNKCIA
+    //fprintf(stdout, "ADD LF@$DELKA LF@$DELKA int@1\n");
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@1\n");
     //
     fprintf(stdout, "GETCHAR LF@$RETVAL LF@$STRING LF@$POSIT\n");//prvy znak return stringu
@@ -243,7 +245,7 @@ void generateChr(){
 
 void generateBuiltIn(){
   generateSubstr();
-    /*generateInputi();
+    generateInputi();
     generateInputs();
     generateInputf();
     generateOrd();
@@ -591,6 +593,12 @@ void generateIf(tDLList*list, void *origi){
 void generateWhile(tDLList*list, void *origi){
 
 
+  list->First = list->First->rptr;
+  generateInstructionREE(list);
+
+  fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
+  fprintf(stdout, "POPS LF@$COND%p\n", origi);
+
   fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", origi);
   //fprintf(stdout, "CREATEFRAME\n"); ////pre nove var memecka
 
@@ -604,8 +612,6 @@ void generateWhile(tDLList*list, void *origi){
   //XXXX
 
 
-  list->First = list->First->rptr;
-  generateInstructionREE(list);
   /*
   int whileCounter = 0;
   fprintf(stdout, "DEFVAR LF@$COND%p_%d\n", origi, ++whileCounter);
