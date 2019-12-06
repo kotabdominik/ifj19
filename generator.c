@@ -533,6 +533,16 @@ void checkInt2Float(){
   fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
   fprintf(stdout, "TYPE LF@$T2 LF@$2\n");
 
+  fprintf(stdout, "DEFVAR LF@$BOOLCHECK0\n");
+  fprintf(stdout, "DEFVAR LF@$BOOLCHECK1\n");
+  fprintf(stdout, "DEFVAR LF@$BOOLCHECK2\n");
+
+  fprintf(stdout, "EQ LF@$BOOLCHECK0 LF@$T1 string@int\n");
+  fprintf(stdout, "EQ LF@$BOOLCHECK1 LF@$T1 string@int\n");
+  fprintf(stdout, "AND LF@$BOOLCHECK2 LF@$BOOLCHECK0 LF@$BOOLCHECK1\n");
+  fprintf(stdout, "JUMPIFEQ $LAB2 LF@$BOOLCHEK2 string@true\n");
+
+  fprintf(stdout, "LABEL $LAB0\n");
   fprintf(stdout, "JUMPIFEQ $LAB1 LF@$T1 string@float\n");
   fprintf(stdout, "INT2FLOAT LF@$1 LF@$1\n");
   fprintf(stdout, "LABEL $LAB1\n");
