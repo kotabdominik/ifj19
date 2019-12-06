@@ -215,7 +215,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 /*if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
                 }*/
-                token->attribute.FLOAT = (double)tokenDruhy.attribute.INT / (double)tokenPrvni.attribute.INT;
+                generateInstruction(I_DIVS, NULL, NULL, NULL);
                 type1 = FLOAT;
               } else if (operacevtokenu == LESS) {
                 generateInstruction(I_LTS, NULL, NULL, NULL);
@@ -274,10 +274,11 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.FLOAT * tokenPrvni.attribute.INT;
               } else if (operacevtokenu == DIVFLT) {
+                generateInstruction(I_DIVS, NULL, NULL, NULL);
                 /*if (tokenPrvni.attribute.INT == 0) {
                   return -4; //dělení nulou lmao
                 }*/
-                token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
+                //token->attribute.FLOAT = tokenDruhy.attribute.FLOAT / tokenPrvni.attribute.INT;
               } else {
                 return -5; //neplatná operace mezi int a float
               }
@@ -290,10 +291,11 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == TIMES) {
                 token->attribute.FLOAT = tokenDruhy.attribute.INT * tokenPrvni.attribute.FLOAT;
               } else if (operacevtokenu == DIVFLT) {
+                generateInstruction(I_DIVS, NULL, NULL, NULL);
                 /*if (tokenPrvni.attribute.FLOAT == 0) {
                   return -4; //dělení nulou lmao
                 }*/
-                token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
+                //token->attribute.FLOAT = tokenDruhy.attribute.INT / tokenPrvni.attribute.FLOAT;
               } else {
                 return -5; //neplatná operace mezi int a float
               }
