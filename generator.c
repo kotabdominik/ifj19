@@ -466,7 +466,24 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_IDIVS):
-                fprintf(stdout, "IDIVS\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                //checkInt2Float();
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                checkFloat2Int();
+
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%d LF@$2\n", 0);
+                fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_DEFVAR):
                 if(0){}
@@ -557,7 +574,7 @@ void checkInt2Float(){
 }
 
 //converts float to int if needed
-void checkFloat2FInt(){
+void checkFloat2Int(){
 
   fprintf(stdout, "DEFVAR LF@$T1\n");
   fprintf(stdout, "DEFVAR LF@$T2\n");

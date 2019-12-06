@@ -39,7 +39,7 @@ void generateWhile(tDLList*list,void* origi);
 void generateIf(tDLList*list,void* origi);
 
 void checkInt2Float();
-void checkFloat2FInt();
+void checkFloat2Int();
 
 
 #endif
