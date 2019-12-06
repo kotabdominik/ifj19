@@ -361,7 +361,8 @@ int statement(char *funName){
         }
       }
 
-
+      token *someTokenThatIUsedToKnow;
+      someTokenThatIUsedToKnow = NULL;
       if(tokenAct.type == STR){
         tmpToken = tokenAct;
         symtableItem *tmpItem1 = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
@@ -457,18 +458,31 @@ int statement(char *funName){
           if(error != OK) return error; // zkoumani lexikalniho erroru
           return OK;
         }
+
+        tokenAct = nextToken(&error, stack, doIndent);
+        if(error != OK) return error; // zkoumani lexikalniho erroru
+        if(tokenAct.type == LEFTBRACKET){
+          fprintf(stderr, "Snazite se priradit do promenne funkci, ktera neni definovana funkce\n");
+          return SEM_DEF_ERR;
+        }
+        else{
+          someTokenThatIUsedToKnow = &tmpToken;
+        }
       }
 
-      if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != LITERAL && tokenAct.type != LEFTBRACKET && tokenAct.type != DOCCOM && tokenAct.type != STR && !(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE)){
+
+      if(someTokenThatIUsedToKnow == NULL){
+        if(tokenAct.type != INT && tokenAct.type != FLOAT && tokenAct.type != LITERAL && tokenAct.type != LEFTBRACKET && tokenAct.type != DOCCOM && tokenAct.type != STR && !(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE)){
         fprintf(stderr, "NELEGALNI EXPRESSION\n");
         return PARSING_ERR;
       }
-
+      }
+      
       symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, someTokenThatIUsedToKnow, tableG, table2);
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
@@ -561,7 +575,7 @@ int statement(char *funName){
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tmpToken, &tokenAct, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, &tmpToken, tableG, table2);
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
@@ -1285,7 +1299,7 @@ int main(){
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
     //setFile("txt.txt");
-    //freopen("txt.txt","r",stdin);
+    freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     if(result != OK) return result;
     //printf("%d\n", result);

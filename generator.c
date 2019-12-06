@@ -46,7 +46,7 @@ void degenerate(tDLList *list){
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     generateInstructionREE(list);
-};
+}
 
 //||======================================================||//
 //||=============== Věstavené funkce start ===============||//
