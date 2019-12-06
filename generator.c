@@ -252,9 +252,9 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
+  generateInputi();
   /*
   generateSubstr();
-    generateInputi();
     generateInputs();
     generateInputf();
     generateOrd();
@@ -507,6 +507,7 @@ int generateInstructionREE(tDLList*list){
             case(I_NQS):
                 fprintf(stdout, "EQS\n");
                 fprintf(stdout, "NOTS\n");
+                break;
             case(I_ELSE_E):
                 return 1488;
             case(I_GT)://greater or equal
