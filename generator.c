@@ -33,8 +33,8 @@
 #include "list.h"
 #include "generator.h"
 
-int functionCounter = 0;
-
+int actNumberOfLF = 0;
+symtableItem *aktualniArgumenty = NULL;
 
 void degenerate(tDLList *list){
     fprintf(stdout, ".IFJcode19\n");
@@ -54,6 +54,10 @@ void degenerate(tDLList *list){
 void generateInputs(){
     fprintf(stdout, "LABEL $ALFA\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL string\n");
@@ -65,6 +69,10 @@ void generateInputs(){
 void generateInputi(){
     fprintf(stdout, "LABEL $BETA\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL int\n");
@@ -76,6 +84,10 @@ void generateInputi(){
 void generateInputf(){
     fprintf(stdout, "LABEL $GAMA\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL float\n");
@@ -92,6 +104,10 @@ void generateInputf(){
 void generatePrint(int *parCounter){
     //fprintf(stdout, "LABEL $DELTA%p\n", parCounter);
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL%p\n", parCounter);
     //fprintf(stdout, "DEFVAR LF@$TMPVAL%p\n", parCounter);
@@ -112,6 +128,10 @@ void generatePrint(int *parCounter){
 void generateLen(){
     fprintf(stdout, "LABEL $LENGTH\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$1\n");
@@ -128,6 +148,10 @@ void generateSubstr(){
     //INIT
     fprintf(stdout, "LABEL $SUBSTR\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$DELKA\n");//n
@@ -184,6 +208,10 @@ void generateOrd(){
     //INIT
     fprintf(stdout, "LABEL $ORD\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     //ULOŽENIE PARAMETROV
@@ -223,6 +251,10 @@ void generateOrd(){
 void generateChr(){
     fprintf(stdout, "LABEL $CHAR\n");
     fprintf(stdout, "CREATEFRAME\n");
+    for(int i = 0; i < actNumberOfLF; i++){
+          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$ASC\n");
@@ -333,25 +365,29 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 char* tmp11 = list->First->Instruction.addr1;
                 if (list->First->Instruction.addr3 != NULL) {
-                  fprintf(stdout, "PUSHS LF@$VAR%s\n", tmp1);
+                  fprintf(stdout, "PUSHS LF@$VAR%s\n", tmp11);
                   break;
                 }
                 int* tmp22 = list->First->Instruction.addr2;
-                if (*tmp == INT) {
+                if (*tmp22 == INT) {
                   int* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS int@%d\n", *tmp8);
                 }
-                else if(*tmp == LITERAL){
+                else if(*tmp22 == LITERAL){
                   char* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS string@%s\n", tmp8);
                 }
-                else if(*tmp == FLOAT){
+                else if(*tmp22 == FLOAT){
                   double* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS float@%a\n", *tmp8);
                 }
                 break;
             case(I_ADDS):
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -369,6 +405,10 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_SUBS):
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -386,6 +426,10 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_MULS):
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -403,6 +447,10 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_DIVS):
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -456,6 +504,7 @@ int generateInstructionREE(tDLList*list){
                 char *notree = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", notree);
                 fprintf(stdout, "POPS LF@$VAR%s\n", notree);
+                actNumberOfLF++;
                 break;
             case(I_POPS):
                 if(0){}
@@ -479,6 +528,10 @@ int generateInstructionREE(tDLList*list){
                 return 1488;
             case(I_GT)://greater or equal
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -492,6 +545,10 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_LT):
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -507,6 +564,10 @@ int generateInstructionREE(tDLList*list){
                 return 69;
             case(I_CONCAT):
                 fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
                 fprintf(stdout, "DEFVAR LF@$STR1\n");
@@ -520,6 +581,8 @@ int generateInstructionREE(tDLList*list){
             case(I_STARTOFFUNC):
                 if(0){}
                 char *idk = list->First->Instruction.addr1;
+                symtableItem *itemNaArgumenty = list->First->Instruction.addr2;
+                aktualniArgumenty = itemNaArgumenty->elementType.function->arguments;
                 fprintf(stdout, "JUMP $FUNCTIONEND%s\n", idk);
                 fprintf(stdout, "LABEL $FUNCTION%s\n", idk);
                 fprintf(stdout, "CREATEFRAME\n");
@@ -533,6 +596,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPFRAME\n");
                 fprintf(stdout, "RETURN\n");
                 fprintf(stdout, "LABEL $FUNCTIONEND%s\n", idk2);
+                actNumberOfLF = 0;
                 return 123;
                 break;
             case(I_CALL):
@@ -647,6 +711,10 @@ void defenestrace(int antiHussites){
 void generateIf(tDLList*list, void *origi){
 
   fprintf(stdout, "CREATEFRAME\n");
+  for(int i = 0; i < actNumberOfLF; i++){
+        fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+        fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+  }
   fprintf(stdout, "PUSHFRAME\n");
   //zistit condition
   list->First = list->First->rptr;
@@ -663,11 +731,20 @@ void generateIf(tDLList*list, void *origi){
   list->First = list->First->rptr;
   generateInstructionREE(list); //dokym nenajdem rovnaky indent
   fprintf(stdout, "LABEL END%p\n",origi);
+  /*for(int i= 0; i < actNumberOfLF; i++){
+        fprintf(stdout,"MOVE LF@$VAR%s TF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+  }*/
   fprintf(stdout, "POPFRAME\n");
 }
 
 void generateWhile(tDLList*list, void *origi){
   fprintf(stdout, "CREATEFRAME\n");
+  //////predavanie hodnot i guess
+  for(int i = 0; i < actNumberOfLF; i++){
+        fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+        fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+  }
+  //////////////////////////
   fprintf(stdout, "PUSHFRAME\n");
   fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
   tDLElemPtr jmp2 = list->First->rptr;

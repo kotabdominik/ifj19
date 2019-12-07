@@ -32,8 +32,8 @@ void generateVariable(smartString *var);
 int initFunctions();
 int defParams(char* funName);
 int defParamsN(char* funName, int argc);
-int callParams(char* funName);
-int callParamsN(char* funName, int argc);
+int callParams(char* funName, char* aktualniFunkce);
+int callParamsN(char* funName, int argc, char* aktualniFunkce);
 void addBuildInFunc();
 
 #endif

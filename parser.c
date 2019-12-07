@@ -356,7 +356,7 @@ int statement(char *funName){
 
           if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
 
-          result = callParams(tmpToken.attribute.string->string);
+          result = callParams(funName,tmpToken.attribute.string->string);
 
           if(strcmp(tmpToken.attribute.string->string, "len") == 0){
             if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
@@ -500,7 +500,7 @@ int statement(char *funName){
         return SEM_DEF_ERR;
       }
 
-      result = callParams(tmpToken.attribute.string->string);
+      result = callParams(funName,tmpToken.attribute.string->string);
 
       if(strcmp(tmpToken.attribute.string->string, "len") == 0){
         if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
@@ -686,7 +686,8 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
-    generateInstruction(I_STARTOFFUNC, s->string, NULL, NULL);
+    symtableItem *aktualniFunkce = searchSymbolTableWithString(tableG, s->string);
+    generateInstruction(I_STARTOFFUNC, s->string, aktualniFunkce, NULL);
     if(tokenAct.type != LEFTBRACKET){
       fprintf(stderr, "za DEF ID ma nasledovat  (\n");
       return PARSING_ERR;
@@ -849,7 +850,7 @@ int defParamsN(char* funName, int argc){
 }
 
 //---------------------------------------------CALLPARAMS----------------------------------
-int callParams(char* funName){
+int callParams(char* funName, char* aktualniFunkce){
   symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
 
   tokenAct = nextToken(&error, stack, doIndent);
@@ -864,7 +865,7 @@ int callParams(char* funName){
     }
   }
 
-  if(strcmp(funName, "print") == 0){
+  if(strcmp(aktualniFunkce, "print") == 0){
     functionData *item;
     item = (functionData *) malloc(sizeof(functionData));
     item->arguments = (symtableItem *) malloc(sizeof(symtableItem));
@@ -881,13 +882,18 @@ int callParams(char* funName){
     tableG->symtabList[hash(funName)] = tmpIT;
   }
 
-  if(tmpItem0->elementType.function->argCount <= 0 && strcmp(funName, "print") != 0){
+  if(tmpItem0->elementType.function->argCount <= 0 && strcmp(aktualniFunkce, "print") != 0){
     fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
     return SEM_PAR_ERR;
   }
   else{
     if(tokenAct.type == STR){
-      symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
+      symtableItem *tmpItem = searchSymbolTable(tmpItem0->elementType.function->sT, tokenAct);
+
+      if(tmpItem == NULL){
+        tmpItem = searchSymbolTable(tableG, tokenAct);
+      }
+
 
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
@@ -942,12 +948,12 @@ int callParams(char* funName){
     }
 
     //generateInstruction(I_PUSH, , NULL, NULL);
-    return callParamsN(funName, 1);
+    return callParamsN(funName, 1, aktualniFunkce);
   }
 }
 
 //---------------------------------------------CALLPARAMSN----------------------------------
-int callParamsN(char* funName, int argc){
+int callParamsN(char* funName, int argc, char* aktualniFunkce){
   symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
 
   tokenAct = nextToken(&error, stack, doIndent);
@@ -972,7 +978,7 @@ int callParamsN(char* funName, int argc){
     return PARSING_ERR;
   }
 
-  if(strcmp(funName, "print") == 0){
+  if(strcmp(aktualniFunkce, "print") == 0){
     symtableItem *tmpAAAAAA = searchSymbolTableWithString(tableG, funName); //hledáme nejen na indexu, ale i jestli někam neukazuje yk
     functionData *item = tmpAAAAAA->elementType.function;
     item->arguments = (symtableItem *) realloc(item->arguments, (argc + 1) * sizeof(symtableItem));
@@ -994,7 +1000,14 @@ int callParamsN(char* funName, int argc){
   }
   else{
     if(tokenAct.type == STR){
-      symtableItem *tmpItem = searchSymbolTable(tableG, tokenAct);
+      symtableItem *tmpItem = searchSymbolTable(tmpItem0->elementType.function->sT, tokenAct);
+
+      if(tmpItem == NULL){
+        tmpItem = searchSymbolTable(tableG, tokenAct);
+      }
+
+
+
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "do argumentu funkce nemuzete davat funkce(nazvy funkci)\n");
         return SEM_MISC_ERR;
@@ -1048,7 +1061,7 @@ int callParamsN(char* funName, int argc){
     }
     argc++;
     //generateInstruction(I_PUSH,, NULL, NULL);
-    return callParamsN(funName, argc);
+    return callParamsN(funName, argc, aktualniFunkce);
   }
 }
 
