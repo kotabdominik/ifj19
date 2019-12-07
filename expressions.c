@@ -55,6 +55,7 @@ int getPrecedenceIndex(token* tokenAct) { //vrací index z precedence tablu
     case STR: // i
     case LITERAL: // i
     case DOCCOM: // stejný co literal
+    case UNDEFINED: //uhhh
     case KEYWORD: //NONE
       if (tokenAct->type == KEYWORD && tokenAct->attribute.keyword != NONE) {
         return -1;
@@ -106,7 +107,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
           if (data->token->type == RIGHTBRACKET) {
             state = 2;
             zpracuj = 1;
-          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR || (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) || data->token->type == DOCCOM) { //int, float, literal, str
+          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR || (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) || data->token->type == DOCCOM || data->token->type == UNDEFINED) { //int, float, literal, str
             token = data->token;
             zpracuj = 2;
             state = 3;
@@ -125,21 +126,22 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 for (int i = 0; i < item->elementType.function->argCount; i++) {
                   if (strcmp(item->elementType.function->arguments[i].key, data->token->attribute.string->string) == 0) { //je to arg fun
                     zesym = 1;
+                    type1 = UNDEFINED;
                   }
                 }
               } else if (!item && tableGG) { //to jestli je item funkce se ošetřuje jinde prej, dává to PARSING_ERR (2)
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
                 zesym = 1;
-                //type1 = INT;
+                type1 = INT;
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_STRING) {
                 zesym = 1;
-                //type1 = LITERAL;
+                type1 = LITERAL;
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_FLOAT) {
                 zesym = 1;
-                //type1 = FLOAT;
+                type1 = FLOAT;
               } else if (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) {
-                //type1 = NONE;
+                type1 = NONE;
               } else { //není v symtablu
                 return -3; //proměnná není deklarovaná
               }
@@ -157,7 +159,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         if (data->token->type == PLUS || data->token->type == MINUS || data->token->type == TIMES || data->token->type == DIVFLT || data->token->type == DIVINT || data->token->type == LESS || data->token->type == GREATER || data->token->type == LESSEQ || data->token->type == GREATEREQ || data->token->type == EQ || data->token->type == NOTEQ) {
           state = 2;
         } else {
-          printf("pořád? 1\n");
           return -5; //neplatný výraz mezi 2mi věcmi
         }
         zpracuj = 3;
@@ -235,7 +236,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                printf("pořád? 2\n");
                 return -5; //neplatná operace mezi 2mi inty
               }
             } else if (type1 == LITERAL && type2 == LITERAL) {
@@ -254,7 +254,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) { // =!
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                printf("pořád? 3\n");
                 return -5; //neplatná operace mezi dvěma str
               }
             } else if (type1 == FLOAT && type2 == FLOAT) {
@@ -279,7 +278,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                printf("pořád? 4\n");
                 return -5; //neplatná operace mezi 2mi floaty
               }
             } else if (type1 == INT && type2 == FLOAT) { //todo
@@ -305,7 +303,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                printf("pořád? 5\n");
                 return -5; //neplatná operace mezi int a float
               }
             } else if (type1 == FLOAT && type2 == INT) { //todo
@@ -331,7 +328,6 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                printf("pořád? 6\n");
                 return -5; //neplatná operace mezi int a float
               }
             } else if (type1 == KEYWORD || type2 == KEYWORD) {
@@ -348,11 +344,35 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else if (operacevtokenu == NOTEQ) { // !=
                 generateInstruction(I_NQS, NULL, NULL, NULL);
               } else {
-                printf("pořád? 7\n");
                 return -5; //neplatná operace mezi NONE a čímkoliv jinýho
               }
+            } else if (type1 == UNDEFINED || type2 == UNDEFINED) {
+              if (operacevtokenu == PLUS) { // +
+                generateInstruction(I_ADDS, NULL, NULL, NULL);
+              } else if (operacevtokenu == MINUS) { // -
+                generateInstruction(I_SUBS, NULL, NULL, NULL);
+              } else if (operacevtokenu == TIMES) { // *
+                generateInstruction(I_MULS, NULL, NULL, NULL);
+              } else if (operacevtokenu == DIVINT) { // //
+                generateInstruction(I_IDIVS, NULL, NULL, NULL);
+              } else if (operacevtokenu == DIVFLT) { // /
+                generateInstruction(I_DIVS, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESS) { // <
+                generateInstruction(I_LTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATER) { // >
+                generateInstruction(I_GTS, NULL, NULL, NULL);
+              } else if (operacevtokenu == LESSEQ) { // <=
+                generateInstruction(I_LT, NULL, NULL, NULL);
+              } else if (operacevtokenu == GREATEREQ) { // >=
+                generateInstruction(I_GT, NULL, NULL, NULL);
+              } else if (operacevtokenu == EQ) { // ==
+                generateInstruction(I_EQS, NULL, NULL, NULL);
+              } else if (operacevtokenu == NOTEQ) { // !=
+                generateInstruction(I_NQS, NULL, NULL, NULL);
+              } else { //neplatná operace mezi UNDEFINED a čímkoliv jinýho (udefined == parametr funkce)
+                return -5;
+              }
             } else {
-              printf("pořád? 8 a tisknu zpracuj %d\n", zpracuj);
               return -5; //neplatná operace mezi dvěmy typy, semantická chyba
             }
 
