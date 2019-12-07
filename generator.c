@@ -272,7 +272,6 @@ void generateBuiltIn(){
   checkFloat2Int();
   checkInt2Float();
   checkInt2FloatDiv();
-  /*
   generateLen();
   generateInputf();
   generateInputi();
@@ -280,6 +279,7 @@ void generateBuiltIn(){
   generateSubstr();
   generateInputs();
   generateChr();
+  /*
   //generatePrint();*/
 }
 
@@ -519,7 +519,7 @@ int generateInstructionREE(tDLList*list){
             case(I_POPSLOCAL):
                 if(0){}
                 symtableItem *localPop = list->First->Instruction.addr1;
-                fprintf(stdout, "POPS LF@$VAR%s\n", localPop->key); 
+                fprintf(stdout, "POPS LF@$VAR%s\n", localPop->key);
                 break;
             case(I_GTS): //greater
                 fprintf(stdout, "GTS \n");
