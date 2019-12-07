@@ -851,12 +851,16 @@ int defParamsN(char* funName, int argc){
 
 //---------------------------------------------CALLPARAMS----------------------------------
 int callParams(char* funName, char* aktualniFunkce){
-  symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
+  symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, aktualniFunkce); //UKAZATEL NA FUNKCI KTEROU VOLAME
+  symtableItem *funkceKdeJsme = searchSymbolTableWithString(tableG, aktualniFunkce); //UKAZATEL NA FUNKCI VE KTERE JSME
 
   tokenAct = nextToken(&error, stack, doIndent);
   if(error != OK) return error; // zkoumani lexikalniho erroru
   if(tokenAct.type == RIGHTBRACKET){
-    if (tmpItem0->elementType.function->argCount == 0 || strcmp(funName, "print") == 0) {
+    if (tmpItem0->elementType.function->argCount == 0 || strcmp(aktualniFunkce, "print") == 0) {
+      /*if(strcmp(aktualniFunkce, "print") == 0){
+        generateInstruction();
+      }*/
       return OK;
     }
     else{
@@ -874,12 +878,12 @@ int callParams(char* funName, char* aktualniFunkce){
     (item->arguments[0]).elementType.variable->type = VARIABLE;
     item->argCount = 1;
 
-    symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+    symtableItem *tmpIT = searchSymbolTableWithString(tableG, aktualniFunkce);
     free(tmpIT->elementType.function->arguments);
     item->sT = tmpIT->elementType.function->sT;
-    tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
+    tmpIT->next = tableG->symtabList[hash(aktualniFunkce)]; //pokud je něco na stejným indexu =)
     tmpIT->elementType.function = item;
-    tableG->symtabList[hash(funName)] = tmpIT;
+    tableG->symtabList[hash(aktualniFunkce)] = tmpIT;
   }
 
   if(tmpItem0->elementType.function->argCount <= 0 && strcmp(aktualniFunkce, "print") != 0){
@@ -888,7 +892,7 @@ int callParams(char* funName, char* aktualniFunkce){
   }
   else{
     if(tokenAct.type == STR){
-      symtableItem *tmpItem = searchSymbolTable(tmpItem0->elementType.function->sT, tokenAct);
+      symtableItem *tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
 
       if(tmpItem == NULL){
         tmpItem = searchSymbolTable(tableG, tokenAct);
@@ -900,9 +904,9 @@ int callParams(char* funName, char* aktualniFunkce){
         return SEM_MISC_ERR;
       }
       else if(tmpItem != NULL && tmpItem->type == VARIABLE){
-        (tmpItem0->elementType.function->arguments[0]).key = tmpItem->key;
+        //(tmpItem0->elementType.function->arguments[0]).key = tmpItem->key;
         //(tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
         generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
       }
       else{
@@ -912,8 +916,8 @@ int callParams(char* funName, char* aktualniFunkce){
     }
     else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
       if(tokenAct.type == INT){
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.INT = tokenAct.attribute.INT;
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_INT;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->value.INT = tokenAct.attribute.INT;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_INT;
         int* hodnota = (int*) malloc(sizeof(int));
         int* typTokenu = (int*) malloc(sizeof(int));
         *hodnota = tokenAct.attribute.INT;
@@ -921,8 +925,8 @@ int callParams(char* funName, char* aktualniFunkce){
         generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == FLOAT){
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_FLOAT;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_FLOAT;
         double* hodnota = (double*) malloc(sizeof(double));
         int* typTokenu = (int*) malloc(sizeof(int));
         *hodnota = tokenAct.attribute.FLOAT;
@@ -930,8 +934,8 @@ int callParams(char* funName, char* aktualniFunkce){
         generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->value.string = tokenAct.attribute.string->string;
-        (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_STRING;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->value.string = tokenAct.attribute.string->string;
+        //(tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_STRING;
         char* hodnota = (char*) malloc(sizeof(char));
         int* typTokenu = (int*) malloc(sizeof(int));
         hodnota = tokenAct.attribute.string->string;
@@ -940,7 +944,7 @@ int callParams(char* funName, char* aktualniFunkce){
       }
     }
     else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
-      (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_UNDEFINED;
+      //(tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_UNDEFINED;
     }
     else{
       fprintf(stderr, "Nespravny typ argumentu pri volani funkce\n");
@@ -954,7 +958,8 @@ int callParams(char* funName, char* aktualniFunkce){
 
 //---------------------------------------------CALLPARAMSN----------------------------------
 int callParamsN(char* funName, int argc, char* aktualniFunkce){
-  symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, funName);
+  symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, aktualniFunkce); //UKAZATEL NA FUNKCI KTEROU VOLAME
+  symtableItem *funkceKdeJsme = searchSymbolTableWithString(tableG, aktualniFunkce); //UKAZATEL NA FUNKCI VE KTERE JSME
 
   tokenAct = nextToken(&error, stack, doIndent);
   if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -979,7 +984,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
   }
 
   if(strcmp(aktualniFunkce, "print") == 0){
-    symtableItem *tmpAAAAAA = searchSymbolTableWithString(tableG, funName); //hledáme nejen na indexu, ale i jestli někam neukazuje yk
+    symtableItem *tmpAAAAAA = searchSymbolTableWithString(tableG, aktualniFunkce); //hledáme nejen na indexu, ale i jestli někam neukazuje yk
     functionData *item = tmpAAAAAA->elementType.function;
     item->arguments = (symtableItem *) realloc(item->arguments, (argc + 1) * sizeof(symtableItem));
     item->arguments[argc].type = VARIABLE;
@@ -987,11 +992,11 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
     (item->arguments[argc]).elementType.variable->type = VARIABLE;
     item->argCount = argc + 1;
 
-    symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
+    symtableItem *tmpIT = searchSymbolTableWithString(tableG, aktualniFunkce);
     item->sT = tmpIT->elementType.function->sT;
-    tmpIT->next = tableG->symtabList[hash(funName)]; //pokud je něco na stejným indexu =)
+    tmpIT->next = tableG->symtabList[hash(aktualniFunkce)]; //pokud je něco na stejným indexu =)
     tmpIT->elementType.function = item;
-    tableG->symtabList[hash(funName)] = tmpIT;
+    tableG->symtabList[hash(aktualniFunkce)] = tmpIT;
   }
 
   if(tmpItem0->elementType.function->argCount <= argc && tmpItem0->elementType.function->argCount != -1){
@@ -1000,7 +1005,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
   }
   else{
     if(tokenAct.type == STR){
-      symtableItem *tmpItem = searchSymbolTable(tmpItem0->elementType.function->sT, tokenAct);
+      symtableItem *tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
 
       if(tmpItem == NULL){
         tmpItem = searchSymbolTable(tableG, tokenAct);
@@ -1013,9 +1018,9 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
         return SEM_MISC_ERR;
       }
       else if(tmpItem != NULL && tmpItem->type == VARIABLE){
-        (tmpItem0->elementType.function->arguments[argc]).key = tmpItem->key;
+        //(tmpItem0->elementType.function->arguments[argc]).key = tmpItem->key;
         //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->value = tmpItem->elementType.variable->value;
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = tmpItem->elementType.variable->type;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = tmpItem->elementType.variable->type;
         generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
       }
       else{
@@ -1025,8 +1030,8 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
     }
     else if(tokenAct.type == INT || tokenAct.type == FLOAT || tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
       if(tokenAct.type == INT){
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.INT = tokenAct.attribute.INT;
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_INT;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.INT = tokenAct.attribute.INT;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_INT;
         int* hodnota = (int*) malloc(sizeof(int));
         int* typTokenu = (int*) malloc(sizeof(int));
         *hodnota = tokenAct.attribute.INT;
@@ -1034,8 +1039,8 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
         generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == FLOAT){
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_FLOAT;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.FLOAT = tokenAct.attribute.FLOAT;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_FLOAT;
         double* hodnota = (double*) malloc(sizeof(double));
         int* typTokenu = (int*) malloc(sizeof(int));
         *hodnota = tokenAct.attribute.FLOAT;
@@ -1043,8 +1048,8 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
         generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }
       else if(tokenAct.type == LITERAL || tokenAct.type == DOCCOM){
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.string = tokenAct.attribute.string->string;
-        (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_STRING;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->value.string = tokenAct.attribute.string->string;
+        //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_STRING;
         char* hodnota = (char*) malloc(sizeof(char));
         int* typTokenu = (int*) malloc(sizeof(int));
         hodnota = tokenAct.attribute.string->string;
@@ -1053,7 +1058,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
       }
     }
     else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
-      (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_UNDEFINED;
+      //(tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_UNDEFINED;
     }
     else{
       fprintf(stderr, "Nespravny typ argumentu pri volani funkce\n");
@@ -1338,3 +1343,5 @@ int main(){
 
 // indent a za nim dokumentacni komentar
 //none v callparams + v pushs(generatoru)
+
+//v CALLPARAMS kdyz ma print 0 parametru tak vytisknout prazdny radek
