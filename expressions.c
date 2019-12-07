@@ -125,10 +125,12 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 item = searchSymbolTableWithString(tableG, jmenoFunkce);
                 for (int i = 0; i < item->elementType.function->argCount; i++) {
                   if (strcmp(item->elementType.function->arguments[i].key, data->token->attribute.string->string) == 0) { //je to arg fun
-                    zesym = 1;
+                    zesym = 2;
                     type1 = UNDEFINED;
                   }
                 }
+              } else if (tableG && item) {
+                zesym = 2;
               } else if (!item && tableGG) { //to jestli je item funkce se ošetřuje jinde prej, dává to PARSING_ERR (2)
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
@@ -208,6 +210,10 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
                 generateInstruction(I_PUSHS, promena, NULL, promena);
+              } else if (zesym == 2) {
+                char* promena = (char*) malloc(sizeof(char));
+                promena = token->attribute.string->string;
+                generateInstruction(I_PUSHSLF, promena, NULL, promena);
               }
             } else if (zpracuj == 1) { //tady zavorky
               newData->dataType = type1;
