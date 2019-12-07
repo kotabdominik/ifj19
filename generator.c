@@ -246,13 +246,10 @@ void generateBuiltIn(){
   generateInputi();
   generateOrd();
   generateSubstr();
-    generateInputs();
-    generateChr();
-    //generatePrint();*/
+  generateInputs();
+  generateChr();
+  //generatePrint();*/
 }
-
-
-
 
 int generateInstructionREE(tDLList*list){
     int *parCounter;

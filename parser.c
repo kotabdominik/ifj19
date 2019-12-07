@@ -113,11 +113,6 @@ int statement(char *funName){
         if(error != OK) return error; // zkoumani lexikalniho erroru
         if(tokenAct.type != INDENT) return PARSING_ERR;
 
-        //jmp2 = generateInstruction(I_JUMP, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
-        //generateInstruction(I_LABEL, NULL, NULL, NULL); //???????????????????????????????????????????????????????????????
-
-        //jmp1->addr1 = list->Last;
-
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         do{
@@ -138,11 +133,6 @@ int statement(char *funName){
         //pokud neni ani indent ani dedent, tak vygenerujeme novy token ktery posleme dal
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
-        return OK;
-
-        //generateInstruction(I_LABEL, NULL, NULL, NULL);
-        //jmp2->addr1 = list->Last;
-
         return OK;
     }
     else if(tokenAct.attribute.keyword == WHILE){ // WHILE ---------------------------------
@@ -253,12 +243,6 @@ int statement(char *funName){
         if(exp->error != OK) return exp->error;
 
         tokenAct = exp->returnToken;
-
-        //generateInstruction(I_PUSHS, NULL, NULL, NULL); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1. NULL musi byt vysledek expression
-        //generateInstruction(I_RETURN, NULL, NULL, NULL);
-
-        /*tokenAct = nextToken(&error, stack, doIndent);
-        if(error != OK) return error; // zkoumani lexikalniho erroru*/
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
         if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
 
@@ -510,6 +494,7 @@ int statement(char *funName){
     }
     else if(tokenAct.type == LEFTBRACKET){
       symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
+      symtableItem *tmpItem1 = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
       if(tmpItem == NULL || tmpItem->type != FUNCTION){
         fprintf(stderr, "snazite se volat nejakou funkci, ktera funkce vubec neni\n");
         return SEM_DEF_ERR;
@@ -518,16 +503,46 @@ int statement(char *funName){
       result = callParams(tmpToken.attribute.string->string);
 
       if(strcmp(tmpToken.attribute.string->string, "len") == 0){
-        generateInstruction(I_LEN, tmpItem->elementType.function->arguments->elementType.variable->value.string, NULL, NULL);
+        if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
+          tmpItem->elementType.variable->type = DATA_INT;
+          generateInstruction(I_LEN, tmpItem1->elementType.function->arguments->elementType.variable->value.string, NULL, NULL);
+        } else {
+          fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+          return SEM_DEF_ERR;
+        }
       }
       else if(strcmp(tmpToken.attribute.string->string, "substr") == 0){
-        //generateInstruction(I_SUBSTR, tmpToken, NULL, NULL);
+        if (tmpItem1->elementType.function->arguments[0].elementType.variable->type == DATA_STRING && tmpItem1->elementType.function->arguments[1].elementType.variable->type == DATA_INT && tmpItem1->elementType.function->arguments[2].elementType.variable->type == DATA_INT) {
+          tmpItem->elementType.variable->type = DATA_STRING;
+          int* value = (int*) malloc(sizeof(int));
+          int* value1 = (int*) malloc(sizeof(int));
+          *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
+          *value1 = tmpItem1->elementType.function->arguments[2].elementType.variable->value.INT;
+          generateInstruction(I_SUBSTR, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, value1);
+        } else {
+          fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+          return SEM_DEF_ERR;
+        }
       }
       else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
-        //generateInstruction(I_CHR, tmpToken, NULL, NULL);
+        if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_INT) {
+          tmpItem->elementType.variable->type = DATA_STRING;
+          generateInstruction(I_CHR, &(tmpItem1->elementType.function->arguments->elementType.variable->value.INT), NULL, NULL);
+        } else {
+          fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+          return SEM_DEF_ERR;
+        }
       }
       else if(strcmp(tmpToken.attribute.string->string, "ord") == 0){
-        //generateInstruction(I_ORD, tmpToken, NULL, NULL);
+        if (tmpItem1->elementType.function->arguments[0].elementType.variable->type == DATA_STRING && tmpItem1->elementType.function->arguments[1].elementType.variable->type == DATA_INT) {
+          tmpItem->elementType.variable->type = DATA_STRING;
+          int* value = (int*) malloc(sizeof(int));
+          *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
+          generateInstruction(I_ORD, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, NULL);
+        } else {
+          fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
+          return SEM_DEF_ERR;
+        }
       }
       else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
         symtableItem * reeItem =(symtableItem*) malloc(tmpItem->elementType.function->argCount * sizeof(symtableItem));
@@ -535,12 +550,15 @@ int statement(char *funName){
         generateInstruction(I_PRINT, NULL, &(tmpItem->elementType.function->argCount), reeItem);
       }
       else if(strcmp(tmpToken.attribute.string->string, "inputs") == 0){
+        tmpItem->elementType.variable->type = DATA_STRING;
         generateInstruction(I_INPUTS, NULL, NULL, NULL);
       }
       else if(strcmp(tmpToken.attribute.string->string, "inputi") == 0){
+        tmpItem->elementType.variable->type = DATA_INT;
         generateInstruction(I_INPUTI, NULL, NULL, NULL);
       }
       else if(strcmp(tmpToken.attribute.string->string, "inputf") == 0){
+        tmpItem->elementType.variable->type = DATA_FLOAT;
         generateInstruction(I_INPUTF, NULL, NULL, NULL);
       }
       else{
@@ -552,8 +570,6 @@ int statement(char *funName){
       if(error != OK) return error; // zkoumani lexikalniho erroru
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
-
-      //generateInstruction(I_POP, , NULL, NULL);//DESTINATION
 
       doIndent = 1;
       tokenAct = nextToken(&error, stack, doIndent);
@@ -667,7 +683,7 @@ int function(){
     }
 
 
-    generateInstruction(I_CLEARS, NULL, NULL, NULL);
+    //generateInstruction(I_CLEARS, NULL, NULL, NULL);
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -769,7 +785,7 @@ int defParams(char* funName){
           fprintf(stderr, "Snazite se definovat variable(jako argument funkce), ktery je stejny jako nejaky nazev funkce\n");
           return SEM_DEF_ERR;
         }
-        generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
+        //generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
         return defParamsN(funName, ++argc);
     }
     else {
@@ -817,7 +833,7 @@ int defParamsN(char* funName, int argc){
       fprintf(stderr, "Snazite se definovat variable(jako argument funkce), ktery je stejny jako nejaky nazev funkce\n");
       return SEM_DEF_ERR;
     }
-    generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
+    //generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
     return defParamsN(funName, argc);
 }
 
