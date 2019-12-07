@@ -916,9 +916,10 @@ int callParams(char* funName, char* aktualniFunkce){
   }
   else{
     if(tokenAct.type == STR){
+      int jeVarZFunkce = 0;
       symtableItem *tmpItem = NULL;
       if(funkceKdeJsme){
-         tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
+          tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
         if(tmpItem == NULL){
           for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
             if(strcmp((funkceKdeJsme->elementType.function->arguments[i]).key, tokenAct.attribute.string->string) == 0){
@@ -930,6 +931,7 @@ int callParams(char* funName, char* aktualniFunkce){
       }
 
       if(tmpItem == NULL){
+        jeVarZFunkce = 1;
         tmpItem = searchSymbolTable(tableG, tokenAct);
       }
 
@@ -942,7 +944,12 @@ int callParams(char* funName, char* aktualniFunkce){
         //(tmpItem0->elementType.function->arguments[0]).key = tmpItem->key;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->value = tmpItem->elementType.variable->value;
         (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = tmpItem->elementType.variable->type;
-        generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
+        if(jeVarZFunkce == 0){
+          generateInstruction(I_PUSHSLF, tmpItem->key,NULL,tmpItem->key);
+        }
+        else{
+          generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
+        }
       }
       else{
         fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
@@ -1039,6 +1046,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
   }
   else{
     if(tokenAct.type == STR){
+      int jeVarZFunkce = 0;
       symtableItem *tmpItem = NULL;
       if(funkceKdeJsme){
          tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
@@ -1052,6 +1060,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
         }
       }
       if(tmpItem == NULL){
+        jeVarZFunkce = 1;
         tmpItem = searchSymbolTable(tableG, tokenAct);
       }
 
@@ -1065,7 +1074,12 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
         //(tmpItem0->elementType.function->arguments[argc]).key = tmpItem->key;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->value = tmpItem->elementType.variable->value;
         (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = tmpItem->elementType.variable->type;
-        generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
+        if(jeVarZFunkce == 0){
+          generateInstruction(I_PUSHSLF, tmpItem->key,NULL,tmpItem->key);
+        }
+        else{
+          generateInstruction(I_PUSHS, tmpItem->key,NULL,tmpItem->key);
+        }
       }
       else{
         fprintf(stderr, "do funkce davate jako parametr nedefinovanou promennou\n");
@@ -1388,4 +1402,4 @@ int main(){
 //none v callparams + v pushs(generatoru)
 
 //v CALLPARAMS kdyz ma print 0 parametru tak vytisknout prazdny radek ?????
-//
+//konverze u porovnavani
