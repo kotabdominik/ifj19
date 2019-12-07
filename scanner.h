@@ -66,10 +66,10 @@ typedef enum {
     LEFTBRACKET, // (
     RIGHTBRACKET, // )
     COMMA, // ,
-    //SEMICOLON, // ;
     COLON, // :
-    BOOL,
-    ASSIGN // =
+    BOOL, //asi meme
+    ASSIGN, // =
+    UNDEFINED // pro parametry funkcí
 } tokenType;
 
 typedef union {
