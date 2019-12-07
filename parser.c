@@ -362,7 +362,7 @@ int statement(char *funName){
           if(strcmp(tmpToken.attribute.string->string, "len") == 0){
             if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
               tmpItem->elementType.variable->type = DATA_INT;
-              generateInstruction(I_LEN, tmpItem1->elementType.function->arguments->elementType.variable->value.string, NULL, NULL);
+              generateInstruction(I_LEN, NULL, NULL, NULL);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
               return SEM_DEF_ERR;
@@ -375,7 +375,7 @@ int statement(char *funName){
               int* value1 = (int*) malloc(sizeof(int));
               *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
               *value1 = tmpItem1->elementType.function->arguments[2].elementType.variable->value.INT;
-              generateInstruction(I_SUBSTR, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, value1);
+              generateInstruction(I_SUBSTR, NULL, value, value1);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
               return SEM_DEF_ERR;
@@ -384,7 +384,7 @@ int statement(char *funName){
           else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
             if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_INT) {
               tmpItem->elementType.variable->type = DATA_STRING;
-              generateInstruction(I_CHR, &(tmpItem1->elementType.function->arguments->elementType.variable->value.INT), NULL, NULL);
+              generateInstruction(I_CHR, NULL, NULL, NULL);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
               return SEM_DEF_ERR;
@@ -395,7 +395,7 @@ int statement(char *funName){
               tmpItem->elementType.variable->type = DATA_STRING;
               int* value = (int*) malloc(sizeof(int));
               *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
-              generateInstruction(I_ORD, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, NULL);
+              generateInstruction(I_ORD, NULL, value, NULL);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
               return SEM_DEF_ERR;
@@ -517,7 +517,7 @@ int statement(char *funName){
       if(strcmp(tmpToken.attribute.string->string, "len") == 0){
         if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
           tmpItem->elementType.variable->type = DATA_INT;
-          generateInstruction(I_LEN, tmpItem1->elementType.function->arguments->elementType.variable->value.string, NULL, NULL);
+          generateInstruction(I_LEN, NULL, NULL, NULL);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
           return SEM_DEF_ERR;
@@ -530,7 +530,7 @@ int statement(char *funName){
           int* value1 = (int*) malloc(sizeof(int));
           *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
           *value1 = tmpItem1->elementType.function->arguments[2].elementType.variable->value.INT;
-          generateInstruction(I_SUBSTR, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, value1);
+          generateInstruction(I_SUBSTR, NULL, value, value1);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
           return SEM_DEF_ERR;
@@ -539,7 +539,7 @@ int statement(char *funName){
       else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
         if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_INT) {
           tmpItem->elementType.variable->type = DATA_STRING;
-          generateInstruction(I_CHR, &(tmpItem1->elementType.function->arguments->elementType.variable->value.INT), NULL, NULL);
+          generateInstruction(I_CHR, NULL, NULL, NULL);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
           return SEM_DEF_ERR;
@@ -550,7 +550,7 @@ int statement(char *funName){
           tmpItem->elementType.variable->type = DATA_STRING;
           int* value = (int*) malloc(sizeof(int));
           *value = tmpItem1->elementType.function->arguments[1].elementType.variable->value.INT;
-          generateInstruction(I_ORD, tmpItem1->elementType.function->arguments[0].elementType.variable->value.string, value, NULL);
+          generateInstruction(I_ORD, NULL, value, NULL);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
           return SEM_DEF_ERR;

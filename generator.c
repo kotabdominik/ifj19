@@ -299,25 +299,25 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_LEN):
                 if (0) {}
-                char* st = list->First->Instruction.addr1;
+                //char* st = list->First->Instruction.addr1;
                 fprintf(stdout, "CALL $LENGTH\n");
                 break;
             case(I_SUBSTR):
                 if (0) {}
-                char* retezec = list->First->Instruction.addr1;
-                int* pozicec = list->First->Instruction.addr2;
-                int* pozicexd = list->First->Instruction.addr3;
+                //char* retezec = list->First->Instruction.addr1;
+                //int* pozicec = list->First->Instruction.addr2;
+                //int* pozicexd = list->First->Instruction.addr3;
                 fprintf(stdout, "CALL $SUBSTR\n");
                 break;
             case(I_ORD):
                 if (0) {}
-                char* retez = list->First->Instruction.addr1;
-                int* pozice = list->First->Instruction.addr2;
+                //char* retez = list->First->Instruction.addr1;
+                //int* pozice = list->First->Instruction.addr2;
                 fprintf(stdout, "CALL $ORD\n");
                 break;
             case(I_CHR):
                 if (0) {}
-                int* chr = list->First->Instruction.addr1;
+                //int* chr = list->First->Instruction.addr1;
                 fprintf(stdout, "CALL $CHAR\n");
                 break;
             case(I_PRINT):
@@ -506,6 +506,9 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 symtableItem *localVar = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", localVar->key);
+                //actNumberOfLF++;
+                //aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
+                //(aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
                 break;
             case(I_DEFVARLF):
                 if(0){}
@@ -595,6 +598,8 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 char *idk = list->First->Instruction.addr1;
                 symtableItem *itemNaArgumenty = list->First->Instruction.addr2;
+                //aktualniArgumenty = malloc(100 * sizeof(symtableItem));
+                //*aktualniArgumenty = *(itemNaArgumenty->elementType.function->arguments);
                 aktualniArgumenty = itemNaArgumenty->elementType.function->arguments;
                 fprintf(stdout, "JUMP $FUNCTIONEND%s\n", idk);
                 fprintf(stdout, "LABEL $FUNCTION%s\n", idk);
@@ -610,6 +615,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "RETURN\n");
                 fprintf(stdout, "LABEL $FUNCTIONEND%s\n", idk2);
                 actNumberOfLF = 0;
+                free(aktualniArgumenty);
                 return 123;
                 break;
             case(I_CALL):
@@ -747,9 +753,10 @@ void generateIf(tDLList*list, void *origi){
   list->First = list->First->rptr;
   generateInstructionREE(list); //dokym nenajdem rovnaky indent
   fprintf(stdout, "LABEL END%p\n",origi);
-  /*for(int i= 0; i < actNumberOfLF; i++){
+  fprintf(stdout, "POPFRAME\n");
+  for(int i= 0; i < actNumberOfLF; i++){
         fprintf(stdout,"MOVE LF@$VAR%s TF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-  }*/
+  }
   fprintf(stdout, "POPFRAME\n");
 }
 
@@ -782,3 +789,4 @@ void generateWhile(tDLList*list, void *origi){
 
 
 //bug .. print ma vracet None
+// VRACET VECI PRED POPFRAME
