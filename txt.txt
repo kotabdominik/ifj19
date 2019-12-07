@@ -1,5 +1,8 @@
-a = 57
-print('budes stuck v cyklu, dokud neuhadnes cislo v rozmezi 0 - 100')
-while a == 57:
-  a = inputi()
-  print('a je', a)
+def factorial(n):
+  if n < 2:
+    pass
+  else:
+    pass
+
+a = 5
+factorial(a)
