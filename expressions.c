@@ -120,30 +120,46 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             } else if (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) {
               type1 = KEYWORD;
             } else if (data->token->type == STR) {
-              symtableItem* item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
-              if (tableG && !item) { //existuje funkce, prohledám argumenty ve funkci
-                item = searchSymbolTableWithString(tableG, jmenoFunkce);
-                for (int i = 0; i < item->elementType.function->argCount; i++) {
-                  if (strcmp(item->elementType.function->arguments[i].key, data->token->attribute.string->string) == 0) { //je to arg fun
-                    zesym = 2;
+              symtableItem* item = NULL;
+              if (tableGG) { //existuje funkce
+                item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
+                if (item) { //bylo to v tabulce funkce
+                  zesym = 2;
+                  if (item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
+                    type1 = INT;
+                  } else if (item->type == VARIABLE && item->elementType.variable->type == DATA_FLOAT) {
+                    type1 = FLOAT;
+                  } else if (item->type == VARIABLE && item->elementType.variable->type == DATA_STRING) {
+                    type1 = LITERAL;
+                  } else {
+                    type1 = UNDEFINED;
+                  }
+                } else { //nebylo to v tabulce funkce, prohledám args
+                  item = searchSymbolTableWithString(tableG, jmenoFunkce);
+                  for (int i = 0; i < item->elementType.function->argCount; i++) {
+                    if (strcmp(item->elementType.function->arguments[i].key, data->token->attribute.string->string) == 0) { //je to arg fun
+                      zesym = 2;
+                      type1 = UNDEFINED;
+                    }
+                  }
+                }
+                if (zesym == 0) { //nebyl to ani arg
+                  item == NULL;
+                }
+              } else if (tableG && !item) { //nebylo to ve funkci
+                item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
+                if (item) {
+                  zesym = 1;
+                  if (item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
+                    type1 = INT;
+                  } else if (item->type == VARIABLE && item->elementType.variable->type == DATA_FLOAT) {
+                    type1 = FLOAT;
+                  } else if (item->type == VARIABLE && item->elementType.variable->type == DATA_STRING) {
+                    type1 = LITERAL;
+                  } else {
                     type1 = UNDEFINED;
                   }
                 }
-              } else if (tableG && item) {
-                zesym = 2;
-              } else if (!item && tableGG) { //to jestli je item funkce se ošetřuje jinde prej, dává to PARSING_ERR (2)
-                item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
-              } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_INT) {
-                zesym = 1;
-                type1 = INT;
-              } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_STRING) {
-                zesym = 1;
-                type1 = LITERAL;
-              } else if (item && item->type == VARIABLE && item->elementType.variable->type == DATA_FLOAT) {
-                zesym = 1;
-                type1 = FLOAT;
-              } else if (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) {
-                type1 = NONE;
               } else { //není v symtablu
                 return -3; //proměnná není deklarovaná
               }
