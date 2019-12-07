@@ -259,10 +259,22 @@ void generateChr(){
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$ASC\n");
     fprintf(stdout, "POPS LF@$ASC\n");
+
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK\n");
+    fprintf(stdout, "GT LF@$BOOLCHECK LF@$ASC int@255\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORCHR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "LT LF@$BOOLCHECK LF@$ASC int@0\n");
+    fprintf(stdout, "JUMPIFEQ $ERRORCHR LF@$BOOLCHECK bool@true\n");
+
     fprintf(stdout, "INT2CHAR LF@$RETVAL LF@$ASC\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
+
+    fprintf(stdout, "LABEL $ERRORCHR\n");
+    fprintf(stdout, "EXIT int@4\n");
+
+
 }
 
 //||=============== Věstavené funkce konec ===============||//
