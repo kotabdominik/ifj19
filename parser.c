@@ -418,7 +418,7 @@ int statement(char *funName){
             generateInstruction(I_INPUTF, NULL, NULL, NULL);
           }
           else{
-            generateInstruction(I_CALL, tmpItem->elementType.function, NULL, NULL); //???
+            generateInstruction(I_CALL, tmpItem->elementType.function, tmpToken.attribute.string->string, NULL); //???
           }
 
           generateInstruction(I_POPS, tmpItem, NULL, NULL);
@@ -562,7 +562,7 @@ int statement(char *funName){
         generateInstruction(I_INPUTF, NULL, NULL, NULL);
       }
       else{
-        generateInstruction(I_CALL, tmpItem->elementType.function, NULL, NULL); //???
+        generateInstruction(I_CALL, tmpItem->elementType.function, tmpToken.attribute.string->string, NULL); //???
       }
 
       if (result != OK) return result;
@@ -686,6 +686,7 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
+    generateInstruction(I_STARTOFFUNC, s->string, NULL, NULL);
     if(tokenAct.type != LEFTBRACKET){
       fprintf(stderr, "za DEF ID ma nasledovat  (\n");
       return PARSING_ERR;
@@ -719,14 +720,13 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
-    generateInstruction(I_STARTOFFUNC, s->string, NULL, NULL);
 
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
         result = statement(s->string);
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
 
-    generateInstruction(I_ENDOFFUNC, NULL, NULL, NULL);
+    generateInstruction(I_ENDOFFUNC, s->string, NULL, NULL);
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -783,7 +783,7 @@ int defParams(char* funName){
         (item->arguments[argc]).elementType.variable->type = VARIABLE;
         (item->arguments[argc]).key = tokenAct.attribute.string->string;
 
-        generateInstruction(I_DEFVAR, &(item->arguments[argc]), NULL, NULL);// ----------------------------------------------------------------------
+        generateInstruction(I_DEFVARLF, (item->arguments[argc]).key, NULL, NULL);// ----------------------------------------------------------------------
 
         item->argCount = argc+1;
         symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
@@ -834,7 +834,7 @@ int defParamsN(char* funName, int argc){
     (item->arguments[argc-1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
     (item->arguments[argc-1]).elementType.variable->type = VARIABLE;
 
-    generateInstruction(I_DEFVAR, &(item->arguments[argc-1]), NULL, NULL);// ----------------------------------------------------------------------
+    generateInstruction(I_DEFVARLF, (item->arguments[argc-1]).key, NULL, NULL);// ----------------------------------------------------------------------
 
     for (int i = 0; i < (argc-1); i++) {
       if(!strcmp((item->arguments[i]).key, (item->arguments[argc-1]).key)) return SEM_DEF_ERR;
@@ -1313,7 +1313,7 @@ int main(){
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
     //setFile("txt.txt");
-    //freopen("txt.txt","r",stdin);
+    freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     if(result != OK) return result;
     //printf("%d\n", result);

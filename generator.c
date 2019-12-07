@@ -240,9 +240,9 @@ void generateBuiltIn(){
   checkFloat2Int();
   checkInt2Float();
   checkInt2FloatDiv();
+  /*
   generateLen();
   generateInputf();
-  /*
   generateInputi();
   generateOrd();
   generateSubstr();
@@ -316,6 +316,27 @@ int generateInstructionREE(tDLList*list){
                   break;
                 }
                 int* tmp = list->First->Instruction.addr2;
+                if (*tmp == INT) {
+                  int* tmp8 = list->First->Instruction.addr1;
+                  fprintf(stdout, "PUSHS int@%d\n", *tmp8);
+                }
+                else if(*tmp == LITERAL){
+                  char* tmp8 = list->First->Instruction.addr1;
+                  fprintf(stdout, "PUSHS string@%s\n", tmp8);
+                }
+                else if(*tmp == FLOAT){
+                  double* tmp8 = list->First->Instruction.addr1;
+                  fprintf(stdout, "PUSHS float@%a\n", *tmp8);
+                }
+                break;
+            case(I_PUSHSLF):
+                if(0){}
+                char* tmp11 = list->First->Instruction.addr1;
+                if (list->First->Instruction.addr3 != NULL) {
+                  fprintf(stdout, "PUSHS LF@$VAR%s\n", tmp1);
+                  break;
+                }
+                int* tmp22 = list->First->Instruction.addr2;
                 if (*tmp == INT) {
                   int* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS int@%d\n", *tmp8);
@@ -430,6 +451,12 @@ int generateInstructionREE(tDLList*list){
                 symtableItem *ree = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
                 break;
+            case(I_DEFVARLF):
+                if(0){}
+                char *notree = list->First->Instruction.addr1;
+                fprintf(stdout, "DEFVAR LF@$VAR%s\n", notree);
+                fprintf(stdout, "POPS LF@$VAR%s\n", notree);
+                break;
             case(I_POPS):
                 if(0){}
                 symtableItem *reee = list->First->Instruction.addr1;
@@ -490,6 +517,31 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
                 fprintf(stdout, "POPFRAME\n");
                 break;
+            case(I_STARTOFFUNC):
+                if(0){}
+                char *idk = list->First->Instruction.addr1;
+                fprintf(stdout, "JUMP $FUNCTIONEND%s\n", idk);
+                fprintf(stdout, "LABEL $FUNCTION%s\n", idk);
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                list->First = list->First->rptr;
+                generateInstructionREE(list);
+                break;
+            case(I_ENDOFFUNC):
+                if(0){}
+                char *idk2 = list->First->Instruction.addr1;
+                fprintf(stdout, "POPFRAME\n");
+                fprintf(stdout, "RETURN\n");
+                fprintf(stdout, "LABEL $FUNCTIONEND%s\n", idk2);
+                return 123;
+                break;
+            case(I_CALL):
+                if(0){}
+                functionData *funkce = list->First->Instruction.addr1;
+                char *nazevFunkce = list->First->Instruction.addr2;
+                defenestrace(funkce->argCount);
+                fprintf(stdout, "CALL $FUNCTION%s\n", nazevFunkce);
+                break;
         }
     }
 }
@@ -547,6 +599,16 @@ void checkFloat2Int(){
   fprintf(stdout, "FLOAT2INT LF@$2 LF@$2\n");
   fprintf(stdout, "LABEL $LAB2\n");
   fprintf(stdout, "RETURN\n");
+}
+
+void defenestrace(int antiHussites){
+  for (int i = 0; i < antiHussites; i++){
+    fprintf(stdout, "DEFVAR LF@$WINDOW%d\n", i);
+    fprintf(stdout, "POPS LF@$WINDOW%d\n", i);
+  }
+  for (int i = 0; i < antiHussites; i++){
+    fprintf(stdout, "PUSHS LF@$WINDOW%d\n", i);
+  }
 }
 
 

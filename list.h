@@ -94,9 +94,10 @@
 #define I_ELSE_E 68
 #define I_NQS 69
 #define I_EOE 70
-
 #define I_STARTOFFUNC 71
 #define I_ENDOFFUNC 72
+#define I_DEFVARLF 73
+#define I_PUSHSLF 74
 
 typedef struct
 {
