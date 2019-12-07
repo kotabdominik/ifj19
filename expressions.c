@@ -86,7 +86,7 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
   return precedenceTable[index1][index2];
 }
 
-int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG) {
+int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce) {
   token* token, tokenPrvni, tokenDruhy;
   int state = 0;
   int zpracuj = 0;
@@ -120,6 +120,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               type1 = KEYWORD;
             } else if (data->token->type == STR) {
               symtableItem* item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
+              if (tableG && !item) {
+                printf("existuje, ale nenašlo to, prohledám argumenty ve funkci %s\n", jmenoFunkce);
+              }
               if (!item && tableGG) { //to jestli je item funkce se ošetřuje jinde prej, dává to PARSING_ERR (2)
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
               }
@@ -375,7 +378,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
   return rule;
 }
 
-precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG) {
+precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce) {
   precendentExpression* exp = malloc(sizeof(precendentExpression));
   if (!exp) {
     return NULL;
@@ -434,7 +437,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
       data->token = current;
       tokenStackPush(s,data);
     } else if (operation == C) { //2  if <y je na vrcholu zásobníku and r: A→y∈P then zaměň <y za A & vypiš r na výstup else chyba
-      int a = findRule(s, &navr, tableG, tableGG); //THE REST OF THE LOVELY OWL
+      int a = findRule(s, &navr, tableG, tableGG, jmenoFunkce); //THE REST OF THE LOVELY OWL
       if (a == -1) {
         exp->error = PARSING_ERR;
         return exp;

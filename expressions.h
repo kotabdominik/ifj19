@@ -38,7 +38,7 @@ typedef enum {
 
 int getPrecedenceIndex(token* tokenAct);
 int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken);
-int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG);
-precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG);
+int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce);
+precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce);
 
 #endif
