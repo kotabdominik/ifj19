@@ -895,6 +895,14 @@ int callParams(char* funName, char* aktualniFunkce){
       symtableItem *tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
 
       if(tmpItem == NULL){
+        for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
+          if(strcmp(funkceKdeJsme->elementType.function->arguments[i].key, tokenAct.attribute.string->string) == 0){
+            tmpItem = &(funkceKdeJsme->elementType.function->arguments[i]);
+            break;
+          }
+        }
+      }
+      if(tmpItem == NULL){
         tmpItem = searchSymbolTable(tableG, tokenAct);
       }
 
@@ -1006,7 +1014,14 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
   else{
     if(tokenAct.type == STR){
       symtableItem *tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
-
+      if(tmpItem == NULL){
+        for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
+          if(strcmp(funkceKdeJsme->elementType.function->arguments[i].key, tokenAct.attribute.string->string) == 0){
+            tmpItem = &(funkceKdeJsme->elementType.function->arguments[i]);
+            break;
+          }
+        }
+      }
       if(tmpItem == NULL){
         tmpItem = searchSymbolTable(tableG, tokenAct);
       }
