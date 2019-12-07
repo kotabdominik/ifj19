@@ -241,7 +241,7 @@ int statement(char *funName){
         }
         precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2, funName);
         if(exp->error != OK) return exp->error;
-
+        generateInstruction(I_RETURN, NULL, NULL, NULL);
         tokenAct = exp->returnToken;
         if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
         if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
@@ -468,9 +468,10 @@ int statement(char *funName){
       }
       }
 
+      symtableItem *funkceVeKtereJsme = searchSymbolTableWithString(tableG, funName);
       symbolTable *table2 = NULL;
       if(strcmp(funName, "globalTable") != 0) {
-        table2 = tmpItem->elementType.function->sT;
+        table2 = funkceVeKtereJsme->elementType.function->sT;
       }
       precendentExpression* exp = doPrecedenceOperation(tokenAct, someTokenThatIUsedToKnow, tableG, table2, funName);
       if(exp->error != OK) return exp->error;
@@ -869,13 +870,21 @@ int callParams(char* funName, char* aktualniFunkce){
   if(error != OK) return error; // zkoumani lexikalniho erroru
   if(tokenAct.type == RIGHTBRACKET){
     if (tmpItem0->elementType.function->argCount == 0 || strcmp(aktualniFunkce, "print") == 0) {
-      /*if(strcmp(aktualniFunkce, "print") == 0){
+
+      if(strcmp(aktualniFunkce, "print") == 0){
+        //tmpItem0->elementType.function->argCount = 0;
+        /*
         char* hodnotaKPrintu = (char*) malloc(sizeof(char));
         int* typTokenuProPrint = (int*) malloc(sizeof(int));
-        hodnota = tokenAct.attribute.string->string;
-        *typTokenu = tokenAct.type;
-        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
-      }*/
+        int* memePocetArgumenty = (int*) malloc(sizeof(int));
+        symtableItem * itemProPrint =(symtableItem*) malloc(sizeof(symtableItem));
+        itemProPrint->
+        *memePocetArgumentu = 1;
+        hodnotaKPrintu = '\n';
+        *typTokenuProPrint = LITERAL;
+        generateInstruction(I_PUSHS, hodnotaKPrintu, typTokenuProPrint, NULL);
+        generateInstruction(I_PRINT, NULL, , memePocetArgumentu);*/
+      }
       return OK;
     }
     else{
@@ -1365,7 +1374,7 @@ int main(){
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
     //setFile("txt.txt");
-    //freopen("txt.txt","r",stdin);
+    freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     if(result != OK) return result;
     //printf("%d\n", result);
@@ -1378,4 +1387,5 @@ int main(){
 // indent a za nim dokumentacni komentar
 //none v callparams + v pushs(generatoru)
 
-//v CALLPARAMS kdyz ma print 0 parametru tak vytisknout prazdny radek
+//v CALLPARAMS kdyz ma print 0 parametru tak vytisknout prazdny radek ?????
+//

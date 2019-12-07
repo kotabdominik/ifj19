@@ -322,7 +322,10 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_PRINT):
                 parCounter = list->First->Instruction.addr2;  ////////////////////////dohodni sa s jindrom
-                if(parCounter == 0) break;
+                if(parCounter == 0) {
+                  fprintf(stdout, "WRITE string@\\010\n");
+                  break;
+                }
                 symtableItem *tmpItem = list->First->Instruction.addr3;
                 generatePrint(parCounter);
                 break;
@@ -615,6 +618,9 @@ int generateInstructionREE(tDLList*list){
                 char *nazevFunkce = list->First->Instruction.addr2;
                 defenestrace(funkce->argCount);
                 fprintf(stdout, "CALL $FUNCTION%s\n", nazevFunkce);
+                break;
+            case(I_RETURN):
+                fprintf(stdout, "RETURN\n");
                 break;
         }
     }
