@@ -338,6 +338,7 @@ int statement(char *funName){
             insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
             tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
             tmpItem->defined = false;
+            generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, NULL);
           }
           else{
             tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
@@ -421,7 +422,12 @@ int statement(char *funName){
             generateInstruction(I_CALL, tmpItem->elementType.function, tmpToken.attribute.string->string, NULL); //???
           }
 
-          generateInstruction(I_POPS, tmpItem, NULL, NULL);
+          if(strcmp("globalTable", funName) == 0){
+            generateInstruction(I_POPS, tmpItem, NULL, NULL);
+          }
+          else{
+            generateInstruction(I_POPSLOCAL, tmpItem, NULL, NULL);
+          }
 
           if (result != OK) return result;
           tokenAct = nextToken(&error, stack, doIndent);
@@ -470,7 +476,12 @@ int statement(char *funName){
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
-      generateInstruction(I_POPS, tmpItem, NULL, NULL);
+      if(strcmp("globalTable", funName) == 0){
+        generateInstruction(I_POPS, tmpItem, NULL, NULL);
+      }
+      else{
+        generateInstruction(I_POPSLOCAL, tmpItem, NULL, NULL);
+      }
 
       tmpItem->defined = true;
       tmpItem->elementType.variable->type = exp->returnType;
@@ -852,14 +863,18 @@ int defParamsN(char* funName, int argc){
 //---------------------------------------------CALLPARAMS----------------------------------
 int callParams(char* funName, char* aktualniFunkce){
   symtableItem *tmpItem0 = searchSymbolTableWithString(tableG, aktualniFunkce); //UKAZATEL NA FUNKCI KTEROU VOLAME
-  symtableItem *funkceKdeJsme = searchSymbolTableWithString(tableG, aktualniFunkce); //UKAZATEL NA FUNKCI VE KTERE JSME
+  symtableItem *funkceKdeJsme = searchSymbolTableWithString(tableG, funName); //UKAZATEL NA FUNKCI VE KTERE JSME
 
   tokenAct = nextToken(&error, stack, doIndent);
   if(error != OK) return error; // zkoumani lexikalniho erroru
   if(tokenAct.type == RIGHTBRACKET){
     if (tmpItem0->elementType.function->argCount == 0 || strcmp(aktualniFunkce, "print") == 0) {
       /*if(strcmp(aktualniFunkce, "print") == 0){
-        generateInstruction();
+        char* hodnotaKPrintu = (char*) malloc(sizeof(char));
+        int* typTokenuProPrint = (int*) malloc(sizeof(int));
+        hodnota = tokenAct.attribute.string->string;
+        *typTokenu = tokenAct.type;
+        generateInstruction(I_PUSHS, hodnota, typTokenu, NULL);
       }*/
       return OK;
     }
@@ -892,16 +907,19 @@ int callParams(char* funName, char* aktualniFunkce){
   }
   else{
     if(tokenAct.type == STR){
-      symtableItem *tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
-
-      if(tmpItem == NULL){
-        for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
-          if(strcmp(funkceKdeJsme->elementType.function->arguments[i].key, tokenAct.attribute.string->string) == 0){
-            tmpItem = &(funkceKdeJsme->elementType.function->arguments[i]);
-            break;
+      symtableItem *tmpItem = NULL;
+      if(funkceKdeJsme){
+         tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
+        if(tmpItem == NULL){
+          for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
+            if(strcmp((funkceKdeJsme->elementType.function->arguments[i]).key, tokenAct.attribute.string->string) == 0){
+              tmpItem = &(funkceKdeJsme->elementType.function->arguments[i]);
+              break;
+            }
           }
         }
       }
+
       if(tmpItem == NULL){
         tmpItem = searchSymbolTable(tableG, tokenAct);
       }
@@ -1013,12 +1031,15 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
   }
   else{
     if(tokenAct.type == STR){
-      symtableItem *tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
-      if(tmpItem == NULL){
-        for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
-          if(strcmp(funkceKdeJsme->elementType.function->arguments[i].key, tokenAct.attribute.string->string) == 0){
-            tmpItem = &(funkceKdeJsme->elementType.function->arguments[i]);
-            break;
+      symtableItem *tmpItem = NULL;
+      if(funkceKdeJsme){
+         tmpItem = searchSymbolTable(funkceKdeJsme->elementType.function->sT, tokenAct);
+        if(tmpItem == NULL){
+          for(int i = 0; i < funkceKdeJsme->elementType.function->argCount; i++){
+            if(strcmp((funkceKdeJsme->elementType.function->arguments[i]).key, tokenAct.attribute.string->string) == 0){
+              tmpItem = &(funkceKdeJsme->elementType.function->arguments[i]);
+              break;
+            }
           }
         }
       }

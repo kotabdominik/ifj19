@@ -499,6 +499,11 @@ int generateInstructionREE(tDLList*list){
                 symtableItem *ree = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
                 break;
+            case(I_DEFVARLOCAL):
+                if(0){}
+                symtableItem *localVar = list->First->Instruction.addr1;
+                fprintf(stdout, "DEFVAR LF@$VAR%s\n", localVar->key);
+                break;
             case(I_DEFVARLF):
                 if(0){}
                 char *notree = list->First->Instruction.addr1;
@@ -510,6 +515,11 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 symtableItem *reee = list->First->Instruction.addr1;
                 fprintf(stdout, "POPS GF@$VAR%s\n", reee->key);
+                break;
+            case(I_POPSLOCAL):
+                if(0){}
+                symtableItem *localPop = list->First->Instruction.addr1;
+                fprintf(stdout, "POPS LF@$VAR%s\n", localPop->key); 
                 break;
             case(I_GTS): //greater
                 fprintf(stdout, "GTS \n");

@@ -98,6 +98,8 @@
 #define I_ENDOFFUNC 72
 #define I_DEFVARLF 73
 #define I_PUSHSLF 74
+#define I_DEFVARLOCAL 75
+#define I_POPSLOCAL 76
 
 typedef struct
 {
