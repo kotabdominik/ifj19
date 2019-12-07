@@ -95,6 +95,9 @@
 #define I_NQS 69
 #define I_EOE 70
 
+#define I_STARTOFFUNC 71
+#define I_ENDOFFUNC 72
+
 typedef struct
 {
   int instType;  // typ instrukce
