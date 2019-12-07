@@ -358,6 +358,7 @@ int statement(char *funName){
           if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
 
           result = callParams(funName,tmpToken.attribute.string->string);
+          if(result != OK) return result;
 
           if(strcmp(tmpToken.attribute.string->string, "len") == 0){
             if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
@@ -365,7 +366,7 @@ int statement(char *funName){
               generateInstruction(I_LEN, NULL, NULL, NULL);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-              return SEM_DEF_ERR;
+              return SEM_RUN_ERR;
             }
           }
           else if(strcmp(tmpToken.attribute.string->string, "substr") == 0){
@@ -378,7 +379,7 @@ int statement(char *funName){
               generateInstruction(I_SUBSTR, NULL, value, value1);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-              return SEM_DEF_ERR;
+              return SEM_RUN_ERR;
             }
           }
           else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
@@ -387,7 +388,7 @@ int statement(char *funName){
               generateInstruction(I_CHR, NULL, NULL, NULL);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-              return SEM_DEF_ERR;
+              return SEM_RUN_ERR;
             }
           }
           else if(strcmp(tmpToken.attribute.string->string, "ord") == 0){
@@ -398,7 +399,7 @@ int statement(char *funName){
               generateInstruction(I_ORD, NULL, value, NULL);
             } else {
               fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-              return SEM_DEF_ERR;
+              return SEM_RUN_ERR;
             }
           }
           else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
@@ -513,6 +514,7 @@ int statement(char *funName){
       }
 
       result = callParams(funName,tmpToken.attribute.string->string);
+      if(result != OK) return result;
 
       if(strcmp(tmpToken.attribute.string->string, "len") == 0){
         if (tmpItem1->elementType.function->arguments->elementType.variable->type == DATA_STRING) {
@@ -520,7 +522,7 @@ int statement(char *funName){
           generateInstruction(I_LEN, NULL, NULL, NULL);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-          return SEM_DEF_ERR;
+          return SEM_RUN_ERR;
         }
       }
       else if(strcmp(tmpToken.attribute.string->string, "substr") == 0){
@@ -533,7 +535,7 @@ int statement(char *funName){
           generateInstruction(I_SUBSTR, NULL, value, value1);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-          return SEM_DEF_ERR;
+          return SEM_RUN_ERR;
         }
       }
       else if(strcmp(tmpToken.attribute.string->string, "chr") == 0){
@@ -542,7 +544,7 @@ int statement(char *funName){
           generateInstruction(I_CHR, NULL, NULL, NULL);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-          return SEM_DEF_ERR;
+          return SEM_RUN_ERR;
         }
       }
       else if(strcmp(tmpToken.attribute.string->string, "ord") == 0){
@@ -553,7 +555,7 @@ int statement(char *funName){
           generateInstruction(I_ORD, NULL, value, NULL);
         } else {
           fprintf(stderr, "hYIWTE TASDZ REEEEEEE\n");
-          return SEM_DEF_ERR;
+          return SEM_RUN_ERR;
         }
       }
       else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
