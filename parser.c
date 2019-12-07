@@ -60,7 +60,7 @@ int statement(char *funName){
         jmp1 = generateInstruction(I_IF, NULL, NULL, NULL);
         jmp1->addr1 = jmp1;
 
-        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2, funName);
         if(exp->error != OK) return exp->error;
 
         tokenAct = exp->returnToken;
@@ -152,7 +152,7 @@ int statement(char *funName){
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
         }
-        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2, funName);
         if(exp->error != OK) return exp->error;
 
         generateInstruction(I_EOE, NULL, NULL, NULL); //konec expression
@@ -239,7 +239,7 @@ int statement(char *funName){
           tmpItem = searchSymbolTableWithString(tableG, funName);
           table2 = tmpItem->elementType.function->sT;
         }
-        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
+        precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2, funName);
         if(exp->error != OK) return exp->error;
 
         tokenAct = exp->returnToken;
@@ -266,7 +266,7 @@ int statement(char *funName){
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2, funName);
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
@@ -466,7 +466,7 @@ int statement(char *funName){
       if(strcmp(funName, "globalTable") != 0) {
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, someTokenThatIUsedToKnow, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, someTokenThatIUsedToKnow, tableG, table2, funName);
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
@@ -591,7 +591,7 @@ int statement(char *funName){
         tmpItem = searchSymbolTableWithString(tableG, funName);
         table2 = tmpItem->elementType.function->sT;
       }
-      precendentExpression* exp = doPrecedenceOperation(tokenAct, &tmpToken, tableG, table2);
+      precendentExpression* exp = doPrecedenceOperation(tokenAct, &tmpToken, tableG, table2, funName);
       if(exp->error != OK) return exp->error;
 
       tokenAct = exp->returnToken;
@@ -620,7 +620,7 @@ int statement(char *funName){
       tmpItem = searchSymbolTableWithString(tableG, funName);
       table2 = tmpItem->elementType.function->sT;
     }
-    precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2);
+    precendentExpression* exp = doPrecedenceOperation(tokenAct, NULL, tableG, table2, funName);
     if(exp->error != OK) return exp->error;
 
     tokenAct = exp->returnToken;
@@ -668,7 +668,7 @@ int function(){
     if(tokenAct.type != STR) return PARSING_ERR; //za def musi nasledovat identifikator
     smartString *s = tokenAct.attribute.string;
     //musi nasledovat '('
-    tokenAct = nextToken(&error, stack, doIndent);
+    /*tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != LEFTBRACKET){
       fprintf(stderr, "Za DEF ID musi nasledovat ( \n");
@@ -680,11 +680,19 @@ int function(){
     while(tokenAct.type != RIGHTBRACKET){
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
+    }*/
+    //----------------------------------------------------------------
+    token tmpToken = tokenAct;
+    tokenAct = nextToken(&error, stack, doIndent);
+    if(error != OK) return error; // zkoumani lexikalniho erroru
+
+    if(tokenAct.type != LEFTBRACKET){
+      fprintf(stderr, "za DEF ID ma nasledovat  (\n");
+      return PARSING_ERR;
     }
-
-
-    //generateInstruction(I_CLEARS, NULL, NULL, NULL);
-
+    result = defParams(tmpToken.attribute.string->string);
+    if(result != OK) return result;
+    //---------------------------------------------------------------
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
     if(tokenAct.type != COLON){
@@ -711,12 +719,14 @@ int function(){
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
+    generateInstruction(I_STARTOFFUNC, s->string, NULL, NULL);
 
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
         result = statement(s->string);
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
 
+    generateInstruction(I_ENDOFFUNC, NULL, NULL, NULL);
 
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
@@ -772,6 +782,9 @@ int defParams(char* funName){
         (item->arguments[argc]).elementType.variable = (variableData *) malloc(sizeof(variableData));
         (item->arguments[argc]).elementType.variable->type = VARIABLE;
         (item->arguments[argc]).key = tokenAct.attribute.string->string;
+
+        generateInstruction(I_DEFVAR, &(item->arguments[argc]), NULL, NULL);// ----------------------------------------------------------------------
+
         item->argCount = argc+1;
         symtableItem *tmpIT = searchSymbolTableWithString(tableG, funName);
         item->sT = tmpIT->elementType.function->sT;
@@ -785,7 +798,6 @@ int defParams(char* funName){
           fprintf(stderr, "Snazite se definovat variable(jako argument funkce), ktery je stejny jako nejaky nazev funkce\n");
           return SEM_DEF_ERR;
         }
-        //generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
         return defParamsN(funName, ++argc);
     }
     else {
@@ -822,7 +834,7 @@ int defParamsN(char* funName, int argc){
     (item->arguments[argc-1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
     (item->arguments[argc-1]).elementType.variable->type = VARIABLE;
 
-    //item->arguments[argc-1].elementType.variable->value.INT = 5;
+    generateInstruction(I_DEFVAR, &(item->arguments[argc-1]), NULL, NULL);// ----------------------------------------------------------------------
 
     for (int i = 0; i < (argc-1); i++) {
       if(!strcmp((item->arguments[i]).key, (item->arguments[argc-1]).key)) return SEM_DEF_ERR;
@@ -833,7 +845,6 @@ int defParamsN(char* funName, int argc){
       fprintf(stderr, "Snazite se definovat variable(jako argument funkce), ktery je stejny jako nejaky nazev funkce\n");
       return SEM_DEF_ERR;
     }
-    //generateInstruction(I_POPS, NULL, NULL, NULL); ////////////////////////////OPRAVIT///////////////////////////////////////////
     return defParamsN(funName, argc);
 }
 
@@ -1069,19 +1080,6 @@ int initFunctions(){
               return SEM_DEF_ERR;
             }
             insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
-
-            token tmpToken = tokenAct;
-
-            tokenAct = nextToken(&error, stack, doIndent);
-            if(error != OK) return error; // zkoumani lexikalniho erroru
-
-            if(tokenAct.type != LEFTBRACKET){
-              fprintf(stderr, "za DEF ID ma nasledovat  (\n");
-              return PARSING_ERR;
-            }
-
-            result = defParams(tmpToken.attribute.string->string);
-            if(result != OK) return result;
         }
 
         tokenAct = nextToken(&error, stack, doIndent);
