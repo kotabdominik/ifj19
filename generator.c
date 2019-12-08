@@ -122,6 +122,7 @@ void generatePrint(int *parCounter){
     }
     fprintf(stdout, "WRITE string@\\010\n");
     fprintf(stdout, "MOVE LF@$RETVAL%p  string@None\n", parCounter);
+    fprintf(stdout, "PUSHS LF@$RETVAL%p\n", parCounter);
     fprintf(stdout, "POPFRAME\n");
 }
 
@@ -372,7 +373,7 @@ int generateInstructionREE(tDLList*list){
                   fprintf(stdout, "PUSHS float@%a\n", *tmp8);
                 }
                 else if(*tmp == KEYWORD){
-                  fprintf(stdout, "PUSHS nil@nil\n");
+                  fprintf(stdout, "PUSHS string@None\n");
                 }
                 break;
             case(I_PUSHSLF):
@@ -581,11 +582,50 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_EQS):
-                fprintf(stdout, "EQS \n");
+                //fprintf(stdout, "EQS \n");
+                fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "EQ LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_NQS):
-                fprintf(stdout, "EQS\n");
-                fprintf(stdout, "NOTS\n");
+                //fprintf(stdout, "EQS\n");
+                //fprintf(stdout, "NOTS\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "EQ LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "NOT LF@$REESULT LF@$REESULT\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_ELSE_E):
                 return 1488;
@@ -601,6 +641,9 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
                 fprintf(stdout, "POPS LF@$2\n");
+                //
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                //
                 fprintf(stdout, "LT LF@$RETVAL LF@$2 LF@$1\n");
                 fprintf(stdout, "NOT LF@$RETVAL LF@$RETVAL\n");
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
@@ -618,6 +661,9 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
                 fprintf(stdout, "POPS LF@$2\n");
+                //
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                //
                 fprintf(stdout, "GT LF@$RETVAL LF@$2 LF@$1\n");
                 fprintf(stdout, "NOT LF@$RETVAL LF@$RETVAL\n");
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
