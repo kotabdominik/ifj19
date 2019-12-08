@@ -559,9 +559,11 @@ int statement(char *funName){
         }
       }
       else if(strcmp(tmpToken.attribute.string->string, "print") == 0){
-        symtableItem * reeItem =(symtableItem*) malloc(tmpItem->elementType.function->argCount * sizeof(symtableItem));
-        reeItem = tmpItem->elementType.function->arguments;
-        generateInstruction(I_PRINT, NULL, &(tmpItem->elementType.function->argCount), reeItem);
+        //symtableItem * reeItem =(symtableItem*) malloc(tmpItem->elementType.function->argCount * sizeof(symtableItem));
+        //reeItem = tmpItem->elementType.function->arguments;
+        int *ukazatelNaArgcount = (int*) malloc(sizeof(int));
+        *ukazatelNaArgcount = tmpItem->elementType.function->argCount;
+        generateInstruction(I_PRINT, NULL, ukazatelNaArgcount, NULL);
       }
       else if(strcmp(tmpToken.attribute.string->string, "inputs") == 0){
         tmpItem->elementType.variable->type = DATA_STRING;
@@ -874,18 +876,7 @@ int callParams(char* funName, char* aktualniFunkce){
     if (tmpItem0->elementType.function->argCount == 0 || strcmp(aktualniFunkce, "print") == 0) {
 
       if(strcmp(aktualniFunkce, "print") == 0){
-        //tmpItem0->elementType.function->argCount = 0;
-        /*
-        char* hodnotaKPrintu = (char*) malloc(sizeof(char));
-        int* typTokenuProPrint = (int*) malloc(sizeof(int));
-        int* memePocetArgumenty = (int*) malloc(sizeof(int));
-        symtableItem * itemProPrint =(symtableItem*) malloc(sizeof(symtableItem));
-        itemProPrint->
-        *memePocetArgumentu = 1;
-        hodnotaKPrintu = '\n';
-        *typTokenuProPrint = LITERAL;
-        generateInstruction(I_PUSHS, hodnotaKPrintu, typTokenuProPrint, NULL);
-        generateInstruction(I_PRINT, NULL, , memePocetArgumentu);*/
+        tmpItem0->elementType.function->argCount = 0;
       }
       return OK;
     }
@@ -989,6 +980,9 @@ int callParams(char* funName, char* aktualniFunkce){
     }
     else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
       (tmpItem0->elementType.function->arguments[0]).elementType.variable->type = DATA_UNDEFINED;
+      int* typTokenu = (int*) malloc(sizeof(int));
+      *typTokenu = tokenAct.type;
+      generateInstruction(I_PUSHS, NULL, typTokenu, NULL);
     }
     else{
       fprintf(stderr, "Nespravny typ argumentu pri volani funkce\n");
@@ -1009,7 +1003,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
 
 
   if(tokenAct.type == RIGHTBRACKET){
-    if (tmpItem0->elementType.function->argCount == argc || tmpItem0->elementType.function->argCount == -1) {
+    if (tmpItem0->elementType.function->argCount == argc) {
       return OK;
     }
     else{
@@ -1119,6 +1113,9 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
     }
     else if (tokenAct.type == KEYWORD && tokenAct.attribute.keyword == NONE){
       (tmpItem0->elementType.function->arguments[argc]).elementType.variable->type = DATA_UNDEFINED;
+      int* typTokenu = (int*) malloc(sizeof(int));
+      *typTokenu = tokenAct.type;
+      generateInstruction(I_PUSHS, NULL, typTokenu, NULL);
     }
     else{
       fprintf(stderr, "Nespravny typ argumentu pri volani funkce\n");
@@ -1402,6 +1399,4 @@ int main(){
 
 // indent a za nim dokumentacni komentar
 //none v callparams + v pushs(generatoru)
-
-//v CALLPARAMS kdyz ma print 0 parametru tak vytisknout prazdny radek ?????
 //konverze u porovnavani

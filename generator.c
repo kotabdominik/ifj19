@@ -334,11 +334,7 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_PRINT):
                 parCounter = list->First->Instruction.addr2;  ////////////////////////dohodni sa s jindrom
-                if(parCounter == 0) {
-                  fprintf(stdout, "WRITE string@\\010\n");
-                  break;
-                }
-                symtableItem *tmpItem = list->First->Instruction.addr3;
+                //symtableItem *tmpItem = list->First->Instruction.addr3;
                 generatePrint(parCounter);
                 break;
             case(I_IF):
@@ -374,6 +370,9 @@ int generateInstructionREE(tDLList*list){
                 else if(*tmp == FLOAT){
                   double* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS float@%a\n", *tmp8);
+                }
+                else if(*tmp == KEYWORD){
+                  fprintf(stdout, "PUSHS nil@nil\n");
                 }
                 break;
             case(I_PUSHSLF):
