@@ -61,6 +61,7 @@ typedef struct {
 
 typedef struct symtableItm { //tady musí být
   bool defined; //je poprvé přiřazena hodnota
+  int definujuVIfu;
 	struct symtableItm *next;
 	char *key;
 	union {

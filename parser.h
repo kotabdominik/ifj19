@@ -22,13 +22,16 @@
 #include "generator.h"
 #include "expressions.h"
 
+#define NEJSEMVIFUELSU 0
+#define JSEMVIFU 1
+#define JSEMVELSU 2
+
 int parse(symbolTable *ST, tDLList *instrList);
 int program();
 int expression();
 int function();
-int statement(char *funName);
+int statement(char *funName, int ifNeboNe);
 tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3);
-void generateVariable(smartString *var);
 int initFunctions();
 int defParams(char* funName);
 int defParamsN(char* funName, int argc);

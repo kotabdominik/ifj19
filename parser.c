@@ -39,7 +39,7 @@ tInstr *generateInstruction(int instType, void *addr1, void *addr2, void *addr3)
 // ==================================================================
 
 //-----------------------------------------STATEMENT--------------------------------------
-int statement(char *funName){
+int statement(char *funName, int ifNeboNe){
   int result;
   tInstr *jmp1;
 
@@ -86,7 +86,7 @@ int statement(char *funName){
         if(error != OK) return error; // zkoumani lexikalniho erroru
 
         do{
-            result = statement(funName);
+            result = statement(funName, JSEMVIFU);
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
             if(tokenAct.type == EOFTOKEN) return PARSING_ERR;
         } while(tokenAct.type != DEDENT); //&& tokenAct.type != EOFTOKEN
@@ -116,7 +116,7 @@ int statement(char *funName){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         do{
-            result = statement(funName);
+            result = statement(funName, JSEMVELSU);
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
@@ -172,7 +172,7 @@ int statement(char *funName){
         tokenAct = nextToken(&error, stack, doIndent);
         if(error != OK) return error; // zkoumani lexikalniho erroru
         do{
-            result = statement(funName);
+            result = statement(funName, ifNeboNe);
             if(result != OK) return result;//kouknout jestli statement probehl bez erroru
         } while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN);
 
@@ -300,17 +300,29 @@ int statement(char *funName){
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
 
-      symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
+      symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken);
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
         return SEM_DEF_ERR;
       }
 
+
       if(strcmp(funName, "globalTable") == 0){
+        if(ifNeboNe == JSEMVELSU && tmpItem != NULL){
+          if(tmpItem->definujuVIfu == JSEMVIFU){
+            generateInstruction(I_DEFVAR, tmpItem, NULL, NULL);
+          }
+        }
         if(tmpItem == NULL){
           insertSymbolTable(tableG, tmpToken, VARIABLE); //vlozeni variable do tabulky
           tmpItem = searchSymbolTable(tableG, tmpToken);
           tmpItem->defined = false;
+          if(ifNeboNe == JSEMVIFU){
+            tmpItem->definujuVIfu = JSEMVIFU;
+          }
+          else{
+            tmpItem->definujuVIfu = -1;
+          }
           generateInstruction(I_DEFVAR, tmpItem, NULL, NULL);
         }
         else{
@@ -334,6 +346,13 @@ int statement(char *funName){
         }
         if(succMePls == 0){
           tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
+          // FOR IF --------------------------------------
+          if(ifNeboNe == JSEMVELSU && tmpItem != NULL){
+            if(tmpItem->definujuVIfu == JSEMVIFU){
+              generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, NULL);
+            }
+          }
+          // FOR IF ---------------------------------------
           if(tmpItem == NULL){
             insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
             tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
@@ -739,7 +758,7 @@ int function(){
 
 
     while(tokenAct.type != DEDENT && tokenAct.type != EOFTOKEN){
-        result = statement(s->string);
+        result = statement(s->string, NEJSEMVIFUELSU);
         if(result != OK) return result;//kouknout jestli statement probehl bez erroru
     }
 
@@ -777,7 +796,7 @@ int program(){
               fprintf(stderr, "V tele programu se nesmi nachazet return\n");
               return PARSING_ERR;
             }
-            result = statement("globalTable");
+            result = statement("globalTable", NEJSEMVIFUELSU);
             if(result != OK) return result;
         }
     }

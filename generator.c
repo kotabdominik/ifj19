@@ -56,10 +56,6 @@ void degenerate(tDLList *list){
 void generateInputs(){
     fprintf(stdout, "LABEL $ALFA\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL string\n");
@@ -71,10 +67,6 @@ void generateInputs(){
 void generateInputi(){
     fprintf(stdout, "LABEL $BETA\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL int\n");
@@ -86,10 +78,6 @@ void generateInputi(){
 void generateInputf(){
     fprintf(stdout, "LABEL $GAMA\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL float\n");
@@ -106,10 +94,6 @@ void generateInputf(){
 void generatePrint(int *parCounter){
     //fprintf(stdout, "LABEL $DELTA%p\n", parCounter);
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL%p\n", parCounter);
     //fprintf(stdout, "DEFVAR LF@$TMPVAL%p\n", parCounter);
@@ -131,10 +115,6 @@ void generatePrint(int *parCounter){
 void generateLen(){
     fprintf(stdout, "LABEL $LENGTH\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$1\n");
@@ -151,10 +131,6 @@ void generateSubstr(){
     //INIT
     fprintf(stdout, "LABEL $SUBSTR\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$DELKA\n");//n
@@ -211,10 +187,6 @@ void generateOrd(){
     //INIT
     fprintf(stdout, "LABEL $ORD\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     //ULOŽENIE PARAMETROV
@@ -254,10 +226,6 @@ void generateOrd(){
 void generateChr(){
     fprintf(stdout, "LABEL $CHAR\n");
     fprintf(stdout, "CREATEFRAME\n");
-    for(int i = 0; i < actNumberOfLF; i++){
-          fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-          fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-    }
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "DEFVAR LF@$ASC\n");
@@ -311,25 +279,18 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_LEN):
                 if (0) {}
-                //char* st = list->First->Instruction.addr1;
                 fprintf(stdout, "CALL $LENGTH\n");
                 break;
             case(I_SUBSTR):
                 if (0) {}
-                //char* retezec = list->First->Instruction.addr1;
-                //int* pozicec = list->First->Instruction.addr2;
-                //int* pozicexd = list->First->Instruction.addr3;
                 fprintf(stdout, "CALL $SUBSTR\n");
                 break;
             case(I_ORD):
                 if (0) {}
-                //char* retez = list->First->Instruction.addr1;
-                //int* pozice = list->First->Instruction.addr2;
                 fprintf(stdout, "CALL $ORD\n");
                 break;
             case(I_CHR):
                 if (0) {}
-                //int* chr = list->First->Instruction.addr1;
                 fprintf(stdout, "CALL $CHAR\n");
                 break;
             case(I_PRINT):
@@ -398,10 +359,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_ADDS):
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -421,10 +378,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_SUBS):
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -444,10 +397,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_MULS):
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -467,10 +416,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_DIVS):
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -548,10 +493,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_GTS): //greater
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -573,10 +514,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_LTS): //less
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -597,10 +534,6 @@ int generateInstructionREE(tDLList*list){
             case(I_EQS):
                 //fprintf(stdout, "EQS \n");
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -621,10 +554,6 @@ int generateInstructionREE(tDLList*list){
                 //fprintf(stdout, "EQS\n");
                 //fprintf(stdout, "NOTS\n");
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
                 fprintf(stdout, "DEFVAR LF@$2\n");
@@ -646,10 +575,6 @@ int generateInstructionREE(tDLList*list){
                 return 177013;
             case(I_GT)://greater or equal
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -668,10 +593,6 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_LT):
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -692,10 +613,6 @@ int generateInstructionREE(tDLList*list){
                 return 69;
             case(I_CONCAT):
                 fprintf(stdout, "CREATEFRAME\n");
-                for(int i = 0; i < actNumberOfLF; i++){
-                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
-                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
-                }
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$RETVAL\n");
                 fprintf(stdout, "DEFVAR LF@$STR1\n");
