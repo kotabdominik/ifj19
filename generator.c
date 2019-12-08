@@ -525,16 +525,16 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 symtableItem *localVar = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", localVar->key);
-                //actNumberOfLF++;
-                //aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
-                //(aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
+                actNumberOfLF++;
+                aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
+                (aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
                 break;
             case(I_DEFVARLF):
                 if(0){}
                 char *notree = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", notree);
                 fprintf(stdout, "POPS LF@$VAR%s\n", notree);
-                actNumberOfLF++;
+                //actNumberOfLF++;
                 break;
             case(I_POPS):
                 if(0){}
@@ -710,9 +710,9 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 char *idk = list->First->Instruction.addr1;
                 symtableItem *itemNaArgumenty = list->First->Instruction.addr2;
-                //aktualniArgumenty = malloc(100 * sizeof(symtableItem));
-                //*aktualniArgumenty = *(itemNaArgumenty->elementType.function->arguments);
-                aktualniArgumenty = itemNaArgumenty->elementType.function->arguments;
+                aktualniArgumenty = malloc(actNumberOfLF * sizeof(symtableItem*));
+                actNumberOfLF = itemNaArgumenty->elementType.function->argCount;
+                aktualniArgumenty = (itemNaArgumenty->elementType.function->arguments);
                 fprintf(stdout, "JUMP $FUNCTIONEND%s\n", idk);
                 fprintf(stdout, "LABEL $FUNCTION%s\n", idk);
                 fprintf(stdout, "CREATEFRAME\n");
@@ -842,36 +842,6 @@ void defenestrace(int antiHussites){
   }
 }
 
-
-/*void generateEquality(tDLList *list){
-  fprintf(stdout, "PUSHFRAME\n");
-  fprintf(stdout, "DEFVAR LF@$RETVAL\n",list->First->Instruction.addr1);
-  fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
-  fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
-  fprintf(stdout, "DEFVAR LF@$EQ3%p\n",list->First->Instruction.addr3);
-  fprintf(stdout, "MOVE LF@$EQ1%p ???\n",list->First->Instruction.addr1);
-  fprintf(stdout, "MOVE LF@$EQ2%p ???\n",list->First->Instruction.addr2);
-  fprintf(stdout, "MOVE LF@$EQ3%p string@%s\n",list->First->Instruction.addr3);
-
-  fprintf(stdout, "JUMPIFEQ $EQ_LESSER%p LF@$EQ3%p string@<\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_GREATER%p LF@$EQ3%p string@>\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_LSREQ%p LF@$EQ3%p string@<=\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_GTREQ%p LF@$EQ3%p string@>=\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_EQ%p LF@$EQ3%p string@==\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
-  fprintf(stdout, "JUMPIFEQ $EQ_NOTEQ%p LF@$EQ3%p string@!=\n",list->First->Instruction.addr3, list->First->Instruction.addr3);
-
-  fprintf(stdout, "LABEL $EQ_LESSER%p\n",list->First->Instruction.addr3);
-  fprintf(stdout, "LABEL $EQ_GREATER%p\n",list->First->Instruction.addr3);
-  fprintf(stdout, "LABEL $EQ_LSREQ%p\n",list->First->Instruction.addr3);
-  fprintf(stdout, "LABEL $EQ_GTREQ%p\n",list->First->Instruction.addr3);
-  fprintf(stdout, "LABEL $EQ_EQ%p\n",list->First->Instruction.addr3);
-  fprintf(stdout, "LABEL $EQ_NOTEQ%p\n",list->First->Instruction.addr3);
-
-  fprintf(stdout, "DEFVAR LF@$EQ1%p\n",list->First->Instruction.addr1);
-  fprintf(stdout, "DEFVAR LF@$EQ2%p\n",list->First->Instruction.addr2);
-
-}*/
-
 ///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
@@ -898,11 +868,13 @@ void generateIf(tDLList*list, void *origi){
   list->First = list->First->rptr;
   generateInstructionREE(list); //dokym nenajdem rovnaky indent
   fprintf(stdout, "LABEL END%p\n",origi);
-  fprintf(stdout, "POPFRAME\n");
-  for(int i= 0; i < actNumberOfLF; i++){
-        fprintf(stdout,"MOVE LF@$VAR%s TF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+  for(int i = actNumberOfLF-1; i >= 0; i--){
+        fprintf(stdout,"PUSHS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
   fprintf(stdout, "POPFRAME\n");
+  for(int i = 0; i < actNumberOfLF; i++){
+        fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
+  }
 }
 
 void generateWhile(tDLList*list, void *origi){
@@ -929,9 +901,16 @@ void generateWhile(tDLList*list, void *origi){
   list->First = jmp1;
   fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "LABEL WHILE$END$%p\n", origi);
+  for(int i = actNumberOfLF-1; i >= 0; i--){
+        fprintf(stdout,"PUSHS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
+  }
   fprintf(stdout, "POPFRAME\n");
+  for(int i = 0; i < actNumberOfLF; i++){
+        fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
+  }
 }
 
+// cekovat jestli do inputi inputf inputs hazis spravny params
 
-//bug .. print ma vracet None
-// VRACET VECI PRED POPFRAME
+// CHYBA kdyz dame napr    if 5:         .... None, 0  a  '' (prazdny retezec) maji byt nepravda, ostatni ma byt pravda
+// tohle by se melo cekovat nekde pred tim, jak je condition u ifu a whilu ... takovy to jumpifneq

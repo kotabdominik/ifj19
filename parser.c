@@ -1396,8 +1396,7 @@ int main(){
     return result;
 }
 
-
-// indent a za nim dokumentacni komentar
+//// fucking komenty
 // semanticka chyba --- zastineni promenne
 // chyba pri definovani promenne v ifu/elsu
-// PRO DOMINIKA None ----- generateInstruction(I_PUSHS, NULL, KEYWORD, NULL);            KEYWORD je tokenact.type
+//definovani funkce az za jejim volanim
