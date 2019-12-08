@@ -539,10 +539,46 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAR%s\n", localPop->key);
                 break;
             case(I_GTS): //greater
-                fprintf(stdout, "GTS \n");
+                fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "GT LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_LTS): //less
-                fprintf(stdout, "LTS \n");
+                fprintf(stdout, "CREATEFRAME\n");
+                for(int i = 0; i < actNumberOfLF; i++){
+                      fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
+                      fprintf(stdout,"MOVE TF@$VAR%s LF@$VAR%s\n", (aktualniArgumenty[i]).key, (aktualniArgumenty[i]).key);
+                }
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "LT LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_EQS):
                 fprintf(stdout, "EQS \n");
