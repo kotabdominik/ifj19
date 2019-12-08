@@ -663,7 +663,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "LABEL $FUNCTIONEND%s\n", idk2);
                 actNumberOfLF = 0;
                 free(aktualniArgumenty);
-                return 123;
+                return 666;
                 break;
             case(I_CALL):
                 if(0){}
