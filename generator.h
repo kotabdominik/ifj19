@@ -41,6 +41,7 @@ void generateIf(tDLList*list,void* origi);
 void checkInt2Float();
 void checkFloat2Int();
 void checkInt2FloatDiv();
+void checkString();
 void defenestrace(int antiHussites);
 
 

@@ -42,6 +42,8 @@ void degenerate(tDLList *list){
     generateBuiltIn();
     fprintf(stdout, "LABEL $ZEROERROR\n");
     fprintf(stdout, "EXIT int@%d\n", DIVISION_BY_ZERO);
+    fprintf(stdout, "LABEL $STRINGERROR\n");
+    fprintf(stdout, "EXIT int@4\n");////wrong string
     fprintf(stdout, "LABEL $$MAIN\n");
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
@@ -265,16 +267,12 @@ void generateChr(){
     fprintf(stdout, "GT LF@$BOOLCHECK LF@$ASC int@255\n");
     fprintf(stdout, "JUMPIFEQ $ERRORCHR LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "LT LF@$BOOLCHECK LF@$ASC int@0\n");
-    fprintf(stdout, "JUMPIFEQ $ERRORCHR LF@$BOOLCHECK bool@true\n");
+    fprintf(stdout, "JUMPIFEQ $STRINGERROR LF@$BOOLCHECK bool@true\n");
 
     fprintf(stdout, "INT2CHAR LF@$RETVAL LF@$ASC\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
-
-    fprintf(stdout, "LABEL $ERRORCHR\n");
-    fprintf(stdout, "EXIT int@4\n");
-
 
 }
 
@@ -285,6 +283,7 @@ void generateBuiltIn(){
   checkFloat2Int();
   checkInt2Float();
   checkInt2FloatDiv();
+  checkString();
   generateLen();
   generateInputf();
   generateInputi();
@@ -413,6 +412,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -434,6 +435,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "SUB LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -455,6 +458,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "MUL LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -476,6 +481,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLTDIV\n");
                 fprintf(stdout, "JUMPIFEQ $ZEROERROR float@%a LF@$2\n", 0.0);
                 fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
@@ -555,6 +562,10 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "GT LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -576,6 +587,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "LT LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -598,6 +611,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkSTRING\n");
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "EQ LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -621,6 +635,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                fprintf(stdout, "CALL $checkSTRING\n");
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "EQ LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "NOT LF@$REESULT LF@$REESULT\n");
@@ -642,6 +657,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$2\n");
                 fprintf(stdout, "POPS LF@$2\n");
                 //
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 //
                 fprintf(stdout, "LT LF@$RETVAL LF@$2 LF@$1\n");
@@ -662,6 +679,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$2\n");
                 fprintf(stdout, "POPS LF@$2\n");
                 //
+                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 //
                 fprintf(stdout, "GT LF@$RETVAL LF@$2 LF@$1\n");
@@ -728,6 +747,7 @@ int generateInstructionREE(tDLList*list){
 //converts int to float if needed
 void checkInt2Float(){
   fprintf(stdout, "LABEL $checkINT2FLT\n");
+  fprintf(stdout, "JUMPIFEQ $LAB22 LF@$BOOLCHECK_00 bool@true\n");
   fprintf(stdout, "DEFVAR LF@$T1\n");
   fprintf(stdout, "DEFVAR LF@$T2\n");
   fprintf(stdout, "TYPE LF@$T1 LF@$1\n");
@@ -747,6 +767,38 @@ void checkInt2Float(){
   fprintf(stdout, "INT2FLOAT LF@$2 LF@$2\n");
   fprintf(stdout, "LABEL $LAB22\n");
   fprintf(stdout, "RETURN\n");
+}
+
+void checkString(){
+    fprintf(stdout, "LABEL $checkSTRING\n");
+    fprintf(stdout, "DEFVAR LF@$ST1\n");
+    fprintf(stdout, "DEFVAR LF@$ST2\n");
+    fprintf(stdout, "TYPE LF@$ST1 LF@$1\n");
+    fprintf(stdout, "TYPE LF@$ST2 LF@$2\n");
+
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK_A\n");
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK_B\n");
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK_0\n");
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK_1\n");
+    fprintf(stdout, "DEFVAR LF@$BOOLCHECK_2\n");
+
+    fprintf(stdout, "EQ LF@$BOOLCHECK_A LF@$ST1 string@string\n");
+    fprintf(stdout, "EQ LF@$BOOLCHECK_B LF@$ST2 string@string\n");
+
+    fprintf(stdout, "AND LF@$BOOLCHECK_00 LF@$BOOLCHECK_A LF@$BOOLCHECK_B\n");
+
+    fprintf(stdout, "OR LF@$BOOLCHECK_0 LF@$BOOLCHECK_A LF@$BOOLCHECK_B\n");
+
+    fprintf(stdout, "NOT LF@$BOOLCHECK_A LF@$BOOLCHECK_A\n");
+    fprintf(stdout, "NOT LF@$BOOLCHECK_B LF@$BOOLCHECK_B\n");
+
+    fprintf(stdout, "OR LF@$BOOLCHECK_1 LF@$BOOLCHECK_A LF@$BOOLCHECK_B\n");
+
+    fprintf(stdout, "AND LF@$BOOLCHECK_2 LF@$BOOLCHECK_0 LF@$BOOLCHECK_1\n");
+
+    fprintf(stdout, "JUMPIFEQ $STRINGERROR LF@$BOOLCHECK_2 bool@true\n");
+    fprintf(stdout, "RETURN\n");
 }
 
 void checkInt2FloatDiv(){
