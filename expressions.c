@@ -222,6 +222,10 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 *hodnota = token->attribute.FLOAT;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
+              } else if (type1 == KEYWORD && zesym == 0) {
+                int* typetokenu = (int *) malloc(sizeof(int));
+                *typetokenu = token->type;
+                generateInstruction(I_PUSHS, NULL, typetokenu, NULL);
               } else if (zesym == 1) { //ze symtablu, pushuju key
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
