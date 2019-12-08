@@ -134,7 +134,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
             stackPop(stack);
             stackTop(stack, &tmpNum);
             if (tmpNum < CurrentIndentCount){
-                *error = PARSING_ERR;
+                *error = LEXICAL_ERR;
                 return Token;
             }
             Token.attribute.INT = counter;

@@ -1398,5 +1398,5 @@ int main(){
 
 
 // indent a za nim dokumentacni komentar
-//none v callparams + v pushs(generatoru)
-//konverze u porovnavani
+
+// PRO DOMINIKA None ----- generateInstruction(I_PUSHS, NULL, KEYWORD, NULL);            KEYWORD je tokenact.type
