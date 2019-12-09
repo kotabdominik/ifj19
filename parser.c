@@ -506,7 +506,6 @@ int statement(char *funName, int ifNeboNe){
 
       tmpItem->defined = true;
       tmpItem->elementType.variable->type = exp->returnType;
-      tmpItem->elementType.variable->value = exp->returnValue;
 
       if(tokenAct.type != EOL && tokenAct.type != EOFTOKEN) return PARSING_ERR;
       if(tokenAct.type == EOFTOKEN) return OK; // pokud je to konec filu, nezkoumame dalsi token
