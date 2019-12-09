@@ -1,8 +1,5 @@
-def factorial(n):
-  if n < 2:
-    pass
-  else:
-    pass
-
-a = 5
-factorial(a)
+a = ''
+if a:
+  print('yeye')
+else:
+  print('nene')
