@@ -11,12 +11,7 @@
   *
   */
 
-
 #include "expressions.h"
-
-int errorE = OK;
-tStack *stack;
-int doIndentE = 0;
 
 // KDYZ PRIJDE PRVNE TO CO JE NAPRAVO A PAK AZ TO CO PRIJDE NAHORE, PAK
 // priklad prvni radek, druha cell ... +* ... prvne se provede *
@@ -88,26 +83,25 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
 }
 
 int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce) {
-  token* token, tokenPrvni, tokenDruhy;
+  token* token;
   int state = 0;
   int zpracuj = 0;
   int rule = 0;
   int operacevtokenu = -1;
   int zesym = 0;
-  while (rule == 0) {
+  while (rule == 0) { //dokud to neudělá nějakou konverzi podle i -> E, E + E -> E, (E) -> E atd..
     int type1, type2;
     sData* data = tokenStackTop(s);
     switch (state) {
-      case 0:
+      case 0: //prvně to vždy půjde sem
         if (data->type == typeNonterm) {
           state = 1;
-          tokenPrvni = *(data->token);
           type1 = data->dataType;
         } else if (data->type == typeToken) {
           if (data->token->type == RIGHTBRACKET) {
             state = 2;
             zpracuj = 1;
-          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR || (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) || data->token->type == DOCCOM || data->token->type == UNDEFINED) { //int, float, literal, str
+          } else if (data->token->type == INT || data->token->type == FLOAT || data->token->type == LITERAL || data->token->type == STR || (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) || data->token->type == DOCCOM || data->token->type == UNDEFINED) { //projde jen int, float, literal, str, atd.
             token = data->token;
             zpracuj = 2;
             state = 3;
@@ -119,7 +113,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               type1 = LITERAL;
             } else if (data->token->type == KEYWORD && data->token->attribute.keyword == NONE) {
               type1 = KEYWORD;
-            } else if (data->token->type == STR) {
+            } else if (data->token->type == STR) { //je to proměnná, prohledávám symtable
               symtableItem* item = NULL;
               if (tableGG) { //existuje funkce
                 item = searchSymbolTableWithString(tableGG, data->token->attribute.string->string);
@@ -186,11 +180,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         if (data->type == typeNonterm) {
           if (zpracuj == 1) { //tady řeším závorky
             state = 4;
-            tokenDruhy = *(data->token);
             type1 = data->dataType;
           } else {
             state = 3;
-            tokenDruhy = *(data->token);
             type2 = data->dataType;
           }
         }
@@ -204,40 +196,40 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             }
             newData->type = typeNonterm;
             if (zpracuj == 2) { //zpracování i -> E
-              if (type1 == INT && zesym == 0) {
+              if (type1 == INT && zesym == 0) { //pushuju INT do generátoru
                 int* hodnota = (int*) malloc(sizeof(int));
                 int* typetokenu = (int*) malloc(sizeof(int));
                 *hodnota = token->attribute.INT;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == LITERAL && zesym == 0) {
+              } else if (type1 == LITERAL && zesym == 0) { //pushuju STR do generátoru
                 char* hodnota = (char *) malloc(sizeof(char));
                 int* typetokenu = (int *) malloc(sizeof(int));
                 hodnota = token->attribute.string->string;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == FLOAT && zesym == 0) {
+              } else if (type1 == FLOAT && zesym == 0) { //pushuju FLOAT do generátoru
                 double* hodnota = (double *) malloc(sizeof(double));
                 int* typetokenu = (int *) malloc(sizeof(int));
                 *hodnota = token->attribute.FLOAT;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == KEYWORD && zesym == 0) {
+              } else if (type1 == KEYWORD && zesym == 0) { //pushuju None do generátoru
                 int* typetokenu = (int *) malloc(sizeof(int));
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, NULL, typetokenu, NULL);
-              } else if (zesym == 1) { //ze symtablu, pushuju key
+              } else if (zesym == 1) { //z globálního symtablu, pushuju název proměnné
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
                 generateInstruction(I_PUSHS, promena, NULL, promena);
-              } else if (zesym == 2) {
+              } else if (zesym == 2) { //ze symtablu funkce nebo z jejího parametru
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
                 generateInstruction(I_PUSHSLF, promena, NULL, promena);
               }
             } else if (zpracuj == 1) { //tady zavorky
               newData->dataType = type1;
-            } else if (type1 == INT && type2 == INT) {
+            } else if (type1 == INT && type2 == INT) { //tady generuju instrukce mezi dvěmi INT
               if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
               } else if (operacevtokenu == MINUS) { // -
@@ -248,7 +240,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 generateInstruction(I_IDIVS, NULL, NULL, NULL);
               } else if (operacevtokenu == DIVFLT) { // /
                 generateInstruction(I_DIVS, NULL, NULL, NULL);
-                type1 = FLOAT; //idk honestly
+                type1 = FLOAT; //idk honestly jestli nutný, ale nechám to tu
               } else if (operacevtokenu == LESS) { // <
                 generateInstruction(I_LTS, NULL, NULL, NULL);
               } else if (operacevtokenu == GREATER) { // >
@@ -264,7 +256,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else {
                 return -5; //neplatná operace mezi 2mi inty
               }
-            } else if (type1 == LITERAL && type2 == LITERAL) {
+            } else if (type1 == LITERAL && type2 == LITERAL) { //platné operace mezi dvěmi STR
               if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_CONCAT, NULL, NULL, NULL);
               } else if (operacevtokenu == LESS) { // <
@@ -282,7 +274,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else {
                 return -5; //neplatná operace mezi dvěma str
               }
-            } else if (type1 == FLOAT && type2 == FLOAT) {
+            } else if (type1 == FLOAT && type2 == FLOAT) { //tady generuju platné operace mezi dvěma FLOAT
               if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
               } else if (operacevtokenu == MINUS) { // -
@@ -306,8 +298,10 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else {
                 return -5; //neplatná operace mezi 2mi floaty
               }
-            } else if (type1 == INT && type2 == FLOAT) { //todo
-              type1 = FLOAT;
+            } else if ((type1 == INT && type2 == FLOAT) || (type1 == FLOAT && type2 == INT)) {
+              if (type1 == INT && type2 == FLOAT) {
+                type1 = FLOAT;
+              }
               if (operacevtokenu == PLUS) { // +
                 generateInstruction(I_ADDS, NULL, NULL, NULL);
               } else if (operacevtokenu == MINUS) { // -
@@ -331,32 +325,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
               } else {
                 return -5; //neplatná operace mezi int a float
               }
-            } else if (type1 == FLOAT && type2 == INT) { //todo
-              type2 = FLOAT;
-              if (operacevtokenu == PLUS) { // +
-                generateInstruction(I_ADDS, NULL, NULL, NULL);
-              } else if (operacevtokenu == MINUS) { // -
-                generateInstruction(I_SUBS, NULL, NULL, NULL);
-              } else if (operacevtokenu == TIMES) { // *
-                generateInstruction(I_MULS, NULL, NULL, NULL);
-              } else if (operacevtokenu == DIVFLT) { // /
-                generateInstruction(I_DIVS, NULL, NULL, NULL);
-              } else if (operacevtokenu == LESS) { // <
-                generateInstruction(I_LTS, NULL, NULL, NULL);
-              } else if (operacevtokenu == GREATER) { // >
-                generateInstruction(I_GTS, NULL, NULL, NULL);
-              } else if (operacevtokenu == LESSEQ) { // <=
-                generateInstruction(I_LT, NULL, NULL, NULL);
-              } else if (operacevtokenu == GREATEREQ) { // >=
-                generateInstruction(I_GT, NULL, NULL, NULL);
-              } else if (operacevtokenu == EQ) { // ==
-                generateInstruction(I_EQS, NULL, NULL, NULL);
-              } else if (operacevtokenu == NOTEQ) { // !=
-                generateInstruction(I_NQS, NULL, NULL, NULL);
-              } else {
-                return -5; //neplatná operace mezi int a float
-              }
-            } else if (type1 == KEYWORD || type2 == KEYWORD) {
+            } else if (type1 == KEYWORD || type2 == KEYWORD) { //operace mezi None a čímkoliv jiným
               if (operacevtokenu == LESS) { // <
                 generateInstruction(I_LTS, NULL, NULL, NULL);
               } else if (operacevtokenu == GREATER) { // >
@@ -426,7 +395,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         break;
       }
 
-      if (data->token->type != COLON) {
+      if (data->token->type != COLON) { //nakonci stacku je mnou vložený $ (colon)
         tokenStackPop(s);
       } else {
         return rule;
@@ -449,7 +418,7 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
   }
 
   tokenStack *s = (tokenStack*) malloc(sizeof(tokenStack));
-  if(s == NULL){
+  if (s == NULL) {
     exp->error = INTERN_ERR;
     return exp;
   }
@@ -467,9 +436,10 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
   tokenStackPush(s, dataPred);
 
   token tmptkn;
-  int navr = 0;
+  int navr = 0; //návratová hodnota exp
+  int errorE = OK; //error pro načítání při z nextToken
 
-  while(1) { //dostanu se z toho daijoubně
+  while(1) { //dostanu se z toho daijoubně, dw
     sData* termData = getTerminalData(s);
     token* token = termData->token;
     int operation = getPrecedenceOperatorValue(token, current); //token = ze stacku, current = ze scanneru
@@ -495,52 +465,48 @@ precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, sy
       tokenStackPush(s,data);
     } else if (operation == C) { //2  if <y je na vrcholu zásobníku and r: A→y∈P then zaměň <y za A & vypiš r na výstup else chyba
       int a = findRule(s, &navr, tableG, tableGG, jmenoFunkce); //THE REST OF THE LOVELY OWL
-      if (a == -1) {
-        exp->error = PARSING_ERR;
+      if (a == -1) { //chyby, které se tu vyskytly předám parseru
+        exp->error = PARSING_ERR; //2
         return exp;
       } else if (a == -2) {
-        exp->error = INTERN_ERR;
+        exp->error = INTERN_ERR; //99
         return exp;
       } else if (a == -3) {
-        exp->error = SEM_DEF_ERR;
-        return exp;
-      } else if (a == -4) {
-        exp->error = DIVISION_BY_ZERO;
+        exp->error = SEM_DEF_ERR; //3
         return exp;
       } else if (a == -5) {
-        exp->error = SEM_RUN_ERR;
+        exp->error = SEM_RUN_ERR; //4
         return exp;
       }
-      continue; //nenačítat další token ze vstupu
-    } else if (operation == D) { //D jako done xddddddd
+      continue; //nenačítat další token ze vstupu (přesně jako podle algoritmu)
+    } else if (operation == D) { //D jako done lmao xddddddd, setování naší struktury
         exp->returnToken.type = current->type;
         exp->returnToken.attribute = current->attribute;
         if (navr == INT) {
           exp->returnType = DATA_INT;
-          exp->returnValue.INT = s->top->data->token->attribute.INT;
         } else if (navr == LITERAL) {
           exp->returnType = DATA_STRING;
-          exp->returnValue.string = s->top->data->token->attribute.string->string;
         } else if (navr == FLOAT) {
           exp->returnType = DATA_FLOAT;
-          exp->returnValue.FLOAT = s->top->data->token->attribute.FLOAT;
+        } else {
+          exp->returnType = DATA_UNDEFINED;
         }
         exp->error = OK;
         return exp;
-    } else if (operation == E) { //errorE
+    } else if (operation == E) { //error
         exp->error = PARSING_ERR;
         return exp;
     }
 
     current = malloc(sizeof(token)); //načítáme další token ze vstupu (nebo z parseru)
-    if (tokenAct2) { //zpracujeme token z parseru
+    if (tokenAct2) { //pokud parser poslal 2 tokeny, tak prvně místo načítání ze vstupu zpracujeme token z parseru
       current->attribute = tokenAct.attribute;
       current->type = tokenAct.type;
       tokenAct2 = NULL;
       continue;
     }
 
-    tmptkn = nextToken(&errorE, stack, doIndentE);
+    tmptkn = nextToken(&errorE, NULL, 0); //nepotřebuju stack, ani indenty
     if (errorE != OK) {
       exp->error = errorE;
       return exp;

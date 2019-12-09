@@ -23,7 +23,6 @@
 
 typedef struct{
     int returnType;
-    value returnValue;
     token returnToken;
     int error;
 } precendentExpression;
@@ -36,9 +35,9 @@ typedef enum {
   E  //4 ERROR
 } precedenceSign;
 
-int getPrecedenceIndex(token* tokenAct);
-int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken);
-int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce);
-precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce);
+int getPrecedenceIndex(token* tokenAct); //vrací index věci z precedenční tabulky
+int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken); //vrací hodnotu z precedenční tabulky
+int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce); //vygeneruje příslušnou instrukci pro generátor
+precendentExpression* doPrecedenceOperation(token tokenAct, token* tokenAct2, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce); //rozhodne podle precedence, co udělá s výrazem dál
 
 #endif
