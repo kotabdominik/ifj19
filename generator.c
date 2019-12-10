@@ -258,13 +258,13 @@ void generateBuiltIn(){
   generateInputf();
   generateInputi();
   generateInputs();
+  checkString();
   /*
+  generateSubstr();
   checkFloat2Int();
   checkInt2FloatDiv();
-  checkString();
   generateLen();
   generateOrd();
-    //generateSubstr();
   generateChr();
   //generatePrint();*/
 }
@@ -509,14 +509,15 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$VAL1\n");
                 fprintf(stdout, "DEFVAR LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
-                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "POPS LF@$VAL2\n");
+                fprintf(stdout, "POPS LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
 
-                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
-                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
 
+                fprintf(stdout, "CALL $checkSTRING\n");
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "GT LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -534,8 +535,9 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
-                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom ked nie je check string
+                fprintf(stdout, "CALL $checkSTRING\n");
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "LT LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
