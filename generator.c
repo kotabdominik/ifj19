@@ -153,7 +153,7 @@ void generateSubstr(){
     fprintf(stdout, "ADD LF@$TMPLEN LF@$TMPLEN int@-1\n");
     fprintf(stdout, "GT LF@$BOOLCHECK LF@$POSIT LF@$TMPLEN\n");
     fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
-    fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT 0\n");
+    fprintf(stdout, "LT LF@$BOOLCHECK LF@$POSIT int@0\n");
     fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
     fprintf(stdout, "GT LF@$BOOLCHECK int@0 LF@$DELKA\n");
     fprintf(stdout, "JUMPIFEQ $ERRORSUBSTR LF@$BOOLCHECK bool@true\n");
@@ -254,13 +254,13 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
+  generateSubstr();
+  /*
   checkInt2Float();
   generateInputf();
   generateInputi();
   generateInputs();
   checkString();
-  /*
-  generateSubstr();
   checkFloat2Int();
   checkInt2FloatDiv();
   generateLen();
@@ -375,8 +375,9 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$VAL1\n");//delenec
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
-                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                fprintf(stdout, "CALL $checkSTRING\n");////shoudlla be ok neotestovane
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
@@ -390,8 +391,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$VAL1\n");
                 fprintf(stdout, "DEFVAR LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
-                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "POPS LF@$VAL2\n");
+                fprintf(stdout, "POPS LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
@@ -409,8 +410,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$VAL1\n");
                 fprintf(stdout, "DEFVAR LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
-                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "POPS LF@$VAL2\n");
+                fprintf(stdout, "POPS LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
@@ -612,8 +613,9 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$2\n");
                 fprintf(stdout, "POPS LF@$2\n");
                 //
-                fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
-                fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                fprintf(stdout, "CALL $checkSTRING\n");
                 fprintf(stdout, "CALL $checkINT2FLT\n");
                 //
                 fprintf(stdout, "GT LF@$RETVAL LF@$2 LF@$1\n");
@@ -631,6 +633,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPS LF@$STR1\n");
                 fprintf(stdout, "DEFVAR LF@$STR2\n");
                 fprintf(stdout, "POPS LF@$STR2\n");
+                /////uh ošetrit ci su oba stringy?
                 fprintf(stdout, "CONCAT LF@$RETVAL LF@$STR2 LF@$STR1\n");
                 fprintf(stdout, "PUSHS LF@$RETVAL\n");
                 fprintf(stdout, "POPFRAME\n");
