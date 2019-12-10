@@ -300,6 +300,7 @@ int statement(char *funName, int ifNeboNe){
       tokenAct = nextToken(&error, stack, doIndent);
       if(error != OK) return error; // zkoumani lexikalniho erroru
 
+      //cekujeme jestli se nesnazime napsat neco do 'funkce'
       symtableItem *tmpItem = searchSymbolTable(tableG, tmpToken);
       if(tmpItem != NULL && tmpItem->type == FUNCTION){
         fprintf(stderr, "snazite se definovat promennou, ktera ma stejny nazev jako nejaka funkce\n");
@@ -365,6 +366,7 @@ int statement(char *funName, int ifNeboNe){
         }
       }
 
+      //checkujeme jestli se nejedna o volani funkce
       token *someTokenThatIUsedToKnow;
       someTokenThatIUsedToKnow = NULL;
       if(tokenAct.type == STR){
@@ -373,8 +375,15 @@ int statement(char *funName, int ifNeboNe){
         if(tmpItem1 != NULL && tmpItem1->type == FUNCTION){
           tokenAct = nextToken(&error, stack, doIndent);
           if(error != OK) return error; // zkoumani lexikalniho erroru
+          if(tmpItem1->defined == false){
+            fprintf(stderr, "snazite se volat nejakou funkci, ktera jeste neni definovana\n");
+            return SEM_DEF_ERR;
+          }
 
-          if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
+          if(tokenAct.type != LEFTBRACKET){
+            fprintf(stderr, "volate spatne funkci, nebo funkci nepouzivate jako funkci\n");
+            return PARSING_ERR;
+          }
 
           result = callParams(funName,tmpToken.attribute.string->string);
           if(result != OK) return result;
@@ -528,6 +537,10 @@ int statement(char *funName, int ifNeboNe){
       symtableItem *tmpItem1 = searchSymbolTable(tableG, tmpToken); //funkce v tabulce
       if(tmpItem == NULL || tmpItem->type != FUNCTION){
         fprintf(stderr, "snazite se volat nejakou funkci, ktera funkce vubec neni\n");
+        return SEM_DEF_ERR;
+      }
+      else if(tmpItem->defined == false){
+        fprintf(stderr, "snazite se volat nejakou funkci, ktera jeste neni definovana\n");
         return SEM_DEF_ERR;
       }
 
@@ -701,26 +714,13 @@ int function(){
 
     if(tokenAct.type != STR) return PARSING_ERR; //za def musi nasledovat identifikator
     smartString *s = tokenAct.attribute.string;
-    //musi nasledovat '('
-    /*tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-    if(tokenAct.type != LEFTBRACKET){
-      fprintf(stderr, "Za DEF ID musi nasledovat ( \n");
-      return PARSING_ERR;
-    }
-
-    tokenAct = nextToken(&error, stack, doIndent);
-    if(error != OK) return error; // zkoumani lexikalniho erroru
-    while(tokenAct.type != RIGHTBRACKET){
-      tokenAct = nextToken(&error, stack, doIndent);
-      if(error != OK) return error; // zkoumani lexikalniho erroru
-    }*/
     //----------------------------------------------------------------
     token tmpToken = tokenAct;
     tokenAct = nextToken(&error, stack, doIndent);
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
     symtableItem *aktualniFunkce = searchSymbolTableWithString(tableG, s->string);
+    aktualniFunkce->defined = true;
     generateInstruction(I_STARTOFFUNC, s->string, aktualniFunkce, NULL);
     if(tokenAct.type != LEFTBRACKET){
       fprintf(stderr, "za DEF ID ma nasledovat  (\n");
@@ -1172,6 +1172,8 @@ int initFunctions(){
               return SEM_DEF_ERR;
             }
             insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
+            symtableItem *currentFunction = searchSymbolTable(tableG, tokenAct);
+            currentFunction->defined = false;
         }
 
         tokenAct = nextToken(&error, stack, doIndent);
@@ -1200,6 +1202,7 @@ void addBuildInFunc(){
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
   symtableItem *tmpIT = searchSymbolTable(tableG, tmpToken);
+  tmpIT->defined = true;
 
   tmpIT->elementType.function->argCount = 0;
 
@@ -1218,7 +1221,7 @@ void addBuildInFunc(){
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
   symtableItem *tmpIT0 = searchSymbolTable(tableG, tmpToken);
-
+  tmpIT0->defined = true;
   tmpIT0->elementType.function->argCount = 0;
 
   //----------------------INPUTF
@@ -1236,7 +1239,7 @@ void addBuildInFunc(){
   insertSymbolTable(tableG, tmpToken, FUNCTION); //vlozeni funkce do tabulky funkci
 
   symtableItem *tmpIT1 = searchSymbolTable(tableG, tmpToken);
-
+  tmpIT1->defined = true;
   tmpIT1->elementType.function->argCount = 0;
 
   //-------------------PRINT
@@ -1254,7 +1257,7 @@ void addBuildInFunc(){
 
   symtableItem *tmpIT2 = searchSymbolTable(tableG, tmpToken);
   tmpIT2->elementType.function->argCount = -1;
-
+  tmpIT2->defined = true;
 
   //-------------------LEN
   smartString *tmpString3 = malloc(sizeof(smartString));
@@ -1277,6 +1280,7 @@ void addBuildInFunc(){
   item->argCount = 1;
   symtableItem *tmpITT = searchSymbolTableWithString(tableG, "len");
   item->sT = tmpITT->elementType.function->sT;
+  tmpITT->defined = true;
 
   tmpITT->next = tableG->symtabList[hash("len")]; //pokud je něco na stejným indexu =)
   tmpITT->elementType.function = item;
@@ -1314,7 +1318,7 @@ void addBuildInFunc(){
   item0->argCount = 3;
   symtableItem *tmpITT0 = searchSymbolTableWithString(tableG, "substr");
   item0->sT = tmpITT0->elementType.function->sT;
-
+  tmpITT0->defined = true;
   tmpITT0->next = tableG->symtabList[hash("substr")]; //pokud je něco na stejným indexu =)
   tmpITT0->elementType.function = item0;
   tableG->symtabList[hash("substr")] = tmpITT0;
@@ -1344,7 +1348,7 @@ void addBuildInFunc(){
   item1->argCount = 2;
   symtableItem *tmpITT1 = searchSymbolTableWithString(tableG, "ord");
   item1->sT = tmpITT1->elementType.function->sT;
-
+  tmpITT1->defined = true;
   tmpITT1->next = tableG->symtabList[hash("ord")]; //pokud je něco na stejným indexu =)
   tmpITT1->elementType.function = item1;
   tableG->symtabList[hash("ord")] = tmpITT1;
@@ -1370,7 +1374,7 @@ void addBuildInFunc(){
   item2->argCount = 1;
   symtableItem *tmpITT2 = searchSymbolTableWithString(tableG, "chr");
   item2->sT = tmpITT2->elementType.function->sT;
-
+  tmpITT2->defined = true;
   tmpITT2->next = tableG->symtabList[hash("chr")]; //pokud je něco na stejným indexu =)
   tmpITT2->elementType.function = item2;
   tableG->symtabList[hash("chr")] = tmpITT2;
@@ -1417,4 +1421,3 @@ int main(){
 //// fucking komenty
 // semanticka chyba --- zastineni promenne
 // chyba pri definovani promenne v ifu/elsu
-//definovani funkce az za jejim volanim
