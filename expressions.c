@@ -83,7 +83,7 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
 }
 
 int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce) {
-  token* token;
+  token* token, tokenPrvni, tokenDruhy;
   int state = 0;
   int zpracuj = 0;
   int rule = 0;
@@ -96,6 +96,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
       case 0: //prvně to vždy půjde sem
         if (data->type == typeNonterm) {
           state = 1;
+          tokenPrvni = *(data->token);
           type1 = data->dataType;
         } else if (data->type == typeToken) {
           if (data->token->type == RIGHTBRACKET) {
@@ -180,9 +181,11 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         if (data->type == typeNonterm) {
           if (zpracuj == 1) { //tady řeším závorky
             state = 4;
+            tokenDruhy = *(data->token);
             type1 = data->dataType;
           } else {
             state = 3;
+            tokenDruhy = *(data->token);
             type2 = data->dataType;
           }
         }
@@ -215,13 +218,13 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               } else if (type1 == KEYWORD && zesym == 0) { //pushuju None do generátoru
-                int* typetokenu = (int *) malloc(sizeof(int));
-                *typetokenu = token->type;
-                generateInstruction(I_PUSHS, NULL, typetokenu, NULL);
+                //int* typetokenu = (int *) malloc(sizeof(int));
+                //*typetokenu = token->type;
+                //generateInstruction(I_PUSHS, NULL, typetokenu, NULL);
               } else if (zesym == 1) { //z globálního symtablu, pushuju název proměnné
-                char* promena = (char*) malloc(sizeof(char));
-                promena = token->attribute.string->string;
-                generateInstruction(I_PUSHS, promena, NULL, promena);
+                //char* promena = (char *) malloc(sizeof(char));
+                //promena = token->attribute.string->string;
+                //generateInstruction(I_PUSHS, promena, NULL, promena);
               } else if (zesym == 2) { //ze symtablu funkce nebo z jejího parametru
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
