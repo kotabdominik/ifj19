@@ -254,17 +254,17 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
+  checkInt2Float();
   generateInputf();
   generateInputi();
   generateInputs();
-  checkFloat2Int();
   /*
+  checkFloat2Int();
   checkInt2FloatDiv();
-  checkInt2Float();
   checkString();
   generateLen();
   generateOrd();
-  //generateSubstr();
+    //generateSubstr();
   generateChr();
   //generatePrint();*/
 }
@@ -332,12 +332,7 @@ int generateInstructionREE(tDLList*list){
                 }
                 else if(*tmp == LITERAL){
                   char* tmp8 = list->First->Instruction.addr1;
-                  if (strcmp(tmp8, "") == 0){
-                    fprintf(stdout, "PUSHS bool@false\n");
-                  }
-                  else{
-                    fprintf(stdout, "PUSHS string@%s\n", tmp8);
-                  }
+                  fprintf(stdout, "PUSHS string@%s\n", tmp8);
                 }
                 else if(*tmp == FLOAT){
                   double* tmp8 = list->First->Instruction.addr1;
@@ -790,14 +785,15 @@ void generateIf(tDLList*list, void *origi){
   generateInstructionREE(list);
   fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
   fprintf(stdout, "POPS LF@$COND%p\n", origi);
-  ////////////
+
   fprintf(stdout, "DEFVAR LF@$TYPE%p\n", origi);
   fprintf(stdout, "TYPE LF@$TYPE%p LF@$COND%p\n",origi, origi);  //'' None 0
 
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_INT%p LF@$TYPE%p string@int\n", origi, origi);  // 0
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_FLOAT%p LF@$TYPE%p string@float\n", origi, origi);  //0.0
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_STRING%p LF@$TYPE%p string@string\n", origi, origi);  // None
-  fprintf(stdout, "JUMPIFEQ $SKIPPUSHTRUE%p LF@$TYPE%p string@bool\n", origi, origi);  // ''
+  fprintf(stdout, "JUMPIFEQ $SKIPPUSHTRUE%p LF@$TYPE%p string@bool\n", origi, origi);  // None
+  fprintf(stdout, "JUMPIFEQ $PUSHFALSE%p LF@$COND%p string@\n", origi, origi);  // None
 
   fprintf(stdout, "JUMP $SKIPPUSHFALSE%p\n",origi);
 
@@ -825,7 +821,7 @@ void generateIf(tDLList*list, void *origi){
   fprintf(stdout, "LABEL $SKIPPUSHFALSE%p\n",origi);
   fprintf(stdout, "MOVE LF@$COND%p bool@true\n",origi);
   fprintf(stdout, "LABEL $SKIPPUSHTRUE%p\n",origi);
-  ////////////
+
   //fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true LF@$COND%p\n", origi, origi);
   fprintf(stdout, "JUMPIFNEQ $ELSE%p bool@true LF@$COND%p\n",origi, origi);
   list->First = list->First->rptr;
@@ -867,8 +863,8 @@ void generateWhile(tDLList*list, void *origi){
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_INT%p LF@$TYPE%p string@int\n", origi, origi);  // 0
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_FLOAT%p LF@$TYPE%p string@float\n", origi, origi);  //0.0
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_STRING%p LF@$TYPE%p string@string\n", origi, origi);  // None
-  fprintf(stdout, "JUMPIFEQ $PUSHFALSE%p LF@$COND%p nil@nil\n", origi, origi);  // None
-  fprintf(stdout, "JUMPIFEQ $SKIPPUSHTRUE%p LF@$TYPE%p string@bool\n", origi, origi);  // ''
+  fprintf(stdout, "JUMPIFEQ $SKIPPUSHTRUE%p LF@$TYPE%p string@bool\n", origi, origi);  // None
+  fprintf(stdout, "JUMPIFEQ $PUSHFALSE%p LF@$COND%p string@\\000\n", origi, origi);  // None
   ///cond je okey
   fprintf(stdout, "JUMP $SKIPPUSHFALSE%p\n",origi);
   ///cond je int tak check ci nula
