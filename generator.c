@@ -255,7 +255,6 @@ void generateChr(){
 
 void generateBuiltIn(){
   generateSubstr();
-  /*
   checkInt2Float();
   generateInputf();
   generateInputi();
@@ -266,6 +265,7 @@ void generateBuiltIn(){
   generateLen();
   generateOrd();
   generateChr();
+  /*
   //generatePrint();*/
 }
 
@@ -481,9 +481,11 @@ int generateInstructionREE(tDLList*list){
                 if(0){}
                 symtableItem *localVar = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", localVar->key);
-                actNumberOfLF++;
-                aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
-                (aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
+                if(list->First->Instruction.addr3 == NULL){
+                  actNumberOfLF++;
+                  aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
+                  (aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
+                }
                 break;
             case(I_DEFVARLF):
                 if(0){}
@@ -778,7 +780,7 @@ void defenestrace(int antiHussites){
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
 void generateIf(tDLList*list, void *origi){
-
+  int pocetLokalnichPred = actNumberOfLF;
   fprintf(stdout, "CREATEFRAME\n");
   for(int i = 0; i < actNumberOfLF; i++){
         fprintf(stdout,"DEFVAR TF@$VAR%s\n", (aktualniArgumenty[i]).key);
@@ -840,12 +842,16 @@ void generateIf(tDLList*list, void *origi){
         fprintf(stdout,"PUSHS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
   fprintf(stdout, "POPFRAME\n");
+  for(int i = actNumberOfLF-1; i>=pocetLokalnichPred; i--){
+    fprintf(stdout,"DEFVAR LF@$VAR%s\n", (aktualniArgumenty[i]).key);
+  }
   for(int i = 0; i < actNumberOfLF; i++){
         fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
 }
 
 void generateWhile(tDLList*list, void *origi){
+  int pocetLokalnichPred = actNumberOfLF;
   fprintf(stdout, "CREATEFRAME\n");
   //////predavanie hodnot i guess
   for(int i = 0; i < actNumberOfLF; i++){
@@ -910,6 +916,9 @@ void generateWhile(tDLList*list, void *origi){
         fprintf(stdout,"PUSHS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
   fprintf(stdout, "POPFRAME\n");
+  for(int i = actNumberOfLF-1; i>=pocetLokalnichPred; i--){
+    fprintf(stdout,"DEFVAR LF@$VAR%s\n", (aktualniArgumenty[i]).key);
+  }
   for(int i = 0; i < actNumberOfLF; i++){
         fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }

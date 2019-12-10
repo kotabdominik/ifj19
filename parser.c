@@ -350,7 +350,7 @@ int statement(char *funName, int ifNeboNe){
           // FOR IF --------------------------------------
           if(ifNeboNe == JSEMVELSU && tmpItem != NULL){
             if(tmpItem->definujuVIfu == JSEMVIFU){
-              generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, NULL);
+              generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, tmpItem);
             }
           }
           // FOR IF ---------------------------------------
@@ -358,6 +358,12 @@ int statement(char *funName, int ifNeboNe){
             insertSymbolTable(tmp->elementType.function->sT, tmpToken, VARIABLE);
             tmpItem = searchSymbolTable(tmp->elementType.function->sT, tmpToken);
             tmpItem->defined = false;
+            if(ifNeboNe == JSEMVIFU){
+              tmpItem->definujuVIfu = JSEMVIFU;
+            }
+            else{
+              tmpItem->definujuVIfu = -1;
+            }
             generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, NULL);
           }
           else{
