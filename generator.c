@@ -70,6 +70,11 @@ void generateInputi(){
     fprintf(stdout, "PUSHFRAME\n");
     fprintf(stdout, "DEFVAR LF@$RETVAL\n");
     fprintf(stdout, "READ LF@$RETVAL int\n");
+    fprintf(stdout, "DEFVAR LF@$TMPVAL\n");
+    fprintf(stdout, "TYPE LF@$TMPVAL LF@$RETVAL\n");
+    fprintf(stdout, "JUMPIFEQ $INTOK LF@$TMPVAL string@int\n");
+    fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+    fprintf(stdout, "LABEL $INTOK\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
@@ -84,8 +89,9 @@ void generateInputf(){
 
     fprintf(stdout, "DEFVAR LF@$TMPVAL\n");
     fprintf(stdout, "TYPE LF@$TMPVAL LF@$RETVAL\n");
-    fprintf(stdout, "JUMPIFNEQ $ZEROERROR LF@$TMPVAL string@float\n");
-
+    fprintf(stdout, "JUMPIFEQ $FLOATOK LF@$TMPVAL string@float\n");
+    fprintf(stdout, "MOVE LF@$RETVAL string@None\n");
+    fprintf(stdout, "LABEL $FLOATOK\n");
     fprintf(stdout, "PUSHS LF@$RETVAL\n");
     fprintf(stdout, "POPFRAME\n");
     fprintf(stdout, "RETURN\n");
@@ -248,17 +254,17 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  /*
-  checkFloat2Int();
-  checkInt2Float();
-  checkInt2FloatDiv();
-  checkString();
-  generateLen();
   generateInputf();
   generateInputi();
+  generateInputs();
+  checkFloat2Int();
+  /*
+  checkInt2FloatDiv();
+  checkInt2Float();
+  checkString();
+  generateLen();
   generateOrd();
   //generateSubstr();
-  generateInputs();
   generateChr();
   //generatePrint();*/
 }
@@ -435,9 +441,13 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_IDIVS):
+                //fprintf(stdout, "IDIVS\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$VAL2\n", 0);
+                fprintf(stdout, "PUSHS LF@$VAL2\n");//delitel
                 fprintf(stdout, "IDIVS\n");
-
-                /*fprintf(stdout, "CREATEFRAME\n");
+              /*  fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 //DEFINICE PROMENNYCH
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -454,12 +464,12 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "CALL $checkFLT2INT\n");
                 fprintf(stdout, "DEFVAR LF@$T3\n");
                 fprintf(stdout, "TYPE LF@$T3\n");
-                fprintf(stdout, "JUMPIFEQ $ int@%d LF@$2\n", 0);
+                //fprintf(stdout, "JUMPIFEQ $ int@%d LF@$2\n", 0);
                 fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$2\n", 0);
                 fprintf(stdout, "DIV LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
-                fprintf(stdout, "POPFRAME\n");
-                */
+                fprintf(stdout, "POPFRAME\n");*/
+
                 break;
             case(I_DEFVAR):
                 if(0){}
@@ -865,8 +875,8 @@ void generateWhile(tDLList*list, void *origi){
 
 // cekovat jestli do inputi inputf inputs hazis spravny params
 
-// CHYBA kdyz dame napr    if 5:         .... None, 0  a  '' (prazdny retezec) maji byt nepravda, ostatni ma byt pravda
+// IF už funguje pre None 0 0.0 as false others true
 // tohle by se melo cekovat nekde pred tim, jak je condition u ifu a whilu ... takovy to jumpifneq
+// CHYBA jindra ako mam chytat fokin '' ked checkujem if?
 
-
-//  8//0 nevyhodi error 9
+//  IDIVS vyhodi error9 ak deli nulou, ale necheckuje parametry lebo sa to meemuje a jindra to zakomentoval not sure why right now
