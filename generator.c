@@ -478,8 +478,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "JUMPIFEQ $SEM_ERROR LF@$CHECKNONE string@string\n");
                 fprintf(stdout, "TYPE LF@$CHECKNONE LF@$VAL2\n");
                 fprintf(stdout, "JUMPIFEQ $SEM_ERROR LF@$CHECKNONE string@string\n");
-                fprintf(stdout, "JUMPIFEQ $ZEROERROR int@0 LF@$VAL2\n");
                 fprintf(stdout, "CALL $checkFLT2INT\n");
+                fprintf(stdout, "JUMPIFEQ $ZEROERROR int@0 LF@$VAL2\n");
                 //fprintf(stdout, "DEFVAR LF@$T3\n");
                 //fprintf(stdout, "TYPE LF@$T3\n");
                 //fprintf(stdout, "JUMPIFEQ $ int@%d LF@$2\n", 0);
