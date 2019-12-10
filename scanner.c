@@ -32,9 +32,9 @@
 #define FALSE 0           //
 
 
-//FILE *f;
+
 int stackReset = FALSE;
-static int TotalTokenCount = 0;
+static int TotalTokenCount = 0;///////////////treba to este?
 
 /*
 void setFile(char* sourceFile){
@@ -51,15 +51,14 @@ void resetToken(){
 */
 
 void resetToken(){
-    rewind(stdin); ///f
+    rewind(stdin);
     stackReset = TRUE;
     TotalTokenCount = 0;
 }
 
 token ungetToken(int *error, tStack *stack, int doIndent){
 
-    rewind(stdin);      ///(f)
-    //stackReset = TRUE;
+    rewind(stdin);
     token Token;
     int tmp = TotalTokenCount - 1;
     TotalTokenCount = 0;
@@ -160,7 +159,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
         return Token;
     }
     stringInit(s);
-    //c = getchar()
 
     int state = STATE_START;
     while (c = getchar(), c != EOF) {
@@ -315,7 +313,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
                     if (c == 32) { //space
                       stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '2');
-                      //c = getchar();
                       continue;
                     }
                     if (c == EOF) {
@@ -324,7 +321,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                     }
                     else if (c == '\n') { // Spraví EOL
                       stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '1');stringAddChar(s, '0');
-                      //c = getchar();
                       continue;
                   }
                     stringAddChar(s, c);
@@ -332,13 +328,13 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                 Token.attribute.string = s;
                 return Token;
 
-            case '#':
+            case '#':///koment
                 c = getchar();
                 free(s);
                 while ((c != '\n') && (c != EOF)){
                     c = getchar();
                 }
-                if (c == '\n'){
+                if (c == '\n'){///yeetne eol token, ten sa basically ocakava
                     c = getchar();
                     Token.type = EOL;
                     ungetc(c, stdin);
@@ -504,13 +500,10 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 }
                                 break;
                         }
-
-                        //break; //Vraciam sa do switch (c)
                     }
                 }
 
                 else if (c == '\'') { // Robíme literál
-                    //stringAddChar(s, c);
                     c = getchar();
                     state = STATE_P10;
 
@@ -563,9 +556,8 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                 }
                                 continue;
 
-                            case (STATE_P11): //Riešime či escape alebo nah   ////////uhhh idk ako s '//' ale asi fajn
+                            case (STATE_P11): //Riešime či escape alebo nah
                                 if (c > 32 && c != 35 && c != 92 && c != 39 && c != 44 && c != 'n' && c != 't' && c != 'x') {//nebola
-                                    //stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '9');stringAddChar(s, '2');
                                     stringAddChar(s, c);
                                     c = getchar();
                                     state = STATE_P10;
@@ -633,7 +625,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                                     char tmp[2];
                                     sprintf(tmp, "%c", decvalue); //convertnem decvalue na ASCII znak
                                     c = *tmp;
-                                    stringAddChar(s, c);
+                                    stringAddChar(s, c);          //realne proud ako to mam vymyslene
                                     c = getchar();
                                     state = STATE_P10;
                                 } else {
@@ -659,12 +651,6 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                   Token.type = BROKEN;
                   return Token;
                 }
-
-                /*
-                *error = LEXICAL_ERR;
-                Token.type = BROKEN;
-                return Token;
-                */
         }
     }
     Token.type = EOFTOKEN;
