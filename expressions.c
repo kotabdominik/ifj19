@@ -199,32 +199,33 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
             }
             newData->type = typeNonterm;
             if (zpracuj == 2) { //zpracování i -> E
+              int* typetokenu = (int *) malloc(sizeof(int));
               if (type1 == INT && zesym == 0) { //pushuju INT do generátoru
                 int* hodnota = (int*) malloc(sizeof(int));
-                int* typetokenu = (int*) malloc(sizeof(int));
+                //int* typetokenu = (int*) malloc(sizeof(int));
                 *hodnota = token->attribute.INT;
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == LITERAL && zesym == 0) { //pushuju STR do generátoru
-                char* hodnota = (char *) malloc(sizeof(char));
-                int* typetokenu = (int *) malloc(sizeof(int));
-                hodnota = token->attribute.string->string;
-                *typetokenu = token->type;
-                generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
-              } else if (type1 == FLOAT && zesym == 0) { //pushuju FLOAT do generátoru
-                double* hodnota = (double *) malloc(sizeof(double));
-                int* typetokenu = (int *) malloc(sizeof(int));
-                *hodnota = token->attribute.FLOAT;
-                *typetokenu = token->type;
-                generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               } else if (type1 == KEYWORD && zesym == 0) { //pushuju None do generátoru
-                int* typetokenu = (int *) malloc(sizeof(int));
+                //int* typetokenu = (int *) malloc(sizeof(int));
                 *typetokenu = token->type;
                 generateInstruction(I_PUSHS, NULL, typetokenu, NULL);
               } else if (zesym == 1) { //z globálního symtablu, pushuju název proměnné
                 char* promena = (char *) malloc(sizeof(char));
                 promena = token->attribute.string->string;
                 generateInstruction(I_PUSHS, promena, NULL, promena);
+              } else if (type1 == LITERAL && zesym == 0) { //pushuju STR do generátoru
+                char* hodnota = (char *) malloc(sizeof(char));
+                //int* typetokenu = (int *) malloc(sizeof(int));
+                hodnota = token->attribute.string->string;
+                *typetokenu = token->type;
+                generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
+              } else if (type1 == FLOAT && zesym == 0) { //pushuju FLOAT do generátoru
+                double* hodnota = (double *) malloc(sizeof(double));
+                //int* typetokenu = (int *) malloc(sizeof(int));
+                *hodnota = token->attribute.FLOAT;
+                *typetokenu = token->type;
+                generateInstruction(I_PUSHS, hodnota, typetokenu, NULL);
               } else if (zesym == 2) { //ze symtablu funkce nebo z jejího parametru
                 char* promena = (char*) malloc(sizeof(char));
                 promena = token->attribute.string->string;
