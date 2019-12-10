@@ -138,7 +138,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                   }
                 }
                 if (zesym == 0) { //nebyl to ani arg
-                  item == NULL;
+                  item = NULL; //uhh doteď tam bylo místo '=' "==" a fungovalo to, takže kdyžtak odstranit????
                 }
               } else if (tableG && !item) { //nebylo to ve funkci
                 item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);

@@ -31,7 +31,6 @@ typedef union{
     char *string;
     int INT;
     double FLOAT;
-    bool BOOL;
 } value;
 
 typedef enum { //možné datové typy - 10.3 v zadání
@@ -47,19 +46,19 @@ typedef enum {
 	VARIABLE,
 } elementType;
 
-typedef struct {
+typedef struct { //položka má data proměnné
 	value value;
 	dataType type;
 } variableData;
 
-typedef struct {
+typedef struct { //položka má data funkce
 	dataType returnType;
 	int argCount;
 	struct symtableItm *arguments;
 	struct symtable *sT;
 } functionData;
 
-typedef struct symtableItm { //tady musí být
+typedef struct symtableItm { //struktura položky v tabulce symbolů
   bool defined; //je poprvé přiřazena hodnota
   int definujuVIfu;
 	struct symtableItm *next;
@@ -71,7 +70,7 @@ typedef struct symtableItm { //tady musí být
 	elementType type;
 } symtableItem;
 
-typedef struct symtable { //tady musi
+typedef struct symtable { //struktura tabulky symbolů
 	unsigned int size;
   symtableItem *currentFunc;
   symtableItem *symtabList[];
@@ -80,7 +79,7 @@ typedef struct symtable { //tady musi
 
 unsigned long hash(char *str); //získání hashe
 symbolTable *initSymbolTable(unsigned int size); //init celého symbol tablu
-void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu
+void freeSymbolTable(symbolTable *sT); //uvolnění celého symbol tablu, nejspíš sekfaultuje
 void insertSymbolTable(symbolTable *sT, token token, elementType type); //přidání prvku do symbol tablu
 symtableItem *searchSymbolTable(symbolTable *sT, token token); //vrací ukazatel na prvek v symbol tablu pokud tam je, jinak NULL
 symtableItem *searchSymbolTableWithString(symbolTable *sT, char* string); //vrací ukazatel na prvek v symbol tablu pokud tam je, jinak NULL
