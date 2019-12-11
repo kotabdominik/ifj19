@@ -374,25 +374,28 @@ int generateInstructionREE(tDLList*list){
                 }
                 break;
             case(I_ADDS):
-                fprintf(stdout, "CREATEFRAME\n");
-                fprintf(stdout, "PUSHFRAME\n");
-                fprintf(stdout, "DEFVAR LF@$1\n");
-                fprintf(stdout, "DEFVAR LF@$2\n");
-                fprintf(stdout, "DEFVAR LF@$VAL1\n");
-                fprintf(stdout, "DEFVAR LF@$VAL2\n");
-                fprintf(stdout, "DEFVAR LF@$REESULT\n");
-                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
-                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
-                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-                //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
-                //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
-                fprintf(stdout, "CALL $checkSTRING\n");////shoudlla be ok neotestovane
-                fprintf(stdout, "CALL $checkINT2FLT\n");
-                fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
-                fprintf(stdout, "PUSHS LF@$REESULT\n");
-                fprintf(stdout, "POPFRAME\n");
-            break;
+                  fprintf(stdout, "CREATEFRAME\n");
+                  fprintf(stdout, "PUSHFRAME\n");
+                  fprintf(stdout, "DEFVAR LF@$1\n");
+                  fprintf(stdout, "DEFVAR LF@$2\n");
+                  fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                  fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                  fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                  fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                  fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                  fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                  fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                  fprintf(stdout, "CALL $checkSTRING\n");////shoudlla be ok neotestovane
+                  fprintf(stdout, "JUMPIFEQ $CONCAT%p LF@$BOOLCHECK_00 bool@true\n", &list->First->Instruction.instType);
+                  fprintf(stdout, "CALL $checkINT2FLT\n");
+                  fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
+                  fprintf(stdout, "JUMP $RESULT_END%p\n",&list->First->Instruction.instType);
+                  fprintf(stdout, "LABEL $CONCAT%p\n",&list->First->Instruction.instType);
+                  fprintf(stdout, "CONCAT LF@$REESULT LF@$1 LF@$2\n");
+                  fprintf(stdout, "LABEL $RESULT_END%p\n",&list->First->Instruction.instType);
+                  fprintf(stdout, "PUSHS LF@$REESULT\n");
+                  fprintf(stdout, "POPFRAME\n");
+                  break;
             case(I_SUBS):
                 fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
@@ -806,6 +809,23 @@ void defenestrace(int antiHussites){
     fprintf(stdout, "PUSHS LF@$WINDOW%d\n", i);
   }
 }
+/*
+fprintf(stdout,"%s\n", (aktualniArgumenty[i]).key);
+fprintf(stdout,"%s\n", (aktualniArgumenty[j+1]).key);
+fprintf(stdout,"REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n");
+
+  for (j = i + 1; j < actNumberOfLF - 1; j++){ ///o jeden viac aby neporovnavalo 2 rovnake vars
+
+
+    if (strcmp(aktualniArgumenty[i].key, aktualniArgumenty[j].key) == 0){///najde 2 rovnake mena vars
+      break;
+    }
+
+  }
+  if (strcmp(aktualniArgumenty[i].key, aktualniArgumenty[j].key) == 0){
+    continue;
+  }
+*/
 
 ///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
@@ -972,7 +992,33 @@ void doDefVars(tDLList*list){
   while(list->Act != NULL){
     if(list->Act->Instruction.instType == I_DEFVAR){
       symtableItem *ree = list->Act->Instruction.addr1;
-      fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
+      symtableItem *reeNext = list->Act->rptr->Instruction.addr1;
+
+      ////
+      // Ak je momentalny a buduci ree->key rovnaky tak to skipni inak ho napis
+      // Potrebujes spravit loop ktory kontroluje momentalny a next (momentalny + i (i = 1)) a ikrementnes i (resp. posunies sa v liste skrz daky tmp pointer like
+      // tmp = list->Act->rptr), ten sa resetne zase ked sa posunie momentalny
+      // ak najde string zhodu da continue na while a ide znova posunuty, ak nenajde zhodu tak ho moze printnut
+      // hadam ti to dava zmysel lebo ja ked som to zacal pisat tak som dostal iba segfault xddd
+      ////
+
+      /*
+      //moj meme pokus
+      if (list->Act->rptr){
+
+        if (strcmp(ree->key, reeNext->key) == 0){
+          list->Act = list->Act->rptr;
+          continue;
+        }
+        else {
+        fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
+        }
+      }
+      else {
+          fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
+      }
+      */
+
       if(list->Act->lptr != NULL){
         list->Act->lptr->rptr = list->Act->rptr;
       }
