@@ -83,7 +83,10 @@ int getPrecedenceOperatorValue(token* stackToken, token* vstupniToken) {
 }
 
 int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG, char* jmenoFunkce) {
-  token* token;//, tokenPrvni, tokenDruhy;
+  token* token = malloc(sizeof(token));
+  token->attribute.INT = 0;
+  token->type = 0;
+  sData* data = NULL;
   int state = 0;
   int zpracuj = 0;
   int rule = 0;
@@ -91,12 +94,11 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
   int zesym = 0;
   while (rule == 0) { //dokud to neudělá nějakou konverzi podle i -> E, E + E -> E, (E) -> E atd..
     int type1, type2;
-    sData* data = tokenStackTop(s);
+    data = tokenStackTop(s);
     switch (state) {
       case 0: //prvně to vždy půjde sem
         if (data->type == typeNonterm) {
           state = 1;
-          //tokenPrvni = *(data->token);
           type1 = data->dataType;
         } else if (data->type == typeToken) {
           if (data->token->type == RIGHTBRACKET) {
@@ -179,11 +181,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
         if (data->type == typeNonterm) {
           if (zpracuj == 1) { //tady řeším závorky
             state = 4;
-            //tokenDruhy = *(data->token);
             type1 = data->dataType;
           } else {
             state = 3;
-            //tokenDruhy = *(data->token);
             type2 = data->dataType;
           }
         }
@@ -191,7 +191,7 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
       case 3:
         if (state == 3) {
           if (data->type == typeHandler) {
-            sData* newData = malloc(sizeof(sData));
+            sData* newData = calloc(1, sizeof(sData));
             if (newData == NULL) {
               return -2; //intern err
             }

@@ -100,7 +100,6 @@ void addHandler(tokenStack *s, sData* sData) {
             //malloc ree
           }
           newItem->data->type = typeHandler;
-          newItem->data->token = sData->token;
           return;
         }
         prev = current;
