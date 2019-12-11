@@ -35,8 +35,8 @@
 
 int actNumberOfLF = 0;
 symtableItem *aktualniArgumenty = NULL;
-/*int pointerCounter = 0;
 int counterZanoreni = 0;
+/*int pointerCounter = 0;
 void *theUltimatePointer;*/
 
 void degenerate(tDLList *list){
@@ -512,21 +512,21 @@ int generateInstructionREE(tDLList*list){
                 //fprintf(stdout, "LABEL $SKIPDEF%p%d\n", pointerForWhile, pointerCounter);
                 break;
             case(I_DEFVARLOCAL):
-                if(0){}
+                /*if(0){}
                 symtableItem *localVar = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", localVar->key);
                 if(list->First->Instruction.addr3 == NULL){
                   actNumberOfLF++;
                   aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
                   (aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
-                }
+                }*/
                 break;
             case(I_DEFVARLF):
-                if(0){}
+                /*if(0){}
                 char *notree = list->First->Instruction.addr1;
                 fprintf(stdout, "DEFVAR LF@$VAR%s\n", notree);
                 fprintf(stdout, "POPS LF@$VAR%s\n", notree);
-                //actNumberOfLF++;
+                //actNumberOfLF++;*/
                 break;
             case(I_POPS):
                 if(0){}
@@ -686,6 +686,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 list->First = list->First->rptr;
+                doDefVarsLocal(list);
                 generateInstructionREE(list);
                 break;
             case(I_ENDOFFUNC):
@@ -694,6 +695,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPFRAME\n");
                 fprintf(stdout, "RETURN\n");
                 fprintf(stdout, "LABEL $FUNCTIONEND%s\n", idk2);
+                counterZanoreni = 0;
                 actNumberOfLF = 0;
                 free(aktualniArgumenty);
                 return 666;
@@ -706,6 +708,10 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "CALL $FUNCTION%s\n", nazevFunkce);
                 break;
             case(I_RETURN):
+                for(int i = 0; i < counterZanoreni; i++) {
+                  fprintf(stdout, "POPFRAME\n");
+                }
+                fprintf(stdout, "POPFRAME\n");
                 fprintf(stdout, "RETURN\n");
                 break;
         }
@@ -834,8 +840,8 @@ fprintf(stdout,"REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n");
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
 void generateIf(tDLList*list, void *origi){
-  /*counterZanoreni++;
-  if(counterZanoreni == 1){
+  counterZanoreni++;
+  /*if(counterZanoreni == 1){
     fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", origi);
     fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", origi);
   }*/
@@ -907,11 +913,11 @@ void generateIf(tDLList*list, void *origi){
   for(int i = 0; i < actNumberOfLF; i++){
         fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
-  //counterZanoreni--;
+  counterZanoreni--;
 }
 
 void generateWhile(tDLList*list, void *origi){
-  //counterZanoreni++;
+  counterZanoreni++;
   //fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", origi);
   //fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", origi);
   //int pocetLoopov = 0;
@@ -987,7 +993,7 @@ void generateWhile(tDLList*list, void *origi){
   for(int i = 0; i < actNumberOfLF; i++){
         fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
-  //counterZanoreni--;
+  counterZanoreni--;
 }
 
 void doDefVars(tDLList*list){
@@ -996,31 +1002,6 @@ void doDefVars(tDLList*list){
     if(list->Act->Instruction.instType == I_DEFVAR){
       symtableItem *ree = list->Act->Instruction.addr1;
       fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
-
-      ////
-      // Ak je momentalny a buduci ree->key rovnaky tak to skipni inak ho napis
-      // Potrebujes spravit loop ktory kontroluje momentalny a next (momentalny + i (i = 1)) a ikrementnes i (resp. posunies sa v liste skrz daky tmp pointer like
-      // tmp = list->Act->rptr), ten sa resetne zase ked sa posunie momentalny
-      // ak najde string zhodu da continue na while a ide znova posunuty, ak nenajde zhodu tak ho moze printnut
-      // hadam ti to dava zmysel lebo ja ked som to zacal pisat tak som dostal iba segfault xddd
-      ////
-
-      /*
-      //moj meme pokus
-      if (list->Act->rptr){
-
-        if (strcmp(ree->key, reeNext->key) == 0){
-          list->Act = list->Act->rptr;
-          continue;
-        }
-        else {
-        fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
-        }
-      }
-      else {
-          fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
-      }
-      */
 
       if(list->Act->lptr != NULL){
         list->Act->lptr->rptr = list->Act->rptr;
@@ -1033,10 +1014,40 @@ void doDefVars(tDLList*list){
   }
 }
 
-// cekovat jestli do inputi inputf inputs hazis spravny params
+void doDefVarsLocal(tDLList*list){
+  list->Act = list->First;
+  while(list->Act->Instruction.instType != I_ENDOFFUNC && list->Act != NULL){
+    if(list->Act->Instruction.instType == I_DEFVARLF){
+      char *notree = list->Act->Instruction.addr1;
+      fprintf(stdout, "DEFVAR LF@$VAR%s\n", notree);
+      fprintf(stdout, "POPS LF@$VAR%s\n", notree);
+      if(list->Act->lptr != NULL){
+        list->Act->lptr->rptr = list->Act->rptr;
+      }
+      else{
+        list->First = list->First->rptr;
+      }
+    }
+    else if(list->Act->Instruction.instType == I_DEFVARLOCAL){
+      symtableItem *ree = list->Act->Instruction.addr1;
+      fprintf(stdout, "DEFVAR LF@$VAR%s\n", ree->key);
+      fprintf(stdout, "MOVE LF@$VAR%s nil@nil\n", ree->key);
+      if(list->Act->Instruction.addr3 == NULL){
+        actNumberOfLF++;
+        aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
+        (aktualniArgumenty[actNumberOfLF-1]).key = ree->key;
+      }
+
+      if(list->Act->lptr != NULL){
+        list->Act->lptr->rptr = list->Act->rptr;
+      }
+      else{
+        list->First = list->First->rptr;
+      }
+    }
+    list->Act = list->Act->rptr;
+  }
+}
 
 // IF už funguje pre None 0 0.0 as false others true
-// tohle by se melo cekovat nekde pred tim, jak je condition u ifu a whilu ... takovy to jumpifneq
 // CHYBA jindra ako mam chytat fokin '' ked checkujem if?
-
-//  IDIVS vyhodi error9 ak deli nulou, ale necheckuje parametry lebo sa to meemuje a jindra to zakomentoval not sure why right now

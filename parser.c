@@ -350,7 +350,7 @@ int statement(char *funName, int ifNeboNe){
           // FOR IF --------------------------------------
           if(ifNeboNe == JSEMVELSU && tmpItem != NULL){
             if(tmpItem->definujuVIfu == JSEMVIFU){
-              generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, tmpItem);
+              //generateInstruction(I_DEFVARLOCAL, tmpItem, NULL, tmpItem);
             }
           }
           // FOR IF ---------------------------------------
@@ -1454,7 +1454,7 @@ int main(){
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
     //setFile("txt.txt");
-    //freopen("txt.txt","r",stdin);
+    freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     if(result != OK) return result;
     //printf("%d\n", result);
