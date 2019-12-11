@@ -387,13 +387,8 @@ int generateInstructionREE(tDLList*list, void *pointerForWhile){
             //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
             //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
             fprintf(stdout, "CALL $checkSTRING\n");////shoudlla be ok neotestovane
-            fprintf(stdout, "JUMPIFEQ $CONCAT LF@$BOOLCHECK_00 bool@true\n");
             fprintf(stdout, "CALL $checkINT2FLT\n");
             fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
-            fprintf(stdout, "JUMP $RESULT_END\n");
-            fprintf(stdout, "LABEL $CONCAT\n");
-            fprintf(stdout, "CONCAT LF@$REESULT LF@$1 LF@$2\n");
-            fprintf(stdout, "LABEL $RESULT_END\n");
             fprintf(stdout, "PUSHS LF@$REESULT\n");
             fprintf(stdout, "POPFRAME\n");
             break;
