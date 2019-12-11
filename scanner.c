@@ -315,6 +315,9 @@ token nextToken(int *error, tStack *stack, int doIndent) {
                       stringAddChar(s, '\\');stringAddChar(s, '0');stringAddChar(s, '3');stringAddChar(s, '2');
                       continue;
                     }
+                    if (c == 13) { //pepe windows
+                      continue;
+                    }
                     if (c == EOF) {
                       *error = 1;
                       return Token;
