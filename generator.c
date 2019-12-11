@@ -263,6 +263,7 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
+  /*
   generateSubstr();
   checkInt2Float();
   generateInputf();
@@ -274,7 +275,6 @@ void generateBuiltIn(){
   generateLen();
   generateOrd();
   generateChr();
-  /*
   //generatePrint();*/
 }
 
@@ -339,7 +339,7 @@ int generateInstructionREE(tDLList*list, void *pointerForWhile){
                   int* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS int@%d\n", *tmp8);
                 }
-                else if(*tmp == LITERAL){
+                else if(*tmp == LITERAL || *tmp == DOCCOM){
                   char* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS string@%s\n", tmp8);
                 }
@@ -363,7 +363,7 @@ int generateInstructionREE(tDLList*list, void *pointerForWhile){
                   int* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS int@%d\n", *tmp8);
                 }
-                else if(*tmp22 == LITERAL){
+                else if(*tmp22 == LITERAL|| *tmp == DOCCOM){
                   char* tmp8 = list->First->Instruction.addr1;
                   fprintf(stdout, "PUSHS string@%s\n", tmp8);
                 }
