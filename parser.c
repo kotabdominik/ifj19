@@ -1454,7 +1454,7 @@ int main(){
     DLInitList(instrList);
     symbolTable *tableGG = initSymbolTable(MAX_SYMTABLE_SIZE);
     //setFile("txt.txt");
-    freopen("txt.txt","r",stdin);
+    //freopen("txt.txt","r",stdin);
     int result = parse(tableGG, instrList);
     if(result != OK) return result;
     //printf("%d\n", result);
