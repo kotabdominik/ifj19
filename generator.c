@@ -20,8 +20,6 @@
 //whitespaces v stringoch su nahradene escape seqs, ' ' = \032 '\n' = \010
 ///////
 
-//TODO
-//urobit print -> cez pointre od tsundri nacitat globals do stacku pred zavolanim funkcie, ktory budem v print loope popovat
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -53,10 +51,6 @@ void degenerate(tDLList *list){
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
     doDefVars(list);
-    /*void*pointer;
-    theUltimatePointer = pointer;
-    fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", theUltimatePointer);
-    fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", theUltimatePointer);*/
     generateInstructionREE(list);
 }
 
@@ -491,10 +485,6 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "JUMPIFEQ $SEM_ERROR LF@$CHECKNONE string@string\n");
                 fprintf(stdout, "CALL $checkFLT2INT\n");
                 fprintf(stdout, "JUMPIFEQ $ZEROERROR int@0 LF@$VAL2\n");
-                //fprintf(stdout, "DEFVAR LF@$T3\n");
-                //fprintf(stdout, "TYPE LF@$T3\n");
-                //fprintf(stdout, "JUMPIFEQ $ int@%d LF@$2\n", 0);
-                //fprintf(stdout, "JUMPIFEQ $ZEROERROR int@%d LF@$2\n", 0);
                 fprintf(stdout, "IDIV LF@$REESULT LF@$1 LF@$2\n");
                 fprintf(stdout, "PUSHS LF@$REESULT\n");
                 fprintf(stdout, "POPFRAME\n");
@@ -502,31 +492,10 @@ int generateInstructionREE(tDLList*list){
                 break;
             case(I_DEFVAR):
                 if(0){}
-                //if(counterZanoreni == 0) pointerCounter++;
-                //fprintf(stdout, "JUMPIFNEQ $SKIPDEF%p%d GF@WHILEDEF%p int@0\n", pointerForWhile, pointerCounter, pointerForWhile);
-                //symtableItem *ree = list->First->Instruction.addr1;
-                //fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
-                /*if(list->First->lptr != NULL){
-                  list->First->lptr->rptr = list->First->rptr;
-                }*/
-                //fprintf(stdout, "LABEL $SKIPDEF%p%d\n", pointerForWhile, pointerCounter);
                 break;
             case(I_DEFVARLOCAL):
-                /*if(0){}
-                symtableItem *localVar = list->First->Instruction.addr1;
-                fprintf(stdout, "DEFVAR LF@$VAR%s\n", localVar->key);
-                if(list->First->Instruction.addr3 == NULL){
-                  actNumberOfLF++;
-                  aktualniArgumenty = realloc(aktualniArgumenty, actNumberOfLF * sizeof(symtableItem));
-                  (aktualniArgumenty[actNumberOfLF-1]).key = localVar->key;
-                }*/
                 break;
             case(I_DEFVARLF):
-                /*if(0){}
-                char *notree = list->First->Instruction.addr1;
-                fprintf(stdout, "DEFVAR LF@$VAR%s\n", notree);
-                fprintf(stdout, "POPS LF@$VAR%s\n", notree);
-                //actNumberOfLF++;*/
                 break;
             case(I_POPS):
                 if(0){}
@@ -589,8 +558,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$VAL1\n");
                 fprintf(stdout, "DEFVAR LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
-                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "POPS LF@$VAL2\n");
+                fprintf(stdout, "POPS LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
                 fprintf(stdout, "CALL $checkSTRING\n");
@@ -600,8 +569,7 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "POPFRAME\n");
                 break;
             case(I_NQS):
-                //fprintf(stdout, "EQS\n");
-                //fprintf(stdout, "NOTS\n");
+
                 fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 fprintf(stdout, "DEFVAR LF@$1\n");
@@ -609,8 +577,8 @@ int generateInstructionREE(tDLList*list){
                 fprintf(stdout, "DEFVAR LF@$VAL1\n");
                 fprintf(stdout, "DEFVAR LF@$VAL2\n");
                 fprintf(stdout, "DEFVAR LF@$REESULT\n");
-                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "POPS LF@$VAL2\n");
+                fprintf(stdout, "POPS LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
                 fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
                 fprintf(stdout, "CALL $checkSTRING\n");
@@ -818,33 +786,14 @@ void defenestrace(int antiHussites){
   }
   fprintf(stdout, "POPFRAME\n");
 }
-/*
-fprintf(stdout,"%s\n", (aktualniArgumenty[i]).key);
-fprintf(stdout,"%s\n", (aktualniArgumenty[j+1]).key);
-fprintf(stdout,"REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n");
 
-  for (j = i + 1; j < actNumberOfLF - 1; j++){ ///o jeden viac aby neporovnavalo 2 rovnake vars
-
-
-    if (strcmp(aktualniArgumenty[i].key, aktualniArgumenty[j].key) == 0){///najde 2 rovnake mena vars
-      break;
-    }
-
-  }
-  if (strcmp(aktualniArgumenty[i].key, aktualniArgumenty[j].key) == 0){
-    continue;
-  }
-*/
 
 ///na IF potrebujem nejako vediet indent že dokedy vykonavat funckie vo vnutri, alebo
 ///potrebujem vediet prechody, teda Zaciatok IF , ELSE , Koniec IF a to niekde pocitat v pripade vnutornych IFov
 ///nasledne mozem volat generateInstruction rekurzivne...? Asi ano..
 void generateIf(tDLList*list, void *origi){
   counterZanoreni++;
-  /*if(counterZanoreni == 1){
-    fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", origi);
-    fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", origi);
-  }*/
+
   int pocetLokalnichPred = actNumberOfLF;
   fprintf(stdout, "CREATEFRAME\n");
   for(int i = 0; i < actNumberOfLF; i++){
@@ -1050,4 +999,3 @@ void doDefVarsLocal(tDLList*list){
 }
 
 // IF už funguje pre None 0 0.0 as false others true
-// CHYBA jindra ako mam chytat fokin '' ked checkujem if?

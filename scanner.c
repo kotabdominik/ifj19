@@ -34,28 +34,15 @@
 
 
 int stackReset = FALSE;
-static int TotalTokenCount = 0;///////////////treba to este?
+//static int TotalTokenCount = 0;///////////////treba to este?
 
-/*
-void setFile(char* sourceFile){
-    f = fopen (sourceFile, "r");
-}
-*/
-
-/*
-void resetToken(){
-    rewind(f);
-    stackReset = TRUE;
-    TotalTokenCount = 0;
-}
-*/
 
 void resetToken(){
     rewind(stdin);
     stackReset = TRUE;
-    TotalTokenCount = 0;
+    //TotalTokenCount = 0;
 }
-
+/*
 token ungetToken(int *error, tStack *stack, int doIndent){
 
     rewind(stdin);
@@ -68,7 +55,7 @@ token ungetToken(int *error, tStack *stack, int doIndent){
     }
 
     return Token;
-}
+}*/
 
 
 token nextToken(int *error, tStack *stack, int doIndent) {
@@ -151,7 +138,7 @@ token nextToken(int *error, tStack *stack, int doIndent) {
     //=========================================================================//
 
 
-    TotalTokenCount++;
+    //TotalTokenCount++;
 
     smartString *s = malloc(sizeof(smartString));
     if (s == NULL) {
