@@ -311,7 +311,7 @@ int statement(char *funName, int ifNeboNe){
       if(strcmp(funName, "globalTable") == 0){
         if(ifNeboNe == JSEMVELSU && tmpItem != NULL){
           if(tmpItem->definujuVIfu == JSEMVIFU){
-            generateInstruction(I_DEFVAR, tmpItem, NULL, NULL);
+            //generateInstruction(I_DEFVAR, tmpItem, NULL, NULL);
           }
         }
         if(tmpItem == NULL){
@@ -454,7 +454,8 @@ int statement(char *funName, int ifNeboNe){
             generateInstruction(I_INPUTF, NULL, NULL, NULL);
           }
           else{
-            generateInstruction(I_CALL, tmpItem->elementType.function, tmpToken.attribute.string->string, NULL); //???
+            symtableItem* novyItem = searchSymbolTableWithString(tableG, tmpToken.attribute.string->string);
+            generateInstruction(I_CALL, novyItem->elementType.function, tmpToken.attribute.string->string, NULL); //???
           }
 
           if(strcmp("globalTable", funName) == 0){
@@ -789,6 +790,7 @@ int program(){
     if(error != OK) return error; // zkoumani lexikalniho erroru
 
     while(tokenAct.type != EOFTOKEN){ // prochazi se cely program
+      symtableItem * debugItem = searchSymbolTableWithString(tableG, "yiplus1");
         // muze se jednat bud o funkci, statement
         if(tokenAct.type == KEYWORD && tokenAct.attribute.keyword == DEF){
             tokenAct = nextToken(&error, stack, doIndent);
@@ -1062,7 +1064,7 @@ int callParamsN(char* funName, int argc, char* aktualniFunkce){
 
   if(tmpItem0->elementType.function->argCount <= argc && tmpItem0->elementType.function->argCount != -1){
     fprintf(stderr, "snazite se do volani funkce vlozit vic parametru, nez funkce vyzaduje\n");
-    return SEM_MISC_ERR;
+    return SEM_PAR_ERR;
   }
   else{
     if(tokenAct.type == STR){
@@ -1173,6 +1175,8 @@ int initFunctions(){
               return PARSING_ERR;
             }
 
+            token tmpTokenForFun = tokenAct;
+
             if(searchSymbolTable(tableG, tokenAct) != NULL){
               fprintf(stderr, "Chyba, kvuli snaze o redefinici funkce\n");
               return SEM_DEF_ERR;
@@ -1180,6 +1184,41 @@ int initFunctions(){
             insertSymbolTable(tableG, tokenAct, FUNCTION); //vlozeni funkce do tabulky funkci
             symtableItem *currentFunction = searchSymbolTable(tableG, tokenAct);
             currentFunction->defined = false;
+
+            tokenAct = nextToken(&error, stack, doIndent);
+            if(error != OK) return error; // zkoumani lexikalniho erroru
+            if(tokenAct.type != LEFTBRACKET) return PARSING_ERR;
+
+            //result = defParams(tmpTokenForFun.attribute.string->string);
+            currentFunction->elementType.function->argCount = 0;
+
+
+
+            tokenAct = nextToken(&error, stack, doIndent);
+            if(error != OK) return error; // zkoumani lexikalniho erroru
+            if(tokenAct.type != RIGHTBRACKET && tokenAct.type != STR) return PARSING_ERR;
+
+            if(tokenAct.type == STR){
+              currentFunction->elementType.function->argCount = 1;
+              currentFunction->elementType.function->arguments = (symtableItem *) malloc(sizeof(symtableItem));
+              (currentFunction->elementType.function->arguments[currentFunction->elementType.function->argCount - 1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+              tokenAct = nextToken(&error, stack, doIndent);
+              if(error != OK) return error; // zkoumani lexikalniho erroru
+
+              while(tokenAct.type != RIGHTBRACKET){
+                if(tokenAct.type != COMMA) return PARSING_ERR;
+
+                tokenAct = nextToken(&error, stack, doIndent);
+                if(error != OK) return error; // zkoumani lexikalniho erroru
+                if(tokenAct.type != STR) return PARSING_ERR;
+
+                currentFunction->elementType.function->argCount = currentFunction->elementType.function->argCount + 1;
+                currentFunction->elementType.function->arguments = (symtableItem *) realloc(currentFunction->elementType.function->arguments ,(currentFunction->elementType.function->argCount - 1) * sizeof(symtableItem));
+                (currentFunction->elementType.function->arguments[currentFunction->elementType.function->argCount - 1]).elementType.variable = (variableData *) malloc(sizeof(variableData));
+                tokenAct = nextToken(&error, stack, doIndent);
+                if(error != OK) return error; // zkoumani lexikalniho erroru
+              }
+            }
         }
 
         tokenAct = nextToken(&error, stack, doIndent);

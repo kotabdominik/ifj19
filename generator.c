@@ -801,6 +801,8 @@ void checkFloat2Int(){
 }
 
 void defenestrace(int antiHussites){
+  fprintf(stdout, "CREATEFRAME\n");
+  fprintf(stdout, "PUSHFRAME\n");
   for (int i = 0; i < antiHussites; i++){
     fprintf(stdout, "DEFVAR LF@$WINDOW%d\n", i);
     fprintf(stdout, "POPS LF@$WINDOW%d\n", i);
@@ -808,6 +810,7 @@ void defenestrace(int antiHussites){
   for (int i = 0; i < antiHussites; i++){
     fprintf(stdout, "PUSHS LF@$WINDOW%d\n", i);
   }
+  fprintf(stdout, "POPFRAME\n");
 }
 /*
 fprintf(stdout,"%s\n", (aktualniArgumenty[i]).key);
@@ -992,7 +995,7 @@ void doDefVars(tDLList*list){
   while(list->Act != NULL){
     if(list->Act->Instruction.instType == I_DEFVAR){
       symtableItem *ree = list->Act->Instruction.addr1;
-      symtableItem *reeNext = list->Act->rptr->Instruction.addr1;
+      fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
 
       ////
       // Ak je momentalny a buduci ree->key rovnaky tak to skipni inak ho napis
