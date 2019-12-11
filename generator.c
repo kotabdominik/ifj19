@@ -810,13 +810,13 @@ void generateIf(tDLList*list, void *origi){
   fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
   fprintf(stdout, "POPS LF@$COND%p\n", origi);
 
-  fprintf(stdout, "DEFVAR LF@$TYPE%p\n", origi);
-  fprintf(stdout, "TYPE LF@$TYPE%p LF@$COND%p\n",origi, origi);  //'' None 0
+  fprintf(stdout, "DEFVAR LF@$$TYPE%p\n", origi);
+  fprintf(stdout, "TYPE LF@$$TYPE%p LF@$COND%p\n",origi, origi);  //'' None 0
 
-  fprintf(stdout, "JUMPIFEQ $COND_TYPE_INT%p LF@$TYPE%p string@int\n", origi, origi);  // 0
-  fprintf(stdout, "JUMPIFEQ $COND_TYPE_FLOAT%p LF@$TYPE%p string@float\n", origi, origi);  //0.0
-  fprintf(stdout, "JUMPIFEQ $COND_TYPE_STRING%p LF@$TYPE%p string@string\n", origi, origi);  // None
-  fprintf(stdout, "JUMPIFEQ $SKIPPUSHTRUE%p LF@$TYPE%p string@bool\n", origi, origi);  // None
+  fprintf(stdout, "JUMPIFEQ $COND_TYPE_INT%p LF@$$TYPE%p string@int\n", origi, origi);  // 0
+  fprintf(stdout, "JUMPIFEQ $COND_TYPE_FLOAT%p LF@$$TYPE%p string@float\n", origi, origi);  //0.0
+  fprintf(stdout, "JUMPIFEQ $COND_TYPE_STRING%p LF@$$TYPE%p string@string\n", origi, origi);  // None
+  fprintf(stdout, "JUMPIFEQ $SKIPPUSHTRUE%p LF@$$TYPE%p string@bool\n", origi, origi);  // None
   fprintf(stdout, "JUMPIFEQ $PUSHFALSE%p LF@$COND%p string@\n", origi, origi);  // None
 
   fprintf(stdout, "JUMP $SKIPPUSHFALSE%p\n",origi);
