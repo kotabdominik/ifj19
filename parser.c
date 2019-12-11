@@ -381,7 +381,7 @@ int statement(char *funName, int ifNeboNe){
         if(tmpItem1 != NULL && tmpItem1->type == FUNCTION){
           tokenAct = nextToken(&error, stack, doIndent);
           if(error != OK) return error; // zkoumani lexikalniho erroru
-          if(tmpItem1->defined == false){
+          if(tmpItem1->defined == false && strcmp("globalTable", funName) == 0){
             fprintf(stderr, "snazite se volat nejakou funkci, ktera jeste neni definovana\n");
             return SEM_DEF_ERR;
           }
@@ -545,7 +545,7 @@ int statement(char *funName, int ifNeboNe){
         fprintf(stderr, "snazite se volat nejakou funkci, ktera funkce vubec neni\n");
         return SEM_DEF_ERR;
       }
-      else if(tmpItem->defined == false){
+      else if(tmpItem->defined == false && strcmp("globalTable", funName) == 0){
         fprintf(stderr, "snazite se volat nejakou funkci, ktera jeste neni definovana\n");
         return SEM_DEF_ERR;
       }
@@ -1424,6 +1424,6 @@ int main(){
     return result;
 }
 
-//// fucking komenty
+//// komenty
 // semanticka chyba --- zastineni promenne
 // chyba pri definovani promenne v ifu/elsu
