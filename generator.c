@@ -868,6 +868,7 @@ void generateIf(tDLList*list, void *origi){
 }
 
 void generateWhile(tDLList*list, void *origi){
+  //int pocetLoopov = 0;
   int pocetLokalnichPred = actNumberOfLF;
   fprintf(stdout, "CREATEFRAME\n");
   //////predavanie hodnot i guess
@@ -881,11 +882,11 @@ void generateWhile(tDLList*list, void *origi){
   tDLElemPtr jmp2 = list->First->rptr;
   list->First = list->First->rptr;
   generateInstructionREE(list);
+  fprintf(stdout, "DEFVAR LF@$TYPE%p\n", origi);
   fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "POPS LF@$COND%p\n", origi);
   ////
   ////
-  fprintf(stdout, "DEFVAR LF@$TYPE%p\n", origi);
   fprintf(stdout, "TYPE LF@$TYPE%p LF@$COND%p\n",origi, origi);  //'' None 0
   ///jump na zaklade typu
   fprintf(stdout, "JUMPIFEQ $COND_TYPE_INT%p LF@$TYPE%p string@int\n", origi, origi);  // 0
