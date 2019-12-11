@@ -138,10 +138,8 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                     }
                   }
                 }
-                if (zesym == 0) { //nebyl to ani arg
-                  item = NULL; //uhh doteď tam bylo místo '=' "==" a fungovalo to, takže kdyžtak odstranit????
-                }
-              } else if (tableG && !item) { //nebylo to ve funkci
+              }
+              if (tableG && zesym == 0) { //nebylo to ve funkci
                 item = searchSymbolTableWithString(tableG, data->token->attribute.string->string);
                 if (item) {
                   zesym = 1;
@@ -154,9 +152,9 @@ int findRule(tokenStack *s, int *type, symbolTable* tableG, symbolTable* tableGG
                   } else {
                     type1 = UNDEFINED;
                   }
+                } else { //není v symtablu
+                  return -3; //proměnná není deklarovaná
                 }
-              } else { //není v symtablu
-                return -3; //proměnná není deklarovaná
               }
             } else {
               return -1; //dostanu něco jinýho než int, str, float, lit
