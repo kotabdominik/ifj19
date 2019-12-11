@@ -34,7 +34,7 @@ void generateSubstr();
 void generateBuiltIn();
 void generateAssign(tDLList*list);
 void generateGFVariable();
-int generateInstructionREE(tDLList*list);
+int generateInstructionREE(tDLList*list, void *pointerForWhile);
 void generateWhile(tDLList*list,void* origi);
 void generateIf(tDLList*list,void* origi);
 
