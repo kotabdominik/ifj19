@@ -38,7 +38,6 @@ typedef struct Stack {
 } tokenStack;
 
 void tokenStackInit(tokenStack* s); //inicializace stacku pro tokeny
-void tokenStackDestruct(tokenStack* s); //zrušení stacku pro tokeny
 int tokenStackEmpty(const tokenStack* s); //vrátí 1, pokud je token stack prázdný
 sData* tokenStackTop(const tokenStack* s); //vrátí nám data z toho, co je na vrcholu stacku
 void tokenStackPop(tokenStack* s); //popne stack

@@ -19,21 +19,6 @@ void tokenStackInit(tokenStack* s) {
   s->top = NULL;
 }
 
-void tokenStackDestruct(tokenStack* s) {
-  if (s != NULL) {
-    tsItem* current = s->top;
-    tsItem* rm = NULL;
-    while (current != NULL) {
-      rm = current;
-      current = current->next;
-      free(rm->data);
-      free(rm);
-    }
-    free(s);
-    s = NULL;
-  }
-}
-
 int tokenStackEmpty(const tokenStack* s) {
   return (s->top == NULL);
 }
@@ -54,13 +39,13 @@ void tokenStackPop(tokenStack* s) {
 }
 
 void tokenStackPush(tokenStack* s, sData* data) {
-  tsItem* new_elem = (tsItem*) malloc(sizeof(struct sItem));
-  if (new_elem == NULL) {
+  tsItem* newElem = (tsItem*) malloc(sizeof(struct sItem));
+  if (newElem == NULL) {
     //maloc ree
   }
-  new_elem->data = data;
-  new_elem->next = s->top;
-  s->top = new_elem;
+  newElem->data = data;
+  newElem->next = s->top;
+  s->top = newElem;
 }
 
 sData* getTerminalData(tokenStack* s) {
@@ -79,47 +64,47 @@ void addHandler(tokenStack *s, sData* sData) {
   tsItem* prev = NULL;
   if (sData == NULL) {
     tsItem * newItem = malloc(sizeof(tsItem));
-        if (newItem == NULL) {
-          //malloc ree
-        }
-        newItem->data = malloc(sizeof(sData));
-        if (newItem->data == NULL) {
-          //malloc ree
-        }
-        newItem->data->type = typeHandler;
-        newItem->next = NULL;
-        newItem->data->token = sData->token;
-        if (tokenStackEmpty(s)) {
-          s->top = newItem;
-        } else {
-          while (current->next != NULL) {
-            current = current->next;
-          }
-          current->next = newItem;
-        }
+      if (newItem == NULL) {
+        //malloc ree
+      }
+      newItem->data = malloc(sizeof(sData));
+      if (newItem->data == NULL) {
+        //malloc ree
+      }
+      newItem->data->type = typeHandler;
+      newItem->next = NULL;
+      newItem->data->token = sData->token;
+      if (tokenStackEmpty(s)) {
+        s->top = newItem;
       } else {
-        while (current != NULL) {
-          if (current->data == sData) {
-            tsItem * newItem = malloc(sizeof(tsItem));
-            if (newItem == NULL) {
-              //malloc ree
-            }
-            if (prev != NULL) {
-              prev->next = newItem;
-            } else {
-              s->top = newItem;
-            }
-            newItem->next = current;
-            newItem->data = malloc(sizeof(sData));
-            if (newItem->data == NULL) {
-              //malloc ree
-            }
-            newItem->data->type = typeHandler;
-            newItem->data->token = sData->token;
-            return;
-          }
-          prev = current;
+        while (current->next != NULL) {
           current = current->next;
         }
+        current->next = newItem;
       }
+    } else {
+      while (current != NULL) {
+        if (current->data == sData) {
+          tsItem * newItem = malloc(sizeof(tsItem));
+          if (newItem == NULL) {
+            //malloc ree
+          }
+          if (prev != NULL) {
+            prev->next = newItem;
+          } else {
+            s->top = newItem;
+          }
+          newItem->next = current;
+          newItem->data = malloc(sizeof(sData));
+          if (newItem->data == NULL) {
+            //malloc ree
+          }
+          newItem->data->type = typeHandler;
+          newItem->data->token = sData->token;
+          return;
+        }
+        prev = current;
+        current = current->next;
+      }
+    }
 }

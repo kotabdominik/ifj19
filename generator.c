@@ -263,7 +263,6 @@ void generateChr(){
 //||======================================================||//
 
 void generateBuiltIn(){
-  /*
   generateSubstr();
   checkInt2Float();
   generateInputf();
@@ -275,6 +274,7 @@ void generateBuiltIn(){
   generateLen();
   generateOrd();
   generateChr();
+  /*
   //generatePrint();*/
 }
 
