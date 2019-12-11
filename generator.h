@@ -34,9 +34,10 @@ void generateSubstr();
 void generateBuiltIn();
 void generateAssign(tDLList*list);
 void generateGFVariable();
-int generateInstructionREE(tDLList*list, void *pointerForWhile);
+int generateInstructionREE(tDLList*list);
 void generateWhile(tDLList*list,void* origi);
 void generateIf(tDLList*list,void* origi);
+void doDefVars(tDLList*list);
 
 void checkInt2Float();
 void checkFloat2Int();

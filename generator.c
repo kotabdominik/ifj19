@@ -35,9 +35,9 @@
 
 int actNumberOfLF = 0;
 symtableItem *aktualniArgumenty = NULL;
-int pointerCounter = 0;
+/*int pointerCounter = 0;
 int counterZanoreni = 0;
-void *theUltimatePointer;
+void *theUltimatePointer;*/
 
 void degenerate(tDLList *list){
     fprintf(stdout, ".IFJcode19\n");
@@ -52,11 +52,12 @@ void degenerate(tDLList *list){
     fprintf(stdout, "LABEL $$MAIN\n");
     fprintf(stdout, "CREATEFRAME\n");
     fprintf(stdout, "PUSHFRAME\n");
-    void*pointer;
+    doDefVars(list);
+    /*void*pointer;
     theUltimatePointer = pointer;
     fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", theUltimatePointer);
-    fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", theUltimatePointer);
-    generateInstructionREE(list, theUltimatePointer);
+    fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", theUltimatePointer);*/
+    generateInstructionREE(list);
 }
 
 //||======================================================||//
@@ -278,7 +279,7 @@ void generateBuiltIn(){
   //generatePrint();*/
 }
 
-int generateInstructionREE(tDLList*list, void *pointerForWhile){
+int generateInstructionREE(tDLList*list){
     int *parCounter;
     int *labcount = 0;
     for (;list->First != NULL;list->First = list->First->rptr){
@@ -373,24 +374,24 @@ int generateInstructionREE(tDLList*list, void *pointerForWhile){
                 }
                 break;
             case(I_ADDS):
-            fprintf(stdout, "CREATEFRAME\n");
-            fprintf(stdout, "PUSHFRAME\n");
-            fprintf(stdout, "DEFVAR LF@$1\n");
-            fprintf(stdout, "DEFVAR LF@$2\n");
-            fprintf(stdout, "DEFVAR LF@$VAL1\n");
-            fprintf(stdout, "DEFVAR LF@$VAL2\n");
-            fprintf(stdout, "DEFVAR LF@$REESULT\n");
-            fprintf(stdout, "POPS LF@$VAL2\n");//delitel
-            fprintf(stdout, "POPS LF@$VAL1\n");//delenec
-            fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
-            fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
-            //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
-            //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
-            fprintf(stdout, "CALL $checkSTRING\n");////shoudlla be ok neotestovane
-            fprintf(stdout, "CALL $checkINT2FLT\n");
-            fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
-            fprintf(stdout, "PUSHS LF@$REESULT\n");
-            fprintf(stdout, "POPFRAME\n");
+                fprintf(stdout, "CREATEFRAME\n");
+                fprintf(stdout, "PUSHFRAME\n");
+                fprintf(stdout, "DEFVAR LF@$1\n");
+                fprintf(stdout, "DEFVAR LF@$2\n");
+                fprintf(stdout, "DEFVAR LF@$VAL1\n");
+                fprintf(stdout, "DEFVAR LF@$VAL2\n");
+                fprintf(stdout, "DEFVAR LF@$REESULT\n");
+                fprintf(stdout, "POPS LF@$VAL2\n");//delitel
+                fprintf(stdout, "POPS LF@$VAL1\n");//delenec
+                fprintf(stdout, "MOVE LF@$1 LF@$VAL1\n");
+                fprintf(stdout, "MOVE LF@$2 LF@$VAL2\n");
+                //fprintf(stdout, "DEFVAR LF@$BOOLCHECK_00\n");
+                //fprintf(stdout, "MOVE LF@$BOOLCHECK_00 bool@false\n");///meme podmienka kvoli stringom
+                fprintf(stdout, "CALL $checkSTRING\n");////shoudlla be ok neotestovane
+                fprintf(stdout, "CALL $checkINT2FLT\n");
+                fprintf(stdout, "ADD LF@$REESULT LF@$1 LF@$2\n");
+                fprintf(stdout, "PUSHS LF@$REESULT\n");
+                fprintf(stdout, "POPFRAME\n");
             break;
             case(I_SUBS):
                 fprintf(stdout, "CREATEFRAME\n");
@@ -498,11 +499,14 @@ int generateInstructionREE(tDLList*list, void *pointerForWhile){
                 break;
             case(I_DEFVAR):
                 if(0){}
-                if(counterZanoreni == 0) pointerCounter++;
-                fprintf(stdout, "JUMPIFNEQ $SKIPDEF%p%d GF@WHILEDEF%p int@0\n", pointerForWhile, pointerCounter, pointerForWhile);
-                symtableItem *ree = list->First->Instruction.addr1;
-                fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
-                fprintf(stdout, "LABEL $SKIPDEF%p%d\n", pointerForWhile, pointerCounter);
+                //if(counterZanoreni == 0) pointerCounter++;
+                //fprintf(stdout, "JUMPIFNEQ $SKIPDEF%p%d GF@WHILEDEF%p int@0\n", pointerForWhile, pointerCounter, pointerForWhile);
+                //symtableItem *ree = list->First->Instruction.addr1;
+                //fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
+                /*if(list->First->lptr != NULL){
+                  list->First->lptr->rptr = list->First->rptr;
+                }*/
+                //fprintf(stdout, "LABEL $SKIPDEF%p%d\n", pointerForWhile, pointerCounter);
                 break;
             case(I_DEFVARLOCAL):
                 if(0){}
@@ -679,7 +683,7 @@ int generateInstructionREE(tDLList*list, void *pointerForWhile){
                 fprintf(stdout, "CREATEFRAME\n");
                 fprintf(stdout, "PUSHFRAME\n");
                 list->First = list->First->rptr;
-                generateInstructionREE(list, pointerForWhile);
+                generateInstructionREE(list);
                 break;
             case(I_ENDOFFUNC):
                 if(0){}
@@ -821,7 +825,7 @@ void generateIf(tDLList*list, void *origi){
   fprintf(stdout, "PUSHFRAME\n");
   //zistit condition
   list->First = list->First->rptr;
-  generateInstructionREE(list, theUltimatePointer);
+  generateInstructionREE(list);
   fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
   fprintf(stdout, "POPS LF@$COND%p\n", origi);
 
@@ -864,11 +868,11 @@ void generateIf(tDLList*list, void *origi){
   //fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true LF@$COND%p\n", origi, origi);
   fprintf(stdout, "JUMPIFNEQ $ELSE%p bool@true LF@$COND%p\n",origi, origi);
   list->First = list->First->rptr;
-  generateInstructionREE(list, theUltimatePointer); //dokym nenajdem rovnaky indent
+  generateInstructionREE(list); //dokym nenajdem rovnaky indent
   fprintf(stdout, "JUMP END%p\n",origi);
   fprintf(stdout, "LABEL $ELSE%p\n",origi);
   list->First = list->First->rptr;
-  generateInstructionREE(list, theUltimatePointer); //dokym nenajdem rovnaky indent
+  generateInstructionREE(list); //dokym nenajdem rovnaky indent
   fprintf(stdout, "LABEL END%p\n",origi);
   for(int i = actNumberOfLF-1; i >= 0; i--){
         fprintf(stdout,"PUSHS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
@@ -884,9 +888,9 @@ void generateIf(tDLList*list, void *origi){
 }
 
 void generateWhile(tDLList*list, void *origi){
-  counterZanoreni++;
-  fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", origi);
-  fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", origi);
+  //counterZanoreni++;
+  //fprintf(stdout, "DEFVAR GF@WHILEDEF%p\n", origi);
+  //fprintf(stdout, "MOVE GF@WHILEDEF%p int@0\n", origi);
   //int pocetLoopov = 0;
   int pocetLokalnichPred = actNumberOfLF;
   fprintf(stdout, "CREATEFRAME\n");
@@ -900,7 +904,7 @@ void generateWhile(tDLList*list, void *origi){
   fprintf(stdout, "DEFVAR LF@$COND%p\n", origi);
   tDLElemPtr jmp2 = list->First->rptr;
   list->First = list->First->rptr;
-  generateInstructionREE(list, origi);
+  generateInstructionREE(list);
   fprintf(stdout, "DEFVAR LF@$TYPE%p\n", origi);
   fprintf(stdout, "LABEL WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "POPS LF@$COND%p\n", origi);
@@ -942,11 +946,11 @@ void generateWhile(tDLList*list, void *origi){
   ////
   fprintf(stdout, "JUMPIFNEQ WHILE$END$%p bool@true LF@$COND%p\n", origi, origi);
   list->First = list->First->rptr;
-  generateInstructionREE(list,origi); //dokym nenajdem dedent
+  generateInstructionREE(list); //dokym nenajdem dedent
   tDLElemPtr jmp1 = list->First;
-  fprintf(stdout, "ADD GF@WHILEDEF%p GF@WHILEDEF%p int@1\n", origi, origi);
+  //fprintf(stdout, "ADD GF@WHILEDEF%p GF@WHILEDEF%p int@1\n", origi, origi);
   list->First = jmp2;
-  generateInstructionREE(list, origi); //dokym nenajdem konec expression(podminky)
+  generateInstructionREE(list); //dokym nenajdem konec expression(podminky)
   list->First = jmp1;
   fprintf(stdout, "JUMP WHILE$BEGIN$%p\n", origi);
   fprintf(stdout, "LABEL WHILE$END$%p\n", origi);
@@ -960,7 +964,24 @@ void generateWhile(tDLList*list, void *origi){
   for(int i = 0; i < actNumberOfLF; i++){
         fprintf(stdout,"POPS LF@$VAR%s\n", (aktualniArgumenty[i]).key);
   }
-  counterZanoreni--;
+  //counterZanoreni--;
+}
+
+void doDefVars(tDLList*list){
+  list->Act = list->First;
+  while(list->Act != NULL){
+    if(list->Act->Instruction.instType == I_DEFVAR){
+      symtableItem *ree = list->Act->Instruction.addr1;
+      fprintf(stdout, "DEFVAR GF@$VAR%s\n", ree->key);
+      if(list->Act->lptr != NULL){
+        list->Act->lptr->rptr = list->Act->rptr;
+      }
+      else{
+        list->First = list->First->rptr;
+      }
+    }
+    list->Act = list->Act->rptr;
+  }
 }
 
 // cekovat jestli do inputi inputf inputs hazis spravny params
